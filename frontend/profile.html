@@ -1021,7 +1021,7 @@
 
             if (currentUser.id) {
                 try {
-                    const response = await fetch(`http://127.0.0.1:5000/api/auth/me?user_id=${encodeURIComponent(currentUser.id)}`);
+                    const response = await fetch(`/api/auth/me?user_id=${encodeURIComponent(currentUser.id)}`);
                     const data = await response.json();
                     if (response.ok && data.success && data.user) {
                         currentUser = { ...currentUser, ...data.user };
@@ -1067,7 +1067,7 @@
 
             if (currentUser.id) {
                 try {
-                    const statsResponse = await fetch(`http://127.0.0.1:5000/api/progress/dashboard?user_id=${encodeURIComponent(currentUser.id)}`);
+                    const statsResponse = await fetch(`/api/progress/dashboard?user_id=${encodeURIComponent(currentUser.id)}`);
                     const statsData = await statsResponse.json();
                     if (statsResponse.ok && statsData.success && statsData.stats.total_performances > 0) {
                         const databaseSkills = statsData.skill_scores || {};
@@ -1137,7 +1137,7 @@
 
             try {
                 if (currentUser.id) {
-                    const response = await fetch("http://127.0.0.1:5000/api/auth/update-profile", {
+                    const response = await fetch("/api/auth/update-profile", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({

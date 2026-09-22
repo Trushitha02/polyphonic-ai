@@ -1609,8 +1609,8 @@ function updateReferenceAudio(category) {
     const referenceAudio = document.getElementById("referenceAudio");
     if (!referenceAudio || !activeAudioId) return;
     const streamUrl = category === "BGM"
-        ? `http://127.0.0.1:5000/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=bgm`
-        : `http://127.0.0.1:5000/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=vocals`;
+        ? `/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=bgm`
+        : `/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=vocals`;
     referenceAudio.pause();
     referenceAudio.src = streamUrl;
     referenceAudio.load();
@@ -1632,7 +1632,7 @@ if(uploadedSong){
         document.getElementById("referenceAudio");
 
     referenceAudio.src = activeAudioId
-        ? `http://127.0.0.1:5000/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=bgm`
+        ? `/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=bgm`
         : uploadedSong;
 
 }
@@ -1695,7 +1695,7 @@ async function analyzePerformance(){
 
         const formData = new FormData();
         formData.append("file", file);
-        const uploadResponse = await fetch("http://127.0.0.1:5000/api/audio/upload", {
+        const uploadResponse = await fetch("/api/audio/upload", {
             method: "POST",
             body: formData
         });
@@ -1715,7 +1715,7 @@ async function analyzePerformance(){
 
         const response =
             await fetch(
-                "http://127.0.0.1:5000/api/performance/analyze",
+                "/api/performance/analyze",
                 {
                     method:"POST",
 
@@ -1803,7 +1803,7 @@ async function resolveReferenceAudio() {
     if (!audioId) return "";
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/audio/${encodeURIComponent(audioId)}`);
+        const response = await fetch(`/api/audio/${encodeURIComponent(audioId)}`);
         const data = await response.json();
         return response.ok && data.success ? data.audio.file_path || "" : "";
     } catch (error) {

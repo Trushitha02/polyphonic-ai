@@ -8,7 +8,7 @@
 
     <script>
         if (window.location.protocol === "file:") {
-            window.location.replace("http://127.0.0.1:5000/upload.html");
+            window.location.replace("/upload.html");
         }
     </script>
 
@@ -1676,10 +1676,10 @@
 
 const BASE_API =
     window.location.port === "5500"
-        ? `${window.location.protocol}//${window.location.hostname}:5000/api`
+        ? "/api"
         : window.location.origin && window.location.origin !== "null"
             ? `${window.location.origin}/api`
-            : "http://127.0.0.1:5000/api";
+            : "/api";
 
 
 // ============================================================

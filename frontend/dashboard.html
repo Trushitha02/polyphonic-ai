@@ -2440,7 +2440,7 @@ async function loadProgress(){
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
+        const response = await fetch(`/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
         const data = await response.json();
         if (!response.ok || !data.success) throw new Error(data.message || "Dashboard data unavailable");
         renderDashboard(data);
@@ -2558,7 +2558,7 @@ loadProgress();
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
+        const response = await fetch(`/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
         const data = await response.json();
         if (!response.ok || !data.success) throw new Error(data.message || "Dashboard data unavailable");
         renderDashboard(data);
