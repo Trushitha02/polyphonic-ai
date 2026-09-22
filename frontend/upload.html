@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script>
+        if (window.location.protocol === "file:") {
+            window.location.replace("http://127.0.0.1:5000/upload.html");
+        }
+    </script>
+
+    <title>Upload Music | Polyphonic AI</title>
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8fbff 0%,
+                    #eef5ff 45%,
+                    #f7f1ff 100%
+                );
+
+            color: #18215f;
+
+        }
+
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        .navbar {
+
+            height: 84px;
+
+            background: rgba(255,255,255,0.95);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 5%;
+
+            box-shadow:
+                0 2px 15px rgba(50,60,120,0.08);
+
+            position: relative;
+
+            z-index: 10;
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            font-size: 30px;
+
+            font-weight: 700;
+
+            color: #172267;
+        }
+
+
+        .logo-icon {
+
+            width: 48px;
+
+            height: 48px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5d55ff,
+                    #8f5bff
+                );
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 26px;
+
+            box-shadow:
+                0 8px 20px rgba(93,85,255,0.25);
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .nav-links {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 38px;
+        }
+
+
+        .nav-links a {
+
+            text-decoration: none;
+
+            color: #52608f;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            padding: 29px 5px;
+
+            position: relative;
+
+            transition: 0.3s;
+        }
+
+
+        .nav-links a:hover {
+
+            color: #5148e8;
+        }
+
+
+        .nav-links a.active {
+
+            color: #5148e8;
+        }
+
+
+        .nav-links a.active::after {
+
+            content: "";
+
+            position: absolute;
+
+            bottom: 15px;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 3px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #4f46ff,
+                    #765cff
+                );
+        }
+
+
+        /* =====================================================
+           USER
+        ===================================================== */
+
+        .user-box {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            background: #f2f1ff;
+
+            padding: 11px 16px;
+
+            border-radius: 16px;
+
+            color: #4642c9;
+
+            font-weight: 600;
+        }
+
+
+        .user-icon {
+
+            width: 28px;
+
+            height: 28px;
+
+            border-radius: 50%;
+
+            background: #6157ef;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+
+            min-height: calc(100vh - 84px);
+
+            display: flex;
+
+            padding: 38px 4% 25px;
+
+            gap: 55px;
+        }
+
+
+        /* =====================================================
+           LEFT SECTION
+        ===================================================== */
+
+        .left-section {
+
+            width: 29%;
+
+            padding: 30px 10px 20px 25px;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .left-section h1 {
+
+            font-size: 42px;
+
+            line-height: 1.1;
+
+            color: #182263;
+
+            margin-bottom: 20px;
+        }
+
+
+        .gradient-text {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #1898ee,
+                    #7355ff
+                );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .description {
+
+            font-size: 17px;
+
+            line-height: 1.7;
+
+            color: #52658f;
+
+            max-width: 400px;
+
+            margin-bottom: 30px;
+        }
+
+
+        /* =====================================================
+           MUSIC ILLUSTRATION
+        ===================================================== */
+
+        .music-art {
+
+            height: 250px;
+
+            position: relative;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            margin-bottom: 22px;
+        }
+
+
+        .record {
+
+            width: 175px;
+
+            height: 175px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    #7758ef 0%,
+                    #4c4bba 15%,
+                    #222c72 17%,
+                    #18235e 40%,
+                    #101946 70%,
+                    #17205d 100%
+                );
+
+            box-shadow:
+                0 15px 35px rgba(30,40,100,0.25);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            position: relative;
+        }
+
+
+        .record::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 135px;
+
+            height: 135px;
+
+            border: 1px solid rgba(255,255,255,0.15);
+
+            border-radius: 50%;
+        }
+
+
+        .record-center {
+
+            width: 62px;
+
+            height: 62px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7663ff,
+                    #d15cff
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: white;
+
+            font-size: 29px;
+
+            z-index: 2;
+        }
+
+
+        .wave {
+
+            position: absolute;
+
+            width: 120px;
+
+            height: 45px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 5px;
+        }
+
+
+        .wave-left {
+
+            left: 5px;
+        }
+
+
+        .wave-right {
+
+            right: 5px;
+        }
+
+
+        .bar {
+
+            width: 5px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    #36a9ff,
+                    #795cff
+                );
+        }
+
+
+        .bar:nth-child(1) { height: 18px; }
+        .bar:nth-child(2) { height: 35px; }
+        .bar:nth-child(3) { height: 50px; }
+        .bar:nth-child(4) { height: 30px; }
+        .bar:nth-child(5) { height: 58px; }
+        .bar:nth-child(6) { height: 36px; }
+        .bar:nth-child(7) { height: 20px; }
+
+
+        .note {
+
+            position: absolute;
+
+            font-size: 30px;
+
+            color: #795cff;
+        }
+
+
+        .note.one {
+
+            top: 18px;
+
+            left: 65px;
+        }
+
+
+        .note.two {
+
+            top: 10px;
+
+            right: 65px;
+
+            color: #2699ee;
+        }
+
+
+        .note.three {
+
+            bottom: 5px;
+
+            left: 90px;
+        }
+
+
+        .note.four {
+
+            bottom: 5px;
+
+            right: 80px;
+        }
+
+
+        /* =====================================================
+           FEATURES
+        ===================================================== */
+
+        .features {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 17px;
+        }
+
+
+        .feature {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .feature-icon {
+
+            min-width: 55px;
+
+            height: 55px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eeeaff,
+                    #e0e8ff
+                );
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 25px;
+
+            color: #5c52ee;
+
+            box-shadow:
+                0 5px 15px rgba(80,80,180,0.08);
+        }
+
+
+        .feature h3 {
+
+            font-size: 16px;
+
+            margin-bottom: 5px;
+
+            color: #182263;
+        }
+
+
+        .feature p {
+
+            font-size: 14px;
+
+            color: #64739b;
+
+            line-height: 1.4;
+        }
+
+
+        /* =====================================================
+           RIGHT SECTION
+        ===================================================== */
+
+        .right-section {
+
+            flex: 1;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        /* =====================================================
+           UPLOAD CARD
+        ===================================================== */
+
+        .upload-card {
+
+            width: 100%;
+
+            max-width: 950px;
+
+            background: rgba(255,255,255,0.96);
+
+            border-radius: 25px;
+
+            padding: 38px 55px 40px;
+
+            box-shadow:
+                0 20px 55px rgba(65,75,150,0.12);
+        }
+
+
+        .upload-header {
+
+            text-align: center;
+
+            margin-bottom: 28px;
+        }
+
+
+        .upload-icon {
+
+            width: 80px;
+
+            height: 80px;
+
+            margin: auto;
+
+            border-radius: 25px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 42px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7660ff,
+                    #6e96ff
+                );
+
+            box-shadow:
+                0 12px 25px rgba(95,90,240,0.22);
+        }
+
+
+        .upload-header h2 {
+
+            font-size: 34px;
+
+            margin-top: 16px;
+
+            margin-bottom: 8px;
+
+            color: #182263;
+        }
+
+
+        .upload-header p {
+
+            font-size: 17px;
+
+            color: #61719c;
+        }
+
+
+        /* =====================================================
+           DROP ZONE
+        ===================================================== */
+
+        .drop-zone {
+
+            border: 2px dashed #7c7cff;
+
+            border-radius: 18px;
+
+            min-height: 300px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fbfbff,
+                    #f7f7ff
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+            padding: 30px;
+        }
+
+
+        .drop-zone:hover {
+
+            background: #f2f2ff;
+
+            border-color: #584eff;
+        }
+
+
+        .drop-zone.dragover {
+
+            background: #eeeeff;
+
+            border-color: #4f46ff;
+
+            transform: scale(1.01);
+        }
+
+
+        .file-symbol {
+
+            width: 60px;
+
+            height: 60px;
+
+            margin: auto auto 18px;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #756bff
+                );
+
+            color: white;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 29px;
+        }
+
+
+        .drop-zone h3 {
+
+            font-size: 22px;
+
+            color: #182263;
+
+            margin-bottom: 13px;
+        }
+
+
+        .or {
+
+            color: #7883a5;
+
+            margin-bottom: 15px;
+
+            font-size: 14px;
+        }
+
+
+        .choose-btn {
+
+            display: inline-block;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #684eff,
+                    #775bff
+                );
+
+            color: white;
+
+            padding: 14px 35px;
+
+            border-radius: 12px;
+
+            font-size: 17px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 18px rgba(92,75,240,0.22);
+
+            transition: 0.3s;
+        }
+
+
+        .choose-btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 25px rgba(92,75,240,0.28);
+        }
+
+
+        .formats {
+
+            margin-top: 18px;
+
+            color: #65749d;
+
+            font-size: 14px;
+
+            line-height: 1.8;
+        }
+
+
+        #audioFile {
+
+            display: none;
+        }
+
+
+        /* =====================================================
+           SELECTED FILE
+        ===================================================== */
+
+        .selected-file {
+
+            margin-top: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f2f1ff,
+                    #f6f7ff
+                );
+
+            border-radius: 14px;
+
+            padding: 17px 20px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            min-height: 70px;
+        }
+
+
+        .file-info {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+        }
+
+
+        .small-file-icon {
+
+            width: 45px;
+
+            height: 45px;
+
+            border-radius: 10px;
+
+            background: #6d5bed;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 21px;
+        }
+
+
+        .file-info strong {
+
+            display: block;
+
+            color: #1b2563;
+
+            margin-bottom: 5px;
+        }
+
+
+        .file-info span {
+
+            color: #7884a6;
+
+            font-size: 13px;
+        }
+
+
+        .remove-btn {
+
+            border: none;
+
+            background: transparent;
+
+            color: #e05268;
+
+            font-size: 22px;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           UPLOAD BUTTON
+        ===================================================== */
+
+        .upload-btn {
+
+            width: 100%;
+
+            margin-top: 22px;
+
+            padding: 17px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #694cff,
+                    #4e5cff
+                );
+
+            color: white;
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 22px rgba(83,76,240,0.23);
+
+            transition: 0.3s;
+        }
+
+
+        .upload-btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 14px 28px rgba(83,76,240,0.30);
+        }
+
+
+        .upload-btn:disabled {
+
+            background: #aaa;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+            box-shadow: none;
+        }
+
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        #message {
+
+            text-align: center;
+
+            margin-top: 17px;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            min-height: 20px;
+        }
+
+
+        .success {
+
+            color: #219653;
+        }
+
+
+        .error {
+
+            color: #e04455;
+        }
+
+
+        /* =====================================================
+           SUCCESS RESULT
+        ===================================================== */
+
+        .result {
+
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 20px;
+
+            border-radius: 15px;
+
+            background: #f0fff6;
+
+            border: 1px solid #bce8ce;
+
+            text-align: center;
+        }
+
+
+        .result h3 {
+
+            color: #18864b;
+
+            margin-bottom: 10px;
+        }
+
+
+        .result p {
+
+            color: #52658f;
+
+            margin: 6px;
+        }
+
+
+        .continue-btn {
+
+            margin-top: 15px;
+
+            padding: 12px 25px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #554be8;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           BOTTOM INFO
+        ===================================================== */
+
+        .bottom-info {
+
+            display: flex;
+
+            justify-content: space-around;
+
+            gap: 20px;
+
+            padding: 18px 5%;
+
+            background: rgba(255,255,255,0.8);
+
+            border-top: 1px solid #e5e7f5;
+        }
+
+
+        .bottom-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            color: #59698e;
+
+            font-size: 14px;
+        }
+
+
+        .bottom-item .icon {
+
+            font-size: 25px;
+
+            color: #6d5bed;
+        }
+
+
+        .bottom-item strong {
+
+            display: block;
+
+            color: #1b2563;
+
+            margin-bottom: 3px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .nav-links {
+
+                gap: 18px;
+            }
+
+            .main {
+
+                gap: 25px;
+            }
+
+            .left-section h1 {
+
+                font-size: 34px;
+            }
+
+            .upload-card {
+
+                padding: 30px;
+            }
+        }
+
+
+        @media (max-width: 850px) {
+
+            .navbar {
+
+                padding: 0 20px;
+            }
+
+            .nav-links {
+
+                display: none;
+            }
+
+            .main {
+
+                flex-direction: column;
+
+                padding: 25px;
+            }
+
+            .left-section {
+
+                width: 100%;
+
+                padding: 10px;
+            }
+
+            .left-section h1 {
+
+                font-size: 35px;
+            }
+
+            .music-art {
+
+                display: none;
+            }
+
+            .features {
+
+                margin-bottom: 20px;
+            }
+
+            .bottom-info {
+
+                flex-wrap: wrap;
+            }
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="sidebar.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+<div id="sidebarContainer" data-active="upload"></div>
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+
+<main class="main">
+
+
+    <!-- =====================================================
+         LEFT SIDE
+    ===================================================== -->
+
+    <section class="left-section">
+
+
+        <h1>
+
+            Turn Your Music
+
+            <br>
+
+            <span class="gradient-text">
+                into Insights
+            </span>
+
+        </h1>
+
+
+        <p class="description">
+
+            Upload a song and let Polyphonic AI
+            separate vocals, detect instruments
+            and transcribe the music.
+
+        </p>
+
+
+        <!-- MUSIC ART -->
+
+        <div class="music-art">
+
+            <span class="note one">♪</span>
+
+            <span class="note two">♫</span>
+
+            <span class="note three">♪</span>
+
+            <span class="note four">♫</span>
+
+
+            <div class="wave wave-left">
+
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+
+            </div>
+
+
+            <div class="record">
+
+                <div class="record-center">
+                    ♪
+                </div>
+
+            </div>
+
+
+            <div class="wave wave-right">
+
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+
+            </div>
+
+        </div>
+
+
+        <!-- FEATURES -->
+
+        <div class="features">
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🎙
+                </div>
+
+                <div>
+
+                    <h3>
+                        Vocal / BGM Separation
+                    </h3>
+
+                    <p>
+                        Get vocals and background
+                        music separately
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🎵
+                </div>
+
+                <div>
+
+                    <h3>
+                        Instrument Detection
+                    </h3>
+
+                    <p>
+                        Identify 20+ instruments
+                        from BGM
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="feature">
+
+                <div class="feature-icon">
+                    🎼
+                </div>
+
+                <div>
+
+                    <h3>
+                        Musical Transcription
+                    </h3>
+
+                    <p>
+                        Convert audio to musical
+                        notes and MIDI
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RIGHT SIDE
+    ===================================================== -->
+
+    <section class="right-section">
+
+
+        <div class="upload-card">
+
+
+            <!-- HEADER -->
+
+            <div class="upload-header">
+
+                <div class="upload-icon">
+                    ☁
+                </div>
+
+                <h2>
+                    Upload Your Music
+                </h2>
+
+                <p>
+                    Choose an audio file to start the AI analysis
+                </p>
+
+            </div>
+
+
+
+            <!-- DROP ZONE -->
+
+            <div
+                class="drop-zone"
+                id="dropZone"
+            >
+
+                <div>
+
+                    <div class="file-symbol">
+                        ♪
+                    </div>
+
+
+                    <h3>
+                        Drag & Drop your audio file here
+                    </h3>
+
+
+                    <div class="or">
+                        OR
+                    </div>
+
+
+                    <label
+                        for="audioFile"
+                        class="choose-btn"
+                    >
+                        📁 &nbsp; Choose File
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="audioFile"
+                        name="file"
+                        accept=".mp3,.wav,.flac,.ogg,.m4a"
+                    >
+
+
+                    <div class="formats">
+
+                        Supported formats:
+                        MP3, WAV, FLAC, OGG, M4A
+
+                        <br>
+
+                        Maximum file size: 50MB
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SELECTED FILE -->
+
+            <div
+                class="selected-file"
+                id="selectedFile"
+                style="display:none;"
+            >
+
+                <div class="file-info">
+
+                    <div class="small-file-icon">
+                        ♪
+                    </div>
+
+                    <div>
+
+                        <strong id="selectedName">
+                            No file selected
+                        </strong>
+
+                        <span id="selectedSize">
+                            Choose a file to upload
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="remove-btn"
+                    onclick="removeFile()"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+
+            <!-- UPLOAD BUTTON -->
+
+            <button
+                class="upload-btn"
+                id="uploadBtn"
+                onclick="uploadAudio()"
+            >
+
+                ☁ &nbsp; Upload Audio
+                <span style="float:right;">
+                    →
+                </span>
+
+            </button>
+
+
+
+            <!-- MESSAGE -->
+
+            <div id="message"></div>
+
+
+
+            <!-- SUCCESS -->
+
+            <div
+                class="result"
+                id="result"
+            >
+
+                <h3>
+                    ✓ Upload Successful!
+                </h3>
+
+                <p>
+                    Audio ID:
+                    <strong id="audioId"></strong>
+                </p>
+
+                <p>
+                    File:
+                    <strong id="uploadedName"></strong>
+                </p>
+
+
+                <button
+                    class="continue-btn"
+                    onclick="goToSeparation()"
+                >
+
+                    Continue to Separation →
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<!-- =========================================================
+     BOTTOM INFORMATION
+========================================================= -->
+
+<div class="bottom-info">
+
+
+    <div class="bottom-item">
+
+        <div class="icon">
+            ⚡
+        </div>
+
+        <div>
+
+            <strong>
+                Fast Processing
+            </strong>
+
+            Get results in minutes
+
+        </div>
+
+    </div>
+
+
+
+    <div class="bottom-item">
+
+        <div class="icon">
+            🛡
+        </div>
+
+        <div>
+
+            <strong>
+                Secure & Private
+            </strong>
+
+            Your files are safe with us
+
+        </div>
+
+    </div>
+
+
+
+    <div class="bottom-item">
+
+        <div class="icon">
+            🧠
+        </div>
+
+        <div>
+
+            <strong>
+                AI Powered
+            </strong>
+
+            Advanced deep learning models
+
+        </div>
+
+    </div>
+
+
+
+    <div class="bottom-item">
+
+        <div class="icon">
+            🎵
+        </div>
+
+        <div>
+
+            <strong>
+                Multiple Formats
+            </strong>
+
+            MP3, WAV, FLAC, OGG, M4A
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+// ============================================================
+// BACKEND URL
+// ============================================================
+
+const BASE_API =
+    window.location.port === "5500"
+        ? `${window.location.protocol}//${window.location.hostname}:5000/api`
+        : window.location.origin && window.location.origin !== "null"
+            ? `${window.location.origin}/api`
+            : "http://127.0.0.1:5000/api";
+
+
+// ============================================================
+// ELEMENTS
+// ============================================================
+
+const fileInput =
+    document.getElementById("audioFile");
+
+const dropZone =
+    document.getElementById("dropZone");
+
+const selectedFile =
+    document.getElementById("selectedFile");
+
+const selectedName =
+    document.getElementById("selectedName");
+
+const selectedSize =
+    document.getElementById("selectedSize");
+
+const message =
+    document.getElementById("message");
+
+const uploadBtn =
+    document.getElementById("uploadBtn");
+
+const result =
+    document.getElementById("result");
+
+
+// ============================================================
+// SHOW USER NAME
+// ============================================================
+
+const user = getStoredUser();
+
+function getStoredUser() {
+    try {
+        return JSON.parse(
+            localStorage.getItem("polyphonic_user") ||
+            localStorage.getItem("user") ||
+            "null"
+        );
+    } catch (error) {
+        return null;
+    }
+}
+
+
+const userNameElement = document.getElementById("userName");
+
+if (user && user.name && userNameElement) {
+
+    userNameElement.textContent = user.name;
+
+}
+
+
+// ============================================================
+// FILE SELECT
+// ============================================================
+
+fileInput.addEventListener(
+    "change",
+    function () {
+
+        if (this.files.length > 0) {
+
+            handleFile(
+                this.files[0]
+            );
+
+        }
+
+    }
+);
+
+dropZone.addEventListener(
+    "click",
+    function (event) {
+        if (!event.target.closest("label")) {
+            fileInput.click();
+        }
+    }
+);
+
+
+// ============================================================
+// DRAG OVER
+// ============================================================
+
+dropZone.addEventListener(
+    "dragover",
+    function (event) {
+
+        event.preventDefault();
+
+        dropZone.classList.add(
+            "dragover"
+        );
+
+    }
+);
+
+
+// ============================================================
+// DRAG LEAVE
+// ============================================================
+
+dropZone.addEventListener(
+    "dragleave",
+    function () {
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+    }
+);
+
+
+// ============================================================
+// DROP
+// ============================================================
+
+dropZone.addEventListener(
+    "drop",
+    function (event) {
+
+        event.preventDefault();
+
+        dropZone.classList.remove(
+            "dragover"
+        );
+
+        const files =
+            event.dataTransfer.files;
+
+        if (files.length > 0) {
+
+            handleFile(
+                files[0]
+            );
+
+        }
+
+    }
+);
+
+
+// ============================================================
+// HANDLE FILE
+// ============================================================
+
+function handleFile(file) {
+
+
+    // Supported formats
+
+    const allowedExtensions = [
+        "mp3",
+        "wav",
+        "flac",
+        "ogg",
+        "m4a"
+    ];
+
+
+    const extension =
+        file.name
+        .split(".")
+        .pop()
+        .toLowerCase();
+
+
+    if (
+        !allowedExtensions.includes(
+            extension
+        )
+    ) {
+
+        showMessage(
+            "Unsupported audio format.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // Maximum 50MB
+
+    const maxSize =
+        50 * 1024 * 1024;
+
+
+    if (file.size > maxSize) {
+
+        showMessage(
+            "File size must be less than 50MB.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // Show file
+
+    selectedFile.style.display =
+        "flex";
+
+
+    selectedName.textContent =
+        file.name;
+
+
+    selectedSize.textContent =
+        formatFileSize(file.size);
+
+
+    message.textContent = "";
+
+    result.style.display =
+        "none";
+
+
+    // Store file
+
+    window.selectedAudioFile =
+        file;
+
+    uploadBtn.disabled = false;
+    uploadBtn.dataset.uploaded = "false";
+    showMessage(
+        "File selected. Click Upload Audio to continue.",
+        "info"
+    );
+
+}
+
+
+// ============================================================
+// FILE SIZE
+// ============================================================
+
+function formatFileSize(bytes) {
+
+    if (bytes < 1024) {
+
+        return bytes + " B";
+
+    }
+
+    if (bytes < 1024 * 1024) {
+
+        return (
+            (bytes / 1024).toFixed(2)
+            + " KB"
+        );
+
+    }
+
+    return (
+        (bytes / (1024 * 1024)).toFixed(2)
+        + " MB"
+    );
+
+}
+
+
+// ============================================================
+// REMOVE FILE
+// ============================================================
+
+function removeFile() {
+
+    window.selectedAudioFile =
+        null;
+
+    fileInput.value = "";
+
+    selectedFile.style.display =
+        "none";
+
+    message.textContent = "";
+
+}
+
+
+// ============================================================
+// MESSAGE
+// ============================================================
+
+function showMessage(
+    text,
+    type
+) {
+
+    message.textContent =
+        text;
+
+    message.className =
+        type;
+
+}
+
+
+// ============================================================
+// UPLOAD AUDIO
+// ============================================================
+
+async function uploadAudio() {
+
+
+    // Check file
+
+    if (!window.selectedAudioFile) {
+        showMessage(
+            "Choose an audio file before uploading.",
+            "error"
+        );
+        return;
+
+    }
+
+
+    const file =
+        window.selectedAudioFile;
+
+
+    // Disable button
+
+    uploadBtn.disabled =
+        true;
+
+    uploadBtn.textContent =
+        "Uploading...";
+
+
+    message.textContent = "";
+
+    result.style.display =
+        "none";
+
+
+    try {
+
+
+        // ====================================================
+        // FORM DATA
+        // ====================================================
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        // ====================================================
+        // USER ID
+        // ====================================================
+
+        const currentUser = getStoredUser();
+
+
+        if (
+            currentUser &&
+            currentUser.id
+        ) {
+
+            formData.append(
+                "user_id",
+                currentUser.id
+            );
+
+        }
+
+
+        // ====================================================
+        // SEND TO FLASK
+        // ====================================================
+
+        const response =
+            await fetch(
+                `${BASE_API}/audio/upload`,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const responseText = await response.text();
+        let data = {};
+
+        try {
+            data = responseText ? JSON.parse(responseText) : {};
+        } catch (parseError) {
+            throw new Error(
+                `Upload service returned ${response.status} ${response.statusText}. ${responseText.slice(0, 160)}`
+            );
+        }
+
+
+        // ====================================================
+        // ERROR
+        // ====================================================
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Upload failed."
+            );
+
+        }
+
+
+        // ====================================================
+        // SAVE DATA
+        // ====================================================
+
+        localStorage.setItem(
+            "uploaded_audio_id",
+            data.audio_id
+        );
+
+
+        localStorage.setItem(
+            "uploadedSong",
+            data.filename
+        );
+
+
+        localStorage.setItem(
+            "uploaded_audio_path",
+            data.file_path
+        );
+
+
+        // ====================================================
+        // DISPLAY SUCCESS
+        // ====================================================
+
+        document.getElementById(
+            "audioId"
+        ).textContent =
+            data.audio_id;
+
+
+        document.getElementById(
+            "uploadedName"
+        ).textContent =
+            data.filename;
+
+
+        result.style.display =
+            "block";
+
+
+        showMessage(
+            "Audio uploaded successfully!",
+            "success"
+        );
+
+        uploadBtn.dataset.uploaded = "true";
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "Upload Error:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Something went wrong.",
+            "error"
+        );
+
+    }
+
+
+    finally {
+
+
+        uploadBtn.disabled = uploadBtn.dataset.uploaded === "true";
+        uploadBtn.innerHTML = uploadBtn.dataset.uploaded === "true"
+            ? "✓ Audio Uploaded"
+            : '☁ &nbsp; Upload Audio <span style="float:right;">→</span>';
+
+    }
+
+}
+
+
+// ============================================================
+// CONTINUE TO SEPARATION
+// ============================================================
+
+function goToSeparation() {
+
+    window.location.href =
+        "separation.html";
+
+}
+
+</script>
+
+
+</body>
+
+<script src="sidebar.js"></script>
+</html>

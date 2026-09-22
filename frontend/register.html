@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Polyphonic AI - Register</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+        /* =========================
+           RESET
+        ========================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            width: 950px;
+            max-width: 100%;
+            min-height: 620px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+
+        /* =========================
+           LEFT PANEL
+        ========================= */
+
+        .left-panel {
+            width: 45%;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 60px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .logo i {
+            font-size: 32px;
+        }
+
+        .left-panel h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .left-panel h3 {
+            font-size: 19px;
+            margin-bottom: 20px;
+            font-weight: normal;
+        }
+
+        .left-panel p {
+            font-size: 15px;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+
+        /* =========================
+           RIGHT PANEL
+        ========================= */
+
+        .right-panel {
+            width: 55%;
+            padding: 50px 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form {
+            width: 100%;
+            max-width: 430px;
+        }
+
+        form h2 {
+            text-align: center;
+            font-size: 30px;
+            color: #222;
+            margin-bottom: 8px;
+        }
+
+        .login-text {
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+
+        /* =========================
+           INPUT BOX
+        ========================= */
+
+        .input-box {
+            position: relative;
+            width: 100%;
+            margin-bottom: 18px;
+        }
+
+        .input-box > i:first-child {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6a11cb;
+            font-size: 16px;
+            z-index: 2;
+        }
+
+        .input-box input {
+            width: 100%;
+            height: 50px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 0 45px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-box input:focus {
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .input-box input::placeholder {
+            color: #999;
+        }
+
+
+        /* =========================
+           PASSWORD TOGGLE
+        ========================= */
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #777;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .toggle-password:hover {
+            color: #6a11cb;
+        }
+
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .login-btn {
+            width: 100%;
+            height: 50px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 5px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(106, 17, 203, 0.3);
+        }
+
+        .login-btn i {
+            margin-right: 8px;
+        }
+
+
+        /* =========================
+           LOGIN LINK
+        ========================= */
+
+        .register {
+            text-align: center;
+            margin-top: 22px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .register a {
+            color: #6a11cb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           RESPONSIVE DESIGN
+        ========================= */
+
+        @media screen and (max-width: 800px) {
+
+            .container {
+                flex-direction: column;
+                width: 500px;
+            }
+
+            .left-panel {
+                width: 100%;
+                padding: 35px;
+                text-align: center;
+                align-items: center;
+            }
+
+            .left-panel h1 {
+                font-size: 27px;
+            }
+
+            .left-panel h3 {
+                font-size: 17px;
+            }
+
+            .left-panel p {
+                font-size: 14px;
+            }
+
+            .right-panel {
+                width: 100%;
+                padding: 40px 35px;
+            }
+        }
+
+
+        @media screen and (max-width: 500px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 15px;
+            }
+
+            .left-panel {
+                padding: 30px 20px;
+            }
+
+            .right-panel {
+                padding: 30px 20px;
+            }
+
+            form h2 {
+                font-size: 25px;
+            }
+        }
+
+        /* Music studio visual direction */
+        :root {
+            --ink: #132321;
+            --forest: #1d4038;
+            --coral: #ef705d;
+            --mint: #a6e3c4;
+            --paper: #f5f1e8;
+        }
+
+        body {
+            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+            background: radial-gradient(circle at 10% 10%, rgba(239,112,93,.24), transparent 24%), linear-gradient(135deg, #0b1212, #1d4038);
+        }
+
+        .container {
+            border-radius: 8px 48px 8px 48px;
+            background: var(--paper);
+            border: 1px solid rgba(245,241,232,.7);
+            box-shadow: 0 30px 80px rgba(0,0,0,.4);
+        }
+
+        .left-panel {
+            background: linear-gradient(145deg, rgba(19,35,33,.98), rgba(29,64,56,.96));
+        }
+
+        .logo {
+            border-radius: 50%;
+            background: var(--coral);
+            border: 6px solid rgba(245,241,232,.18);
+        }
+
+        .left-panel h1,
+        .left-panel h3,
+        form h2 {
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .right-panel { background: var(--paper); }
+
+        .input-box input {
+            border-color: #d6cec0;
+            border-radius: 4px 12px 4px 12px;
+            background: rgba(255,255,255,.48);
+        }
+
+        .input-box input:focus {
+            border-color: var(--coral);
+            box-shadow: 0 0 0 3px rgba(239,112,93,.12);
+        }
+
+        .input-box > i:first-child { color: var(--coral); }
+
+        button[type="submit"] {
+            border-radius: 4px 14px 4px 14px;
+            background: var(--ink);
+        }
+
+        button[type="submit"]:hover { background: var(--coral); }
+
+    </style>
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <!-- =========================
+             LEFT PANEL
+        ========================= -->
+
+        <div class="left-panel">
+
+            <div class="logo">
+                <i class="fa-solid fa-music"></i>
+            </div>
+
+            <h1>Join Polyphonic AI</h1>
+
+            <h3>
+                Explore Music with Artificial Intelligence
+            </h3>
+
+            <p>
+                Create your account and start analyzing music.
+                Separate instruments, identify musical notes,
+                evaluate your performance and track your musical
+                progress using AI.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             RIGHT PANEL
+        ========================= -->
+
+        <div class="right-panel">
+
+            <form id="registerForm">
+
+                <h2>Create Account</h2>
+
+                <p class="login-text">
+                    Register to begin your musical journey
+                </p>
+
+
+                <!-- FULL NAME -->
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <input
+                        type="text"
+                        id="fullname"
+                        name="fullname"
+                        placeholder="Full Name"
+                        required>
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Email Address"
+                        required>
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="Mobile Number"
+                        pattern="[0-9]{10}"
+                        maxlength="10"
+                        required>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Create Password"
+                        minlength="6"
+                        required>
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="password"
+                        aria-label="Show password">
+
+                        <i class="fas fa-eye-slash"></i>
+
+                    </button>
+
+                </div>
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <div class="input-box">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        minlength="6"
+                        required>
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        data-target="confirmPassword"
+                        aria-label="Show password">
+
+                        <i class="fas fa-eye-slash"></i>
+
+                    </button>
+
+                </div>
+
+
+                <!-- CREATE ACCOUNT BUTTON -->
+
+                <button
+                    type="submit"
+                    class="login-btn">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    Create Account
+
+                </button>
+
+
+                <!-- LOGIN LINK -->
+
+                <p class="register">
+
+                    Already have an account?
+
+                    <a href="login.html">
+                        Login
+                    </a>
+
+                </p>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        /* =========================
+           PASSWORD SHOW / HIDE
+        ========================= */
+
+        const toggleButtons =
+            document.querySelectorAll(".toggle-password");
+
+        toggleButtons.forEach(function(button) {
+
+            button.addEventListener("click", function() {
+
+                const targetId =
+                    button.getAttribute("data-target");
+
+                const passwordInput =
+                    document.getElementById(targetId);
+
+                const icon =
+                    button.querySelector("i");
+
+                if (passwordInput.type === "password") {
+
+                    passwordInput.type = "text";
+
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+
+                    button.setAttribute(
+                        "aria-label",
+                        "Hide password"
+                    );
+
+                } else {
+
+                    passwordInput.type = "password";
+
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+
+                    button.setAttribute(
+                        "aria-label",
+                        "Show password"
+                    );
+                }
+
+            });
+
+        });
+
+
+        /* =========================
+           REGISTER FORM
+        ========================= */
+
+        const registerForm =
+            document.getElementById("registerForm");
+
+        registerForm.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+
+            const fullname =
+                document.getElementById("fullname").value.trim();
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const phone =
+                document.getElementById("phone").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const confirmPassword =
+                document.getElementById("confirmPassword").value;
+
+
+            /* CHECK PASSWORD */
+
+            if (password !== confirmPassword) {
+
+                alert("Passwords do not match!");
+
+                return;
+            }
+
+
+            /* CHECK PHONE */
+
+            if (!/^[0-9]{10}$/.test(phone)) {
+
+                alert("Please enter a valid 10-digit mobile number.");
+
+                return;
+            }
+
+
+            /* CHECK PASSWORD LENGTH */
+
+            if (password.length < 6) {
+
+                alert("Password must contain at least 6 characters.");
+
+                return;
+            }
+
+
+            /* =========================
+               REAL API REGISTRATION
+            ========================= */
+            const submitBtn = registerForm.querySelector("button[type='submit']");
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering...';
+
+            fetch(`${API_BASE}/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: fullname,
+                    email: email,
+                    password: password
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+
+                if (data.success) {
+                    setCurrentUser(data.user);
+                    showToast("Account created successfully! Welcome, " + fullname + "!", "success");
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1000);
+                } else {
+                    showToast(data.message || "Registration failed", "error");
+                }
+            })
+            .catch(err => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                showToast("Server connection error. Ensure Flask backend is running.", "error");
+            });
+
+        });
+
+    </script>
+    <script src="api.js"></script>
+
+</body>
+
+</html>

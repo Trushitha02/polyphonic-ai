@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Performance Analysis | Polyphonic AI</title>
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#f4f6fb;
+    color:#17213d;
+    min-height:100vh;
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:265px;
+    height:100vh;
+
+    background:
+        linear-gradient(
+            180deg,
+            #211052 0%,
+            #281466 45%,
+            #17103d 100%
+        );
+
+    color:white;
+    padding:18px 14px;
+
+    display:flex;
+    flex-direction:column;
+
+    box-shadow:5px 0 25px rgba(35,20,90,0.15);
+
+    z-index:1000;
+}
+
+/* Logo */
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:2px 5px 25px;
+
+    border-bottom:1px solid rgba(255,255,255,0.15);
+}
+
+.logo-icon{
+    width:52px;
+    height:52px;
+
+    border-radius:15px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:27px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7654ff,
+            #367cff
+        );
+
+    box-shadow:0 8px 20px rgba(71,64,255,0.35);
+}
+
+.logo-text h2{
+    font-size:20px;
+    letter-spacing:.3px;
+}
+
+.logo-text span{
+    display:block;
+    margin-top:3px;
+
+    font-size:10px;
+    letter-spacing:1.5px;
+
+    color:#bdb5e9;
+}
+
+/* Sidebar headings */
+
+.menu-title{
+    margin:28px 8px 12px;
+
+    font-size:10px;
+    letter-spacing:2px;
+
+    color:#8e84b5;
+}
+
+/* Menu */
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.menu a{
+    text-decoration:none;
+    color:#d5d1e9;
+
+    height:47px;
+
+    padding:0 13px;
+
+    border-radius:13px;
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+    font-size:14px;
+
+    transition:.25s;
+}
+
+.menu a:hover{
+    background:rgba(255,255,255,.08);
+    color:white;
+    transform:translateX(3px);
+}
+
+.menu a.active{
+    background:
+        linear-gradient(
+            90deg,
+            #7138e8,
+            #326df5
+        );
+
+    color:white;
+
+    box-shadow:
+        0 8px 20px rgba(68,76,240,.28);
+}
+
+.menu-icon{
+    width:22px;
+    text-align:center;
+    font-size:18px;
+}
+
+/* Bottom menu */
+
+.sidebar-bottom{
+    margin-top:auto;
+
+    padding-top:18px;
+
+    border-top:1px solid rgba(255,255,255,.15);
+}
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main{
+    margin-left:265px;
+    min-height:100vh;
+}
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar{
+    height:70px;
+
+    background:white;
+
+    border-bottom:1px solid #e7e9f2;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 28px;
+}
+
+.top-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    font-size:18px;
+    font-weight:700;
+}
+
+.top-title-icon{
+    font-size:22px;
+}
+
+.top-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.status{
+    padding:9px 15px;
+
+    border-radius:30px;
+
+    background:#e8fff4;
+    color:#119463;
+
+    font-size:11px;
+    font-weight:700;
+
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.status-dot{
+    width:8px;
+    height:8px;
+
+    border-radius:50%;
+
+    background:#15bd77;
+}
+
+.user{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    padding:7px 13px;
+
+    border:1px solid #e4e6ef;
+    border-radius:12px;
+
+    font-size:14px;
+    font-weight:600;
+}
+
+.avatar{
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7025e8,
+            #326cf4
+        );
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-weight:bold;
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page{
+    padding:35px 32px 50px;
+}
+
+/* Heading */
+
+.page-label{
+    color:#7040e8;
+
+    font-size:11px;
+    font-weight:bold;
+
+    letter-spacing:2px;
+
+    margin-bottom:8px;
+}
+
+.page-heading{
+    font-size:34px;
+    margin-bottom:9px;
+}
+
+.page-subtitle{
+    color:#73809b;
+    font-size:15px;
+    margin-bottom:30px;
+}
+
+/* =========================================================
+   REFERENCE CARD
+========================================================= */
+
+.reference-card{
+
+    position:relative;
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            120deg,
+            #351476,
+            #5722bb,
+            #2d70ee
+        );
+
+    border-radius:24px;
+
+    padding:30px;
+
+    color:white;
+
+    box-shadow:
+        0 18px 40px rgba(75,44,180,.22);
+
+    margin-bottom:25px;
+}
+
+.reference-card::before{
+    content:"";
+
+    position:absolute;
+
+    width:260px;
+    height:260px;
+
+    border:1px solid rgba(255,255,255,.14);
+
+    border-radius:50%;
+
+    right:-80px;
+    top:-120px;
+}
+
+.reference-card::after{
+    content:"";
+
+    position:absolute;
+
+    width:160px;
+    height:160px;
+
+    border:1px solid rgba(255,255,255,.1);
+
+    border-radius:50%;
+
+    right:80px;
+    bottom:-110px;
+}
+
+.reference-top{
+    position:relative;
+    z-index:2;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+
+    margin-bottom:25px;
+}
+
+.reference-title{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.reference-icon{
+    width:62px;
+    height:62px;
+
+    border-radius:17px;
+
+    background:rgba(255,255,255,.18);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:30px;
+}
+
+.reference-title h2{
+    font-size:20px;
+    margin-bottom:5px;
+}
+
+.reference-title p{
+    font-size:12px;
+    color:#ddd8ff;
+}
+
+.ready{
+    padding:9px 15px;
+
+    border-radius:30px;
+
+    background:rgba(255,255,255,.16);
+
+    font-size:11px;
+    font-weight:bold;
+}
+
+.reference-controls{
+    position:relative;
+    z-index:2;
+}
+
+.reference-song{
+    position:relative;
+    z-index:2;
+    margin:14px 0 18px;
+    padding:13px 16px;
+    border:1px solid rgba(255,255,255,.24);
+    border-radius:14px;
+    background:rgba(22,12,76,.28);
+}
+
+.reference-song-name{
+    margin:0 0 5px;
+    color:#ffffff;
+    font-size:16px;
+    font-weight:800;
+    line-height:1.3;
+    overflow-wrap:anywhere;
+}
+
+.reference-song-details{
+    margin:0;
+    color:#e8e4ff;
+    font-size:12px;
+}
+
+.reference-label{
+    font-size:10px;
+    letter-spacing:.8px;
+    margin-bottom:8px;
+    color:#e5dcff;
+}
+
+select{
+    width:100%;
+    height:46px;
+
+    border:none;
+    outline:none;
+
+    border-radius:12px;
+
+    padding:0 15px;
+
+    background:white;
+    color:#27233b;
+
+    font-size:14px;
+}
+
+.audio-box{
+    margin-top:15px;
+
+    background:#f4f5f8;
+
+    border-radius:30px;
+
+    padding:7px 15px;
+}
+
+audio{
+    width:100%;
+    height:38px;
+}
+
+/* =========================================================
+   TWO COLUMN SECTION
+========================================================= */
+
+.two-column{
+    display:grid;
+
+    grid-template-columns:1.1fr .9fr;
+
+    gap:22px;
+
+    margin-bottom:22px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card{
+    background:white;
+
+    border-radius:20px;
+
+    padding:26px;
+
+    border:1px solid #e8eaf1;
+
+    box-shadow:
+        0 10px 30px rgba(30,45,90,.06);
+}
+
+.card-header{
+    display:flex;
+    align-items:center;
+    gap:13px;
+
+    margin-bottom:22px;
+}
+
+.card-header-icon{
+    width:45px;
+    height:45px;
+
+    border-radius:13px;
+
+    background:#eee7ff;
+
+    color:#6824db;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:21px;
+}
+
+.card-header h2{
+    font-size:18px;
+}
+
+.card-header p{
+    font-size:12px;
+    color:#8a91a5;
+    margin-top:4px;
+}
+
+/* =========================================================
+   UPLOAD AREA
+========================================================= */
+
+.upload-area{
+
+    border:2px dashed #d7cdfb;
+
+    background:
+        linear-gradient(
+            180deg,
+            #fbfaff,
+            #f8f9ff
+        );
+
+    border-radius:18px;
+
+    min-height:225px;
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+
+    transition:.25s;
+}
+
+.upload-area:hover{
+    border-color:#7642e8;
+    background:#f9f6ff;
+}
+
+.upload-icon{
+    width:65px;
+    height:65px;
+
+    border-radius:18px;
+
+    background:#ebe6ff;
+
+    color:#6b2dde;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:29px;
+
+    margin-bottom:15px;
+}
+
+.upload-area h3{
+    font-size:15px;
+    margin-bottom:7px;
+}
+
+.upload-area p{
+    color:#8991a6;
+    font-size:12px;
+    margin-bottom:16px;
+}
+
+.file-input{
+    display:none;
+}
+
+.choose-btn{
+    border:none;
+
+    padding:11px 20px;
+
+    border-radius:10px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            90deg,
+            #7024dc,
+            #3477f3
+        );
+
+    cursor:pointer;
+
+    font-weight:bold;
+    font-size:12px;
+}
+
+/* =========================================================
+   INSTRUMENT CARD
+========================================================= */
+
+.instrument-box{
+    background:#f7f8fc;
+
+    border-radius:16px;
+
+    padding:20px;
+
+    display:flex;
+    align-items:center;
+
+    gap:16px;
+
+    margin-bottom:18px;
+}
+
+.instrument-icon{
+    width:58px;
+    height:58px;
+
+    border-radius:15px;
+
+    background:#eee8ff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#7026dd;
+
+    font-size:28px;
+}
+
+.instrument-box h3{
+    font-size:17px;
+}
+
+.instrument-box p{
+    color:#8b92a4;
+    font-size:12px;
+    margin-top:4px;
+}
+
+.evaluate-box{
+    background:#fbfaff;
+
+    border-radius:15px;
+
+    padding:18px;
+}
+
+.evaluate-box h4{
+    font-size:13px;
+    margin-bottom:12px;
+}
+
+.evaluate-box div{
+    font-size:12px;
+    color:#7c849a;
+
+    margin:9px 0;
+}
+
+.check{
+    color:#6730dc;
+    font-weight:bold;
+    margin-right:7px;
+}
+
+/* =========================================================
+   ANALYZE BUTTON
+========================================================= */
+
+.analyze-section{
+    background:white;
+
+    border-radius:20px;
+
+    padding:24px 27px;
+
+    border:1px solid #e8eaf1;
+
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    box-shadow:
+        0 10px 30px rgba(30,45,90,.06);
+}
+
+.analyze-info{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.analyze-symbol{
+    width:48px;
+    height:48px;
+
+    border-radius:14px;
+
+    background:#eee8ff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#6927dc;
+
+    font-size:22px;
+}
+
+.analyze-info h3{
+    font-size:16px;
+}
+
+.analyze-info p{
+    color:#8a91a5;
+    font-size:12px;
+    margin-top:4px;
+}
+
+.analyze-btn{
+    border:none;
+
+    padding:14px 25px;
+
+    border-radius:12px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6d22db,
+            #2f75f3
+        );
+
+    font-size:13px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 18px rgba(75,57,220,.2);
+
+    transition:.25s;
+}
+
+.analyze-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 12px 24px rgba(75,57,220,.28);
+}
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+.result{
+    display:none;
+
+    margin-top:22px;
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:25px;
+
+    border:1px solid #e8eaf1;
+}
+
+.result h2{
+    margin-bottom:18px;
+}
+
+.score-grid{
+    display:grid;
+
+    grid-template-columns:repeat(4,minmax(0,1fr));
+
+    gap:15px;
+}
+
+.score{
+    background:#f7f8fc;
+
+    border-radius:15px;
+
+    padding:18px;
+
+    text-align:center;
+}
+
+.score strong{
+    display:block;
+    document.getElementById("noteScore")
+        .textContent =
+        (result.note_score || 0) + "%";
+
+
+    font-size:25px;
+
+    color:#6725d8;
+
+    margin-bottom:5px;
+}
+
+.score span{
+    color:#858da2;
+
+    font-size:11px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1000px){
+
+    .sidebar{
+        width:220px;
+    }
+
+    .main{
+        margin-left:220px;
+    }
+
+    .two-column{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media(max-width:750px){
+
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .menu{
+        display:none;
+    }
+
+    .two-column{
+        grid-template-columns:1fr;
+    }
+
+    .score-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .analyze-section{
+        flex-direction:column;
+        gap:20px;
+        align-items:flex-start;
+    }
+
+}
+
+</style>
+
+<link rel="stylesheet" href="sidebar.css">
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<div id="sidebarContainer" data-active="performance"></div>
+<aside class="sidebar legacy-sidebar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            🎼
+        </div>
+
+        <div class="logo-text">
+
+            <h2>Polyphonic AI</h2>
+
+            <span>MUSIC INTELLIGENCE STUDIO</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- WORKSPACE -->
+
+    <div class="menu-title">
+        WORKSPACE
+    </div>
+
+    <nav class="menu">
+
+        <a href="dashboard.html">
+            <span class="menu-icon">▦</span>
+            Dashboard
+        </a>
+
+        <a href="upload.html">
+            <span class="menu-icon">☁</span>
+            Upload Music
+        </a>
+
+        <a href="separation.html">
+            <span class="menu-icon">◇</span>
+            Instrument Separation
+        </a>
+
+        <a href="transcription.html">
+            <span class="menu-icon">♫</span>
+            Music Transcription
+        </a>
+
+    </nav>
+
+
+    <!-- PERFORMANCE -->
+
+    <div class="menu-title">
+        PERFORMANCE
+    </div>
+
+    <nav class="menu">
+
+        <a href="performance.html" class="active">
+            <span class="menu-icon">◉</span>
+            Performance Analysis
+        </a>
+
+        <a href="level.html">
+            <span class="menu-icon">★</span>
+            Skill Level
+        </a>
+
+        <a href="confidence.html">
+            <span class="menu-icon">◇</span>
+            Confidence Score
+        </a>
+
+        <a href="progress.html">
+            <span class="menu-icon">↗</span>
+            Progress Tracking
+        </a>
+
+    </nav>
+
+
+    <!-- BOTTOM -->
+
+    <div class="sidebar-bottom">
+
+        <nav class="menu">
+
+            <a href="profile.html">
+                <span class="menu-icon">●</span>
+                Profile
+            </a>
+
+            <a href="login.html" onclick="logoutUser()">
+                <span class="menu-icon">→</span>
+                Logout
+            </a>
+
+        </nav>
+
+    </div>
+
+</aside>
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+        <div class="top-title">
+
+            <span class="top-title-icon">🎯</span>
+
+            Performance Intelligence
+
+        </div>
+
+
+        <div class="top-right">
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                AI SYSTEM ONLINE
+
+            </div>
+
+            <div class="user">
+
+                <div class="avatar">
+                    M
+                </div>
+
+                <span id="userName">
+                    Musician
+                </span>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- PAGE -->
+
+    <section class="page">
+
+
+        <div class="page-label">
+            AI MUSIC COACH
+        </div>
+
+        <h1 class="page-heading">
+            Performance Analysis
+        </h1>
+
+        <p class="page-subtitle">
+            Compare your playing with the AI-generated musical reference and discover where you can improve.
+        </p>
+
+
+        <!-- =================================================
+             REFERENCE
+        ================================================== -->
+
+        <div class="reference-card">
+
+            <div class="reference-top">
+
+                <div class="reference-title">
+
+                    <div class="reference-icon">
+                        🎧
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            AI Reference Track
+                        </h2>
+
+                        <p>
+                            Your musical target for comparison
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="ready">
+                    ● Reference Ready
+                </div>
+
+            </div>
+
+            <div class="reference-song">
+                <div id="referenceSongName" class="reference-song-name">
+                    Uploaded song reference
+                </div>
+                <div id="referenceSongDetails" class="reference-song-details">
+                    Select an audio category to practice.
+                </div>
+            </div>
+
+
+            <div class="reference-controls">
+
+                <div class="reference-label">
+                    PRACTICE CATEGORY
+                </div>
+
+                <select id="instrument">
+                    <option value="Vocals">🎤 Vocals</option>
+                    <option value="BGM">🎵 BGM / Background Music</option>
+
+                </select>
+
+
+                <div class="audio-box">
+
+                    <audio id="referenceAudio"
+                           controls>
+                    </audio>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             TWO COLUMNS
+        ================================================== -->
+
+        <div class="two-column">
+
+
+            <!-- UPLOAD PERFORMANCE -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="card-header-icon">
+                        🎙
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Upload Your Performance
+                        </h2>
+
+                        <p>
+                            Record or upload your playing
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="upload-area">
+
+                    <div class="upload-icon">
+                        🎤
+                    </div>
+
+                    <h3>
+                        Drop your performance here
+                    </h3>
+
+                    <p>
+                        MP3, WAV, FLAC or OGG supported
+                    </p>
+
+
+                    <label for="performanceFile"
+                           class="choose-btn">
+
+                        Choose Performance
+
+                    </label>
+
+                    <input
+                        type="file"
+                        id="performanceFile"
+                        class="file-input"
+                        accept=".mp3,.wav,.flac,.ogg,.m4a,audio/*"
+                    >
+
+                </div>
+
+                <p id="fileName"
+                   style="
+                   margin-top:12px;
+                   color:#6d7385;
+                   font-size:12px;
+                   text-align:center;
+                   ">
+                </p>
+
+            </div>
+
+
+            <!-- INSTRUMENT -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="card-header-icon">
+                        🎼
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            Instrument Under Evaluation
+                        </h2>
+
+                        <p>
+                            Current practice configuration
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="instrument-box">
+
+                    <div class="instrument-icon"
+                         id="instrumentIcon">
+                        🎹
+                    </div>
+
+                    <div>
+
+                        <h3 id="selectedInstrument">
+                            Piano
+                        </h3>
+
+                        <p>
+                            Selected practice category
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="evaluate-box">
+
+                    <h4>
+                        What will AI evaluate?
+                    </h4>
+
+                    <div>
+                        <span class="check">✓</span>
+                        Pitch accuracy
+                    </div>
+
+                    <div>
+                        <span class="check">✓</span>
+                        Rhythm consistency
+                    </div>
+
+                    <div>
+                        <span class="check">✓</span>
+                        Timing accuracy
+                    </div>
+
+                    <div>
+                        <span class="check">✓</span>
+                        Note accuracy
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ANALYZE
+        ================================================== -->
+
+        <div class="analyze-section">
+
+            <div class="analyze-info">
+
+                <div class="analyze-symbol">
+                    ✨
+                </div>
+
+                <div>
+
+                    <h3>
+                        Ready to evaluate your performance?
+                    </h3>
+
+                    <p>
+                        AI will compare your playing with the reference track.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="analyze-btn"
+                onclick="analyzePerformance()">
+
+                ✨ Analyze Performance
+
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             RESULT
+        ================================================== -->
+
+        <div class="result" id="resultBox">
+
+            <h2>
+                Performance Results
+            </h2>
+
+            <div class="score-grid">
+
+                <div class="score">
+
+                    <strong id="pitchScore">
+                        0%
+                    </strong>
+
+                    <span>
+                        Pitch Control
+                    </span>
+
+                </div>
+
+
+                <div class="score">
+
+                    <strong id="rhythmScore">
+                        0%
+                    </strong>
+
+                    <span>
+                        Rhythm Accuracy
+                    </span>
+
+                </div>
+
+
+                <div class="score">
+
+                    <strong id="timingScore">
+                        0%
+                    </strong>
+
+                    <span>
+                        Timing Accuracy
+                    </span>
+
+                </div>
+
+                <div class="score">
+
+                    <strong id="noteScore">
+                        0%
+                    </strong>
+
+                    <span>
+                        Note Accuracy
+                    </span>
+
+                </div>
+
+
+                <div class="score">
+
+                    <strong id="overallScore">
+                        0%
+                    </strong>
+
+                    <span>
+                        Overall Score
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+<script>
+
+/* =========================================================
+   USER NAME
+========================================================= */
+
+const storedUser =
+    JSON.parse(localStorage.getItem("user"));
+
+if(storedUser && storedUser.name){
+
+    document.getElementById("userName").textContent =
+        storedUser.name;
+
+}
+
+
+/* =========================================================
+   INSTRUMENT CHANGE
+========================================================= */
+
+const instrumentSelect =
+    document.getElementById("instrument");
+
+const selectedInstrument =
+    document.getElementById("selectedInstrument");
+
+const instrumentIcon =
+    document.getElementById("instrumentIcon");
+
+
+instrumentSelect.addEventListener("change", function(){
+
+    selectedInstrument.textContent =
+        this.value;
+
+    const icons = {
+        "Vocals":"🎤",
+        "BGM":"🎵",
+
+        "Piano":"🎹",
+
+        "Acoustic Guitar":"🎸",
+
+        "Bass Guitar":"🎸",
+
+        "Veena":"🎵",
+
+        "Sitar":"🎵",
+
+        "Tabla":"🥁",
+
+        "Mridangam":"🥁",
+
+        "Bansuri":"🎶",
+
+        "Harmonium":"🎹"
+
+    };
+
+    instrumentIcon.textContent =
+        icons[this.value] || "🎵";
+
+    updateReferenceAudio(this.value);
+
+});
+
+
+/* =========================================================
+   PERFORMANCE FILE
+========================================================= */
+
+const performanceFile =
+    document.getElementById("performanceFile");
+
+
+performanceFile.addEventListener("change", function(){
+
+    if(this.files.length > 0){
+
+        const file =
+            this.files[0];
+
+        document.getElementById("fileName").textContent =
+            "Selected: " + file.name;
+
+        /* Preview audio */
+
+        const audioURL =
+            URL.createObjectURL(file);
+
+        const existing =
+            document.getElementById("performancePreview");
+
+        if(existing){
+            existing.remove();
+        }
+
+        const audio =
+            document.createElement("audio");
+
+        audio.id =
+            "performancePreview";
+
+        audio.controls =
+            true;
+
+        audio.src =
+            audioURL;
+
+        audio.style.width =
+            "100%";
+
+        audio.style.marginTop =
+            "15px";
+
+        document
+            .querySelector(".upload-area")
+            .appendChild(audio);
+
+    }
+
+});
+
+
+/* =========================================================
+   LOAD REFERENCE AUDIO
+========================================================= */
+
+const uploadedSong =
+    localStorage.getItem("uploadedSong");
+
+const activeAudioId = localStorage.getItem("uploaded_audio_id") || "";
+const separationCache = (() => {
+    try {
+        return JSON.parse(localStorage.getItem("cached_separation_result") || "null");
+    } catch (error) {
+        return null;
+    }
+})();
+
+const referenceSongName = document.getElementById("referenceSongName");
+const referenceSongDetails = document.getElementById("referenceSongDetails");
+if (referenceSongName) referenceSongName.textContent = uploadedSong || "Uploaded song reference";
+
+function updateReferenceAudio(category) {
+    const referenceAudio = document.getElementById("referenceAudio");
+    if (!referenceAudio || !activeAudioId) return;
+    const streamUrl = category === "BGM"
+        ? `http://127.0.0.1:5000/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=bgm`
+        : `http://127.0.0.1:5000/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=vocals`;
+    referenceAudio.pause();
+    referenceAudio.src = streamUrl;
+    referenceAudio.load();
+    if (referenceSongDetails) referenceSongDetails.textContent = category === "BGM"
+        ? "Selected reference: separated BGM"
+        : "Selected reference: separated Vocals";
+}
+
+function loadDetectedPerformanceInstruments() {
+    const group = document.getElementById("detectedPerformanceInstruments");
+    if (group) group.innerHTML = "";
+}
+
+loadDetectedPerformanceInstruments();
+
+if(uploadedSong){
+
+    const referenceAudio =
+        document.getElementById("referenceAudio");
+
+    referenceAudio.src = activeAudioId
+        ? `http://127.0.0.1:5000/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=bgm`
+        : uploadedSong;
+
+}
+
+instrumentSelect.value = "Vocals";
+instrumentSelect.dispatchEvent(new Event("change"));
+
+const savedPerformanceInstrument = localStorage.getItem("performance_instrument");
+if (savedPerformanceInstrument) {
+    const matchingInstrument = Array.from(instrumentSelect.options).find(option =>
+        option.value.toLowerCase() === savedPerformanceInstrument.toLowerCase() ||
+        option.textContent.toLowerCase().includes(savedPerformanceInstrument.toLowerCase())
+    );
+    if (matchingInstrument) {
+        instrumentSelect.value = matchingInstrument.value;
+        instrumentSelect.dispatchEvent(new Event("change"));
+    }
+}
+
+
+/* =========================================================
+   ANALYZE PERFORMANCE
+========================================================= */
+
+async function analyzePerformance(){
+
+    const file =
+        performanceFile.files[0];
+
+    if(!file){
+
+        alert(
+            "Please choose your performance audio first."
+        );
+
+        return;
+
+    }
+
+
+    const reference = await resolveReferenceAudio();
+
+    if(!reference){
+
+        alert("Upload a reference song first, then choose a performance to analyze.");
+
+        return;
+
+    }
+
+
+    try{
+
+        const analyzeButton = document.querySelector(".analyze-btn");
+        const originalButtonText = analyzeButton ? analyzeButton.innerHTML : "";
+        if (analyzeButton) {
+            analyzeButton.disabled = true;
+            analyzeButton.innerHTML = "⏳ Analyzing Performance...";
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+        const uploadResponse = await fetch("http://127.0.0.1:5000/api/audio/upload", {
+            method: "POST",
+            body: formData
+        });
+        const uploadText = await uploadResponse.text();
+        let uploadData = {};
+        try {
+            uploadData = uploadText ? JSON.parse(uploadText) : {};
+        } catch (error) {
+            throw new Error(`Upload service returned ${uploadResponse.status}.`);
+        }
+        if (!uploadResponse.ok || !uploadData.success) {
+            throw new Error(uploadData.message || "Performance audio upload failed.");
+        }
+
+        const storedUser = getStoredPerformanceUser();
+        const userId = localStorage.getItem("user_id") || (storedUser && storedUser.id) || "";
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:5000/api/performance/analyze",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        reference_audio:
+                            reference,
+
+                        performance_audio:
+                            uploadData.file_path,
+
+                        user_id: userId,
+
+                        audio_id:
+                            localStorage.getItem("performance_audio_id") || localStorage.getItem("uploaded_audio_id"),
+
+                        instrument:
+                            instrumentSelect.value
+
+                    })
+
+                }
+            );
+
+
+        const responseText = await response.text();
+        let data = {};
+        try {
+            data = responseText ? JSON.parse(responseText) : {};
+        } catch (error) {
+            throw new Error(`Analysis service returned ${response.status}.`);
+        }
+
+
+        if(!response.ok){
+
+            alert(
+                data.message ||
+                "Performance analysis failed."
+            );
+
+            return;
+
+        }
+
+
+        if(data.success){
+
+            showResults(
+                data.result
+            );
+
+        }
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        alert(error.message || "Performance analysis failed.");
+
+    } finally {
+
+        const analyzeButton = document.querySelector(".analyze-btn");
+        if (analyzeButton) {
+            analyzeButton.disabled = false;
+            analyzeButton.innerHTML = "✨ Analyze Performance";
+        }
+
+    }
+
+}
+
+async function resolveReferenceAudio() {
+    const storedPath = localStorage.getItem("reference_audio_path") ||
+        localStorage.getItem("uploaded_audio_path");
+    if (storedPath) return storedPath;
+
+    const audioId = localStorage.getItem("uploaded_audio_id");
+    if (!audioId) return "";
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/audio/${encodeURIComponent(audioId)}`);
+        const data = await response.json();
+        return response.ok && data.success ? data.audio.file_path || "" : "";
+    } catch (error) {
+        return "";
+    }
+}
+
+function getStoredPerformanceUser() {
+    try {
+        return JSON.parse(
+            localStorage.getItem("polyphonic_user") ||
+            localStorage.getItem("user") ||
+            "null"
+        );
+    } catch (error) {
+        return null;
+    }
+}
+
+
+/* =========================================================
+   SHOW RESULTS
+========================================================= */
+
+function showResults(result){
+
+    document.getElementById("resultBox")
+        .style.display = "block";
+
+    const scores = {
+        pitch_score: Number(result.pitch_score) || 0,
+        rhythm_score: Number(result.rhythm_score) || 0,
+        timing_score: Number(result.timing_score) || 0,
+        note_score: Number(result.note_score) || 0,
+        overall_score: Number(result.overall_score) || 0
+    };
+
+    Object.entries(scores).forEach(([key, value]) => {
+        localStorage.setItem(key, String(value));
+    });
+
+    const performanceCount = Number(localStorage.getItem("performance_count")) || 0;
+    localStorage.setItem("performance_count", String(performanceCount + 1));
+    const performanceHistory = JSON.parse(localStorage.getItem("performance_history") || "[]");
+    performanceHistory.push({
+        ...scores,
+        session_number: performanceHistory.length + 1,
+        created_at: new Date().toISOString()
+    });
+    localStorage.setItem("performance_history", JSON.stringify(performanceHistory.slice(-20)));
+    localStorage.setItem("latest_performance_result", JSON.stringify(scores));
+
+    document.getElementById("pitchScore")
+        .textContent =
+        scores.pitch_score + "%";
+
+
+    document.getElementById("rhythmScore")
+        .textContent =
+        scores.rhythm_score + "%";
+
+
+    document.getElementById("timingScore")
+        .textContent =
+        scores.timing_score + "%";
+
+    document.getElementById("noteScore")
+        .textContent =
+        scores.note_score + "%";
+
+
+    document.getElementById("overallScore")
+        .textContent =
+        scores.overall_score + "%";
+
+}
+
+function loadSavedPerformanceResults() {
+    const savedResult = localStorage.getItem("latest_performance_result");
+    let result = null;
+
+    try {
+        result = savedResult ? JSON.parse(savedResult) : null;
+    } catch (error) {
+        result = null;
+    }
+
+    if (!result && localStorage.getItem("overall_score") !== null) {
+        result = {
+            pitch_score: localStorage.getItem("pitch_score"),
+            rhythm_score: localStorage.getItem("rhythm_score"),
+            timing_score: localStorage.getItem("timing_score"),
+            note_score: localStorage.getItem("note_score"),
+            overall_score: localStorage.getItem("overall_score")
+        };
+    }
+
+    if (result) {
+        showResults(result);
+    }
+}
+
+loadSavedPerformanceResults();
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logoutUser(){
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("user_id");
+
+}
+
+</script>
+
+<script src="sidebar.js"></script>
+</body>
+</html>

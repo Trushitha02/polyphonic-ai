@@ -1,0 +1,4176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Audio Separation | Polyphonic AI</title>
+
+    <style>
+        /* =========================================================
+   RESET
+========================================================= */
+        .logo-icon {
+
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            font-size: 23px;
+
+            background:
+                linear-gradient(135deg,
+                    #693ff0,
+                    #288cf0);
+
+            box-shadow:
+                0 8px 20px rgba(87, 68, 220, .25);
+        }
+
+
+        .profile {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-weight: 600;
+
+            color: #26346f;
+        }
+
+
+        .profile-circle {
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            background:
+                linear-gradient(135deg,
+                    #6347e9,
+                    #2788ed);
+        }
+
+
+        /* =========================================================
+   PAGE
+========================================================= */
+
+        .container {
+
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 32px 25px 50px;
+        }
+
+
+        /* =========================================================
+   HEADER
+========================================================= */
+
+        .page-header {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+
+        .small-label {
+
+            display: inline-block;
+
+            padding: 7px 15px;
+
+            border-radius: 20px;
+
+            background: #ebe8ff;
+
+            color: #5c42d9;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: .5px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .page-header h1 {
+
+            font-size: 38px;
+
+            color: #17245f;
+
+            margin-bottom: 10px;
+        }
+
+
+        .gradient {
+
+            background:
+                linear-gradient(90deg,
+                    #613de5,
+                    #168eea);
+
+            background-clip: text;
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .page-header p {
+
+            color: #687596;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================================
+   MAIN GRID
+========================================================= */
+
+        .main-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1.6fr .9fr;
+
+            gap: 22px;
+
+            align-items: start;
+        }
+
+
+        /* =========================================================
+   CARD
+========================================================= */
+
+        .card {
+
+            background:
+                rgba(255, 255, 255, .94);
+
+            border: 1px solid #e2e6f1;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 15px 45px rgba(45, 58, 120, .08);
+
+            padding: 25px;
+        }
+
+
+        /* =========================================================
+   UPLOAD CARD
+========================================================= */
+
+        .upload-card {
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .upload-card::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            background: #e8e2ff;
+
+            right: -80px;
+            top: -80px;
+
+            opacity: .7;
+        }
+
+
+        .card-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            margin-bottom: 20px;
+
+            position: relative;
+        }
+
+
+        .title-icon {
+
+            width: 43px;
+            height: 43px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(135deg,
+                    #6b47ee,
+                    #3689ed);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: white;
+
+            font-size: 21px;
+        }
+
+
+        .card-title h2 {
+
+            font-size: 19px;
+
+            color: #17276b;
+        }
+
+
+        .card-title p {
+
+            font-size: 12px;
+
+            color: #7b85a2;
+
+            margin-top: 4px;
+        }
+
+
+        /* =========================================================
+   DROP ZONE
+========================================================= */
+
+        .drop-zone {
+
+            min-height: 190px;
+
+            border: 2px dashed #8d80e9;
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(135deg,
+                    #faf8ff,
+                    #f4f9ff);
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            cursor: pointer;
+
+            transition: .25s;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        .drop-zone:hover {
+
+            border-color: #533be1;
+
+            background: #f7f4ff;
+
+            transform: translateY(-2px);
+        }
+
+
+        .upload-icon {
+
+            width: 60px;
+            height: 60px;
+
+            border-radius: 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(135deg,
+                    #ece7ff,
+                    #e5f2ff);
+
+            color: #6246e6;
+
+            font-size: 29px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .drop-zone h3 {
+
+            color: #253574;
+
+            font-size: 17px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .drop-zone p {
+
+            color: #818aa4;
+
+            font-size: 12px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .choose-btn {
+
+            background: #fff;
+
+            border: 1px solid #d8ddef;
+
+            color: #5141cc;
+
+            padding: 8px 17px;
+
+            border-radius: 8px;
+
+            font-weight: 700;
+
+            font-size: 12px;
+        }
+
+
+        #fileInput {
+
+            display: none;
+        }
+
+
+        /* =========================================================
+   SELECTED FILE
+========================================================= */
+
+        .file-info {
+
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 14px;
+
+            border-radius: 13px;
+
+            background: #f3f5ff;
+
+            border: 1px solid #e0e4f3;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+
+        .file-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+        }
+
+
+        .file-icon {
+
+            width: 40px;
+            height: 40px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #6048df;
+
+            color: white;
+        }
+
+
+        .file-info strong {
+
+            display: block;
+
+            color: #27356e;
+
+            font-size: 13px;
+        }
+
+
+        .file-info span {
+
+            display: block;
+
+            color: #858ea7;
+
+            font-size: 11px;
+
+            margin-top: 3px;
+        }
+
+
+        .remove-btn {
+
+            border: none;
+
+            background: #ffe9ed;
+
+            color: #d83d59;
+
+            width: 32px;
+            height: 32px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================================
+   WAVEFORM
+========================================================= */
+
+        .wave-card {
+
+            margin-top: 20px;
+
+            background:
+                linear-gradient(135deg,
+                    #171d52,
+                    #222b70);
+
+            border-radius: 18px;
+
+            padding: 20px;
+
+            color: white;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .wave-top {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 16px;
+        }
+
+
+        .wave-top span {
+
+            font-size: 12px;
+
+            color: #c5cbeb;
+        }
+
+
+        .wave-status {
+
+            padding: 5px 10px;
+
+            border-radius: 15px;
+
+            background: rgba(72, 215, 167, .13);
+
+            color: #62e2b4;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+
+        .waveform {
+
+            height: 90px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 4px;
+        }
+
+
+        .bar {
+
+            width: 4px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(to top,
+                    #7656f2,
+                    #32a0f1);
+
+            animation: wave 1.2s infinite ease-in-out;
+
+            opacity: .9;
+        }
+
+
+        .bar:nth-child(1) {
+            height: 25px
+        }
+
+        .bar:nth-child(2) {
+            height: 42px
+        }
+
+        .bar:nth-child(3) {
+            height: 60px
+        }
+
+        .bar:nth-child(4) {
+            height: 35px
+        }
+
+        .bar:nth-child(5) {
+            height: 75px
+        }
+
+        .bar:nth-child(6) {
+            height: 50px
+        }
+
+        .bar:nth-child(7) {
+            height: 65px
+        }
+
+        .bar:nth-child(8) {
+            height: 32px
+        }
+
+        .bar:nth-child(9) {
+            height: 80px
+        }
+
+        .bar:nth-child(10) {
+            height: 48px
+        }
+
+        .bar:nth-child(11) {
+            height: 68px
+        }
+
+        .bar:nth-child(12) {
+            height: 40px
+        }
+
+        .bar:nth-child(13) {
+            height: 74px
+        }
+
+        .bar:nth-child(14) {
+            height: 50px
+        }
+
+        .bar:nth-child(15) {
+            height: 30px
+        }
+
+        .bar:nth-child(16) {
+            height: 62px
+        }
+
+        .bar:nth-child(17) {
+            height: 78px
+        }
+
+        .bar:nth-child(18) {
+            height: 40px
+        }
+
+        .bar:nth-child(19) {
+            height: 68px
+        }
+
+        .bar:nth-child(20) {
+            height: 30px
+        }
+
+        .bar:nth-child(21) {
+            height: 58px
+        }
+
+        .bar:nth-child(22) {
+            height: 76px
+        }
+
+        .bar:nth-child(23) {
+            height: 45px
+        }
+
+        .bar:nth-child(24) {
+            height: 67px
+        }
+
+        .bar:nth-child(25) {
+            height: 35px
+        }
+
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                transform: scaleY(.7);
+            }
+
+            50% {
+                transform: scaleY(1);
+            }
+        }
+
+
+        /* =========================================================
+   SEPARATE BUTTON
+========================================================= */
+
+        .separate-btn {
+
+            width: 100%;
+
+            margin-top: 20px;
+
+            border: none;
+
+            border-radius: 13px;
+
+            padding: 16px;
+
+            color: white;
+
+            background:
+                linear-gradient(90deg,
+                    #6845ec,
+                    #268fe9);
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 25px rgba(85, 70, 220, .25);
+
+            transition: .25s;
+        }
+
+
+        .separate-btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 14px 30px rgba(85, 70, 220, .32);
+        }
+
+
+        .separate-btn:disabled {
+
+            background: #a7aabd;
+
+            cursor: not-allowed;
+
+            box-shadow: none;
+
+            transform: none;
+        }
+
+
+        /* =========================================================
+   RIGHT PANEL
+========================================================= */
+
+        .process-card {
+
+            padding: 22px;
+        }
+
+
+        .process-title {
+
+            font-size: 18px;
+
+            color: #17276b;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================================================
+   PIPELINE
+========================================================= */
+
+        .pipeline {
+
+            position: relative;
+
+            padding-left: 27px;
+        }
+
+
+        .pipeline::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 9px;
+
+            top: 15px;
+
+            bottom: 15px;
+
+            width: 2px;
+
+            background: #dce0f1;
+        }
+
+
+        .step {
+
+            position: relative;
+
+            display: flex;
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .step:last-child {
+
+            margin-bottom: 0;
+        }
+
+
+        .step-circle {
+
+            position: absolute;
+
+            left: -27px;
+
+            width: 20px;
+            height: 20px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            border: 4px solid #7257e9;
+
+            z-index: 2;
+        }
+
+
+        .step.done .step-circle {
+
+            background: #34c89b;
+
+            border-color: #34c89b;
+        }
+
+
+        .step h4 {
+
+            color: #29366f;
+
+            font-size: 13px;
+
+            margin-bottom: 4px;
+        }
+
+
+        .step p {
+
+            color: #8790aa;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+   OUTPUT TABS & CARDS
+========================================================= */
+
+        .output-tabs-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+            margin-bottom: 6px;
+        }
+
+        .output-tabs {
+            display: inline-flex;
+            gap: 6px;
+            background: #edf2fc;
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid #dbe3f4;
+        }
+
+        .output-tab {
+            padding: 7px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #4b5878;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .output-tab:hover {
+            color: #1e293b;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .output-tab.active {
+            background: #ffffff;
+            color: #3b50df;
+            box-shadow: 0 2px 8px rgba(59, 80, 223, 0.18);
+        }
+
+        .outputs {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .outputs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .output {
+            border: 1px solid #e0e6f5;
+            border-radius: 16px;
+            padding: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 18px rgba(70, 75, 140, 0.05);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .output:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(70, 75, 140, 0.12);
+            border-color: #cbd5e1;
+        }
+
+        .output.hidden-tab {
+            display: none !important;
+        }
+
+        .output-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .output-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .output-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .vocal-icon {
+            background: #ffeaf2;
+            color: #d94276;
+        }
+
+        .bgm-icon {
+            background: #e9f0ff;
+            color: #466ee5;
+        }
+
+        .full-song-icon {
+            background: #f1edff;
+            color: #7048e8;
+        }
+
+        .output-title-group h3 {
+            font-size: 15px;
+            color: #1e293b;
+            margin: 0 0 3px 0;
+            font-weight: 700;
+        }
+
+        .output-title-group p {
+            font-size: 11px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        /* Track Length Badge */
+        .track-duration-badge {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .track-duration-badge.active-length {
+            background: #eef2ff;
+            color: #4338ca;
+            border-color: #c7d2fe;
+        }
+
+        /* Audio Player Container */
+        .player-container {
+            margin-top: auto;
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Scrubber and Time */
+        .scrubber-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #f8fafc;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #edf2f7;
+        }
+
+        .scrubber-time-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .scrubber-current-time {
+            color: #4338ca;
+            font-weight: 800;
+        }
+
+        .scrubber-status {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Custom Interactive Range Scrubber */
+        .audio-scrubber {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 7px;
+            border-radius: 7px;
+            background: #e2e8f0;
+            outline: none;
+            cursor: pointer;
+            transition: height 0.15s ease;
+            margin: 4px 0;
+        }
+
+        .audio-scrubber:hover {
+            height: 9px;
+        }
+
+        .audio-scrubber::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4f46e5;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.45);
+            cursor: grab;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+
+        .audio-scrubber:active::-webkit-slider-thumb {
+            cursor: grabbing;
+            transform: scale(1.25);
+            background: #3730a3;
+            box-shadow: 0 2px 10px rgba(79, 70, 229, 0.6);
+        }
+
+        .audio-scrubber::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4f46e5;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.45);
+            cursor: grab;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+
+        .audio-scrubber:active::-moz-range-thumb {
+            cursor: grabbing;
+            transform: scale(1.25);
+            background: #3730a3;
+        }
+
+        /* Transport Controls Row */
+        .transport-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .transport-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 9px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+            flex: 1;
+        }
+
+        .transport-btn:hover {
+            background: #edf2f7;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+
+        .transport-btn:active {
+            transform: scale(0.96);
+        }
+
+        .transport-btn.btn-play {
+            flex: 1.4;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            font-size: 12px;
+            box-shadow: 0 3px 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .transport-btn.btn-play:hover {
+            background: linear-gradient(135deg, #4338ca, #4f46e5);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+        }
+
+        .transport-btn.btn-play.playing {
+            background: linear-gradient(135deg, #e11d48, #f43f5e);
+            box-shadow: 0 3px 10px rgba(225, 29, 72, 0.35);
+        }
+
+        .transport-btn.btn-stop {
+            flex: 0 0 34px;
+            color: #64748b;
+            padding: 7px 0;
+        }
+
+        .transport-btn.btn-stop:hover {
+            color: #e11d48;
+            background: #ffe4e6;
+            border-color: #fecdd3;
+        }
+
+        /* Secondary Actions */
+        .secondary-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 6px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .vol-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vol-btn {
+            background: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 4px;
+            color: #64748b;
+            border-radius: 4px;
+        }
+
+        .vol-btn:hover {
+            color: #1e293b;
+            background: #f1f5f9;
+        }
+
+        .vol-slider {
+            width: 65px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #cbd5e1;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .vol-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #64748b;
+            cursor: pointer;
+        }
+
+        .download-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #4f46e5;
+            background: #eef2ff;
+            border: 1px solid #e0e7ff;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .download-link-btn:hover {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+
+        /* Backward compatibility classes */
+        .audio-duration {
+            display: none;
+        }
+
+        .play-btn {
+            display: none;
+        }
+
+        .seek-controls {
+            display: none;
+        }
+
+        .seek-btn {
+            display: none;
+        }
+
+
+        /* =========================================================
+   STATUS
+========================================================= */
+
+        .status-box {
+
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 15px;
+
+            border-radius: 13px;
+
+            background: #effbf6;
+
+            border: 1px solid #c8eedf;
+
+            color: #19855e;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================================================
+   INSTRUMENT SECTION
+========================================================= */
+
+        .instrument-section {
+
+            margin-top: 22px;
+
+        }
+
+
+        .instrument-heading {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 15px;
+        }
+
+
+        .instrument-heading h2 {
+
+            font-size: 19px;
+
+            color: #17276b;
+        }
+
+
+        .count-badge {
+
+            padding: 6px 12px;
+
+            border-radius: 15px;
+
+            background: #eeeaff;
+
+            color: #6045dc;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        .instrument-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 10px;
+        }
+
+
+        .instrument {
+
+            padding: 12px 8px;
+
+            border: 1px solid #e1e4ee;
+
+            border-radius: 12px;
+
+            background: white;
+
+            text-align: center;
+
+            transition: .2s;
+        }
+
+
+        .instrument:hover {
+
+            border-color: #7659e9;
+
+            transform: translateY(-2px);
+        }
+
+
+        .instrument-icon {
+
+            font-size: 21px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .instrument strong {
+
+            display: block;
+
+            color: #2b376d;
+
+            font-size: 11px;
+        }
+
+
+        .instrument span {
+
+            display: block;
+
+            color: #8b93aa;
+
+            font-size: 9px;
+
+            margin-top: 3px;
+        }
+
+
+        /* =========================================================
+   MESSAGE
+========================================================= */
+
+        #message {
+
+            text-align: center;
+
+            min-height: 20px;
+
+            margin-top: 13px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .success {
+
+            color: #15945e;
+        }
+
+
+        .error {
+
+            color: #df3f55;
+        }
+
+
+        .info {
+
+            color: #5c51d8;
+        }
+
+
+        /* =========================================================
+   RESPONSIVE
+========================================================= */
+
+        @media(max-width:1000px) {
+
+            .main-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+            .instrument-grid {
+
+                grid-template-columns:
+                    repeat(4, 1fr);
+            }
+
+        }
+
+
+        @media(max-width:700px) {
+
+            .container {
+
+                padding: 20px 15px;
+            }
+
+            .page-header h1 {
+
+                font-size: 29px;
+            }
+
+            .outputs {
+
+                grid-template-columns: 1fr;
+            }
+
+            .instrument-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+            /* Source Toggle & Song Selector */
+            .source-mode-bar {
+                display: flex;
+                gap: 8px;
+                background: #f1f5f9;
+                padding: 6px;
+                border-radius: 14px;
+                margin-bottom: 18px;
+            }
+
+            .source-mode-btn {
+                flex: 1;
+                padding: 10px 14px;
+                border: none;
+                background: transparent;
+                color: #64748b;
+                font-weight: 600;
+                font-size: 13px;
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+            }
+
+            .source-mode-btn.active {
+                background: #ffffff;
+                color: #4f46e5;
+                font-weight: 700;
+                box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+            }
+
+            .song-picker-wrap {
+                margin-bottom: 16px;
+            }
+
+            .song-select-dropdown {
+                width: 100%;
+                padding: 12px 16px;
+                border-radius: 12px;
+                border: 1.5px solid #cbd5e1;
+                background: #ffffff;
+                font-size: 14px;
+                font-weight: 500;
+                color: #1e293b;
+                outline: none;
+                transition: border-color 0.2s;
+                cursor: pointer;
+            }
+
+            .song-select-dropdown:focus {
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+            }
+
+            .separation-progress-box {
+                margin: 14px 0 10px;
+                padding: 12px 14px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+            }
+
+            .progress-timer-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+                font-size: 12.5px;
+                font-weight: 600;
+                color: #475569;
+            }
+
+            .progress-bar-track {
+                width: 100%;
+                height: 7px;
+                background: #e2e8f0;
+                border-radius: 99px;
+                overflow: hidden;
+            }
+
+            .progress-bar-fill {
+                width: 0%;
+                height: 100%;
+                background: linear-gradient(90deg, #4f46e5, #06b6d4);
+                border-radius: 99px;
+                transition: width 0.3s ease;
+            }
+
+            .transcription-cta-card {
+                margin-top: 24px;
+                padding: 22px 24px;
+                border-radius: 18px;
+                background: linear-gradient(135deg, #eef2ff, #f8faff);
+                border: 1.5px solid #c7d2fe;
+                box-shadow: 0 10px 30px rgba(79, 70, 229, 0.08);
+            }
+
+            /* =========================================================
+   AI DETECTED INSTRUMENTS
+========================================================= */
+            .detected-instrument-section {
+                margin-top: 22px;
+            }
+
+            .detected-instrument-grid {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 16px;
+            }
+
+            .detected-empty-state {
+                grid-column: 1 / -1;
+                padding: 22px;
+                border: 1px dashed #cbd5e1;
+                border-radius: 12px;
+                background: #f8fafc;
+                color: #64748b;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            .detected-instrument-card {
+                border: 1px solid #e0e6f5;
+                border-radius: 16px;
+                padding: 18px;
+                background: #ffffff;
+                box-shadow: 0 4px 18px rgba(70, 75, 140, 0.05);
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .detected-instrument-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 26px rgba(70, 75, 140, 0.12);
+                border-color: #cbd5e1;
+            }
+
+            .detected-instrument-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+
+            .detected-instrument-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .detected-instrument-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f1edff;
+                color: #7048e8;
+                font-size: 22px;
+                flex-shrink: 0;
+            }
+
+            .detected-instrument-name {
+                margin: 0 0 3px;
+                color: #1e293b;
+                font-size: 15px;
+                font-weight: 700;
+            }
+
+            .detected-instrument-source {
+                margin: 0;
+                color: #64748b;
+                font-size: 11px;
+                line-height: 1.3;
+            }
+
+            .detected-instrument-confidence {
+                margin: 10px 0 8px;
+                color: #64748b;
+                font-size: 10px;
+            }
+
+            .detected-player {
+                width: 100%;
+            }
+
+            .detected-time-box {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                margin-bottom: 10px;
+                padding: 10px 12px;
+                border-radius: 12px;
+                background: #f8fafc;
+                border: 1px solid #edf2f7;
+            }
+
+            .detected-time-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                color: #475569;
+                font-size: 11px;
+                font-weight: 700;
+                font-variant-numeric: tabular-nums;
+            }
+
+            .detected-current-time {
+                color: #4338ca;
+                font-weight: 800;
+            }
+
+            .detected-status {
+                color: #94a3b8;
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: .4px;
+            }
+
+            .detected-scrubber {
+                width: 100%;
+                height: 7px;
+                border-radius: 7px;
+                background: #e2e8f0;
+                accent-color: #4f46e5;
+                outline: none;
+                cursor: pointer;
+            }
+
+            .detected-transport {
+                display: flex;
+                gap: 6px;
+                margin-top: 7px;
+            }
+
+            .detected-skip {
+                flex: 1;
+                padding: 7px 8px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                background: #f8fafc;
+                color: #334155;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+
+            .detected-skip:hover {
+                background: #edf2f7;
+                border-color: #cbd5e1;
+            }
+
+            .detected-download {
+                width: 100%;
+                margin-top: 7px;
+                padding: 7px 8px;
+                border: 1px solid #e0e7ff;
+                border-radius: 8px;
+                background: #eef2ff;
+                color: #4f46e5;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+
+            .detected-download:hover {
+                background: #4f46e5;
+                color: #ffffff;
+            }
+
+            .detected-download:disabled {
+                cursor: not-allowed;
+                opacity: .55;
+            }
+
+            .detected-play {
+                width: 100%;
+                padding: 9px 12px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #4f46e5, #6366f1);
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 0 3px 10px rgba(79, 70, 229, 0.2);
+            }
+
+            .detected-transport .detected-play {
+                flex: 1.4;
+                width: auto;
+                margin: 0;
+            }
+
+            .detected-play:hover {
+                background: linear-gradient(135deg, #4338ca, #4f46e5);
+            }
+
+            .detected-play.playing {
+                background: linear-gradient(135deg, #e11d48, #f43f5e);
+                border-color: transparent;
+                box-shadow: 0 3px 10px rgba(225, 29, 72, 0.35);
+            }
+
+            .detected-play.playing:hover {
+                background: linear-gradient(135deg, #be123c, #e11d48);
+            }
+
+            .detected-play:disabled {
+                cursor: not-allowed;
+                opacity: .55;
+            }
+
+            @media(max-width:1000px) {
+                .detected-instrument-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
+
+            @media(max-width:700px) {
+                .detected-instrument-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+    </style>
+
+    <link rel="stylesheet" href="sidebar.css">
+
+</head>
+
+
+<body>
+
+    <div id="sidebarContainer" data-active="separation"></div>
+
+
+    <!-- =========================================================
+     MAIN CONTAINER
+========================================================= -->
+
+    <div class="container">
+
+
+        <!-- =====================================================
+         HEADER
+    ===================================================== -->
+
+        <header class="page-header">
+
+            <span class="small-label">
+                AI AUDIO PROCESSING
+            </span>
+
+            <h1>
+
+                Intelligent
+                <span class="gradient">
+                    Audio Separation
+                </span>
+
+            </h1>
+
+            <p>
+                Decompose your polyphonic music into vocals,
+                background music and analyzable audio components.
+            </p>
+
+        </header>
+
+
+
+        <!-- =====================================================
+         MAIN GRID
+    ===================================================== -->
+
+        <div class="main-grid">
+
+
+            <!-- =================================================
+             LEFT
+        ================================================= -->
+
+            <section>
+
+
+                <!-- UPLOAD CARD -->
+
+                <div class="card upload-card">
+
+
+                    <div class="card-title">
+
+                        <div class="title-icon">
+                            ↑
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Add Your Music
+                            </h2>
+
+                            <p>
+                                Upload an audio file for AI separation
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- INPUT MODE TOGGLE -->
+                    <div class="source-mode-bar">
+                        <button type="button" class="source-mode-btn active" id="tab-choose-existing"
+                            onclick="switchInputMode('existing')">
+                            📁 Choose Uploaded Song (<span id="songCountBadge">--</span>)
+                        </button>
+                        <button type="button" class="source-mode-btn" id="tab-upload-new"
+                            onclick="switchInputMode('upload')">
+                            ☁ Upload New Audio
+                        </button>
+                    </div>
+
+                    <!-- EXISTING SONG SELECTOR BOX -->
+                    <div id="existingSongSection" class="song-picker-wrap">
+                        <label for="songDropdown"
+                            style="display:block; font-size:12.5px; font-weight:700; color:#475569; margin-bottom:8px;">
+                            Select audio from your library:
+                        </label>
+                        <div style="display:flex; gap:8px;">
+                            <select id="songDropdown" class="song-select-dropdown"
+                                onchange="onSelectExistingSong(this.value)">
+                                <option value="">Loading uploaded audio files...</option>
+                            </select>
+                            <button type="button" onclick="loadUploadedSongsList(true)" title="Refresh audio library"
+                                style="padding:0 16px; border-radius:12px; border:1.5px solid #cbd5e1; background:#f8fafc; color:#475569; cursor:pointer; font-size:16px; font-weight:700;">
+                                ↻
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- DROP ZONE (FOR UPLOAD MODE) -->
+                    <div id="uploadNewSection" style="display:none;">
+                        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                            <div class="upload-icon">
+                                ☁
+                            </div>
+                            <h3>
+                                Drop your music here
+                            </h3>
+                            <p>
+                                MP3, WAV, FLAC, OGG or M4A
+                            </p>
+                            <span class="choose-btn">
+                                Browse Files
+                            </span>
+                        </div>
+
+                        <input type="file" id="fileInput" accept=".mp3,.wav,.flac,.ogg,.m4a">
+                    </div>
+
+                    <!-- FILE INFORMATION -->
+                    <div class="file-info" id="fileInfo">
+                        <div class="file-left">
+                            <div class="file-icon">
+                                ♪
+                            </div>
+                            <div>
+                                <strong id="fileName">
+                                    Audio
+                                </strong>
+                                <span id="fileSize">
+                                    0 MB
+                                </span>
+                            </div>
+                        </div>
+
+                        <button class="remove-btn" onclick="removeFile(event)" title="Remove selected file">
+                            ×
+                        </button>
+                    </div>
+
+                    <!-- WAVEFORM -->
+                    <div class="wave-card">
+                        <div class="wave-top">
+                            <span>
+                                Audio Signal
+                            </span>
+                            <span class="wave-status" id="waveStatus">
+                                READY
+                            </span>
+                        </div>
+
+                        <div class="waveform">
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- SEPARATION PROGRESS BOX (ACTIVE DURING DEMUCS RUN) -->
+                    <div id="separationProgressBox" class="separation-progress-box" style="display:none;">
+                        <div class="progress-timer-row">
+                            <span id="separationProgressTitle">⏳ Processing separation...</span>
+                            <span id="separationProgressTimer">Elapsed: 00:00</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div id="separationProgressBar" class="progress-bar-fill"></div>
+                        </div>
+                        <div id="uploadProgressStatus" style="margin-top:8px; font-size:11px; color:#64748b;">
+                            Waiting to upload...
+                        </div>
+                    </div>
+
+                    <!-- SEPARATE BUTTON -->
+                    <button class="separate-btn" id="separateBtn" onclick="startSeparation()">
+                        ✨ Start AI Separation →
+                    </button>
+
+                    <div id="message"></div>
+                </div>
+
+
+
+                <!-- OUTPUTS -->
+
+                <div class="card" style="margin-top:20px;">
+
+                    <div class="card-title">
+
+                        <div class="title-icon">
+                            ♪
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Separated Components
+                            </h2>
+
+                            <p>
+                                Your AI-generated audio layers
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="output-tabs-bar">
+                        <div class="output-tabs" role="tablist">
+                            <button class="output-tab active" id="tab-btn-all" onclick="switchOutputTab('all')">
+                                <span>📑</span> All Tracks (3)
+                            </button>
+                            <button class="output-tab" id="tab-btn-full_song" onclick="switchOutputTab('full_song')">
+                                <span>🎼</span> Full Song
+                            </button>
+                            <button class="output-tab" id="tab-btn-vocals" onclick="switchOutputTab('vocals')">
+                                <span>🎤</span> Vocals
+                            </button>
+                            <button class="output-tab" id="tab-btn-bgm" onclick="switchOutputTab('bgm')">
+                                <span>🎵</span> BGM
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="outputs">
+
+                        <!-- FULL SONG -->
+                        <div class="output" id="card-full_song">
+                            <div class="output-header">
+                                <div class="output-header-left">
+                                    <div class="output-icon full-song-icon">🎼</div>
+                                    <div class="output-title-group">
+                                        <h3>Full Song</h3>
+                                        <p>Original uploaded audio</p>
+                                    </div>
+                                </div>
+                                <div class="track-duration-badge" id="badge-full_song">
+                                    <span>⏳</span> <strong id="badge-time-full_song">Length: --:--</strong>
+                                </div>
+                            </div>
+
+                            <audio id="audio-full_song" preload="metadata" style="display:none;"></audio>
+
+                            <div class="player-container">
+                                <div class="scrubber-box">
+                                    <div class="scrubber-time-row">
+                                        <span class="scrubber-current-time" id="curtime-full_song">00:00</span>
+                                        <span class="scrubber-status" id="status-full_song">Ready</span>
+                                        <span class="scrubber-total-time" id="totaltime-full_song">--:--</span>
+                                    </div>
+                                    <input type="range" class="audio-scrubber" id="scrubber-full_song" min="0" max="100"
+                                        value="0" step="0.1" aria-label="Seek Full Song"
+                                        oninput="onScrubberInput('full_song', this.value)"
+                                        onchange="onScrubberChange('full_song', this.value)">
+                                </div>
+
+                                <div class="transport-controls">
+                                    <button class="transport-btn" onclick="skipAudio('full_song', -10)"
+                                        title="Rewind 10s">↶ 10s</button>
+                                    <button class="transport-btn" onclick="skipAudio('full_song', -5)"
+                                        title="Rewind 5s">↺ 5s</button>
+                                    <button class="transport-btn btn-play" id="playbtn-full_song"
+                                        onclick="togglePlayAudio('full_song')">▶ Play</button>
+                                    <button class="transport-btn" onclick="skipAudio('full_song', 5)"
+                                        title="Forward 5s">5s ↷</button>
+                                    <button class="transport-btn" onclick="skipAudio('full_song', 10)"
+                                        title="Forward 10s">10s ↷</button>
+                                    <button class="transport-btn btn-stop" onclick="stopAudio('full_song')"
+                                        title="Stop & Reset">⏹</button>
+                                </div>
+
+                                <div class="secondary-controls">
+                                    <div class="vol-control">
+                                        <button class="vol-btn" id="mutebtn-full_song" onclick="toggleMute('full_song')"
+                                            title="Mute/Unmute">🔊</button>
+                                        <input type="range" class="vol-slider" id="vol-full_song" min="0" max="1"
+                                            step="0.05" value="1" oninput="setAudioVolume('full_song', this.value)"
+                                            title="Volume">
+                                    </div>
+                                    <button class="download-link-btn" onclick="downloadAudio('full_song')">
+                                        ↓ Download
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Fallback elements for backwards compatibility -->
+                            <span class="audio-duration" id="duration-full_song" style="display:none;">Duration:
+                                --:--</span>
+                        </div>
+
+                        <!-- VOCALS -->
+                        <div class="output" id="card-vocals">
+                            <div class="output-header">
+                                <div class="output-header-left">
+                                    <div class="output-icon vocal-icon">🎤</div>
+                                    <div class="output-title-group">
+                                        <h3>Vocals</h3>
+                                        <p>Isolated vocal component</p>
+                                    </div>
+                                </div>
+                                <div class="track-duration-badge" id="badge-vocals">
+                                    <span>⏳</span> <strong id="badge-time-vocals">Length: --:--</strong>
+                                </div>
+                            </div>
+
+                            <audio id="audio-vocals" preload="metadata" style="display:none;"></audio>
+
+                            <div class="player-container">
+                                <div class="scrubber-box">
+                                    <div class="scrubber-time-row">
+                                        <span class="scrubber-current-time" id="curtime-vocals">00:00</span>
+                                        <span class="scrubber-status" id="status-vocals">Ready</span>
+                                        <span class="scrubber-total-time" id="totaltime-vocals">--:--</span>
+                                    </div>
+                                    <input type="range" class="audio-scrubber" id="scrubber-vocals" min="0" max="100"
+                                        value="0" step="0.1" aria-label="Seek Vocals"
+                                        oninput="onScrubberInput('vocals', this.value)"
+                                        onchange="onScrubberChange('vocals', this.value)">
+                                </div>
+
+                                <div class="transport-controls">
+                                    <button class="transport-btn" onclick="skipAudio('vocals', -10)"
+                                        title="Rewind 10s">↶ 10s</button>
+                                    <button class="transport-btn" onclick="skipAudio('vocals', -5)" title="Rewind 5s">↺
+                                        5s</button>
+                                    <button class="transport-btn btn-play" id="playbtn-vocals"
+                                        onclick="togglePlayAudio('vocals')">▶ Play</button>
+                                    <button class="transport-btn" onclick="skipAudio('vocals', 5)" title="Forward 5s">5s
+                                        ↷</button>
+                                    <button class="transport-btn" onclick="skipAudio('vocals', 10)"
+                                        title="Forward 10s">10s ↷</button>
+                                    <button class="transport-btn btn-stop" onclick="stopAudio('vocals')"
+                                        title="Stop & Reset">⏹</button>
+                                </div>
+
+                                <div class="secondary-controls">
+                                    <div class="vol-control">
+                                        <button class="vol-btn" id="mutebtn-vocals" onclick="toggleMute('vocals')"
+                                            title="Mute/Unmute">🔊</button>
+                                        <input type="range" class="vol-slider" id="vol-vocals" min="0" max="1"
+                                            step="0.05" value="1" oninput="setAudioVolume('vocals', this.value)"
+                                            title="Volume">
+                                    </div>
+                                    <button class="download-link-btn" onclick="downloadAudio('vocals')">
+                                        ↓ Download
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Fallback elements for backwards compatibility -->
+                            <span class="audio-duration" id="duration-vocals" style="display:none;">Duration:
+                                --:--</span>
+                        </div>
+
+                        <!-- BGM -->
+                        <div class="output" id="card-bgm">
+                            <div class="output-header">
+                                <div class="output-header-left">
+                                    <div class="output-icon bgm-icon">🎵</div>
+                                    <div class="output-title-group">
+                                        <h3>BGM</h3>
+                                        <p>Background music component</p>
+                                    </div>
+                                </div>
+                                <div class="track-duration-badge" id="badge-bgm">
+                                    <span>⏳</span> <strong id="badge-time-bgm">Length: --:--</strong>
+                                </div>
+                            </div>
+
+                            <audio id="audio-bgm" preload="metadata" style="display:none;"></audio>
+
+                            <div class="player-container">
+                                <div class="scrubber-box">
+                                    <div class="scrubber-time-row">
+                                        <span class="scrubber-current-time" id="curtime-bgm">00:00</span>
+                                        <span class="scrubber-status" id="status-bgm">Ready</span>
+                                        <span class="scrubber-total-time" id="totaltime-bgm">--:--</span>
+                                    </div>
+                                    <input type="range" class="audio-scrubber" id="scrubber-bgm" min="0" max="100"
+                                        value="0" step="0.1" aria-label="Seek BGM"
+                                        oninput="onScrubberInput('bgm', this.value)"
+                                        onchange="onScrubberChange('bgm', this.value)">
+                                </div>
+
+                                <div class="transport-controls">
+                                    <button class="transport-btn" onclick="skipAudio('bgm', -10)" title="Rewind 10s">↶
+                                        10s</button>
+                                    <button class="transport-btn" onclick="skipAudio('bgm', -5)" title="Rewind 5s">↺
+                                        5s</button>
+                                    <button class="transport-btn btn-play" id="playbtn-bgm"
+                                        onclick="togglePlayAudio('bgm')">▶ Play</button>
+                                    <button class="transport-btn" onclick="skipAudio('bgm', 5)" title="Forward 5s">5s
+                                        ↷</button>
+                                    <button class="transport-btn" onclick="skipAudio('bgm', 10)" title="Forward 10s">10s
+                                        ↷</button>
+                                    <button class="transport-btn btn-stop" onclick="stopAudio('bgm')"
+                                        title="Stop & Reset">⏹</button>
+                                </div>
+
+                                <div class="secondary-controls">
+                                    <div class="vol-control">
+                                        <button class="vol-btn" id="mutebtn-bgm" onclick="toggleMute('bgm')"
+                                            title="Mute/Unmute">🔊</button>
+                                        <input type="range" class="vol-slider" id="vol-bgm" min="0" max="1" step="0.05"
+                                            value="1" oninput="setAudioVolume('bgm', this.value)" title="Volume">
+                                    </div>
+                                    <button class="download-link-btn" onclick="downloadAudio('bgm')">
+                                        ↓ Download
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Fallback elements for backwards compatibility -->
+                            <span class="audio-duration" id="duration-bgm" style="display:none;">Duration: --:--</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="status-box" id="statusBox">
+                        ✓ Separation completed successfully.
+                    </div>
+
+                    <!-- TRANSCRIPTION CTA CARD -->
+                    <div class="transcription-cta-card" id="transcriptionCta" style="display:none;">
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+                            <div>
+                                <div
+                                    style="display:inline-flex; align-items:center; gap:6px; background:#4338ca; color:white; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:8px;">
+                                    <span>✓</span> STEMS READY FOR ANALYSIS
+                                </div>
+                                <h3 style="margin:0 0 6px 0; color:#1e1b4b; font-size:18px;">Next Step: Polyphonic
+                                    Transcription</h3>
+                                <p style="margin:0; color:#475569; font-size:13px;">Convert your separated audio
+                                    components into MIDI, musical notation, and detailed instrument tracks.</p>
+                            </div>
+                            <button type="button" onclick="continueToTranscription()"
+                                style="background:linear-gradient(135deg, #4f46e5, #2563eb); color:white; border:none; padding:12px 24px; border-radius:12px; font-weight:700; font-size:15px; cursor:pointer; box-shadow:0 4px 14px rgba(37,99,235,0.3); display:inline-flex; align-items:center; gap:8px; transition:transform 0.2s;"
+                                onmouseover="this.style.transform='translateY(-2px)'"
+                                onmouseout="this.style.transform='none'">
+                                <span>Continue to Transcription</span> →
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+             RIGHT
+        ================================================= -->
+
+            <aside class="card process-card">
+
+
+                <h2 class="process-title">
+                    AI Separation Pipeline
+                </h2>
+
+
+                <div class="pipeline">
+
+
+                    <div class="step done">
+
+                        <div class="step-circle"></div>
+
+                        <div>
+
+                            <h4>
+                                01 · Audio Input
+                            </h4>
+
+                            <p>
+                                Your original polyphonic music
+                                enters the processing pipeline.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="step">
+
+                        <div class="step-circle"></div>
+
+                        <div>
+
+                            <h4>
+                                02 · Preprocessing
+                            </h4>
+
+                            <p>
+                                Audio is loaded and prepared
+                                for source separation.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="step">
+
+                        <div class="step-circle"></div>
+
+                        <div>
+
+                            <h4>
+                                03 · Vocal Separation
+                            </h4>
+
+                            <p>
+                                AI separates vocals from the
+                                musical background.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="step">
+
+                        <div class="step-circle"></div>
+
+                        <div>
+
+                            <h4>
+                                04 · BGM Analysis
+                            </h4>
+
+                            <p>
+                                Background music is prepared
+                                for further instrument analysis.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="step">
+
+                        <div class="step-circle"></div>
+
+                        <div>
+
+                            <h4>
+                                05 · Instrument Analysis
+                            </h4>
+
+                            <p>
+                                The BGM can be analyzed against
+                                the supported instrument classes.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </aside>
+
+        </div>
+
+
+
+        <!-- =====================================================
+         INSTRUMENT SECTION
+    ===================================================== -->
+
+        <!-- =========================================================
+     AI DETECTED INSTRUMENTS
+     (Appears only after AI analysis returns detections)
+========================================================= -->
+
+        <section class="card detected-instrument-section" id="detectedInstrumentSection" style="display:none;">
+
+            <div class="instrument-heading">
+
+                <div>
+                    <h2>
+                        🎯 AI Detected Instruments
+                    </h2>
+
+                    <p style="margin:5px 0 0; color:#7b85a2; font-size:12px;">
+                        Instruments identified from the separated BGM
+                    </p>
+                </div>
+
+                <span class="count-badge" id="detectedInstrumentCount">
+                    0 Detected
+                </span>
+
+            </div>
+
+            <div class="detected-instrument-grid" id="detectedInstrumentGrid"></div>
+
+        </section>
+
+
+        <section class="card instrument-section">
+
+
+            <div class="instrument-heading">
+
+                <div>
+
+                    <h2>
+                        🎼 Supported Instrument Analysis
+                    </h2>
+
+                </div>
+
+                <span class="count-badge">
+                    20 Instruments
+                </span>
+
+            </div>
+
+
+
+            <div class="instrument-grid" id="instrumentGrid"></div>
+
+
+        </section>
+
+    </div>
+
+
+
+    <script>
+
+
+        // ============================================================
+        // BACKEND
+        // ============================================================
+
+        const BASE_API = (window.location.origin && window.location.origin.includes(":5000"))
+            ? window.location.origin + "/api"
+            : "http://127.0.0.1:5000/api";
+
+
+        // ============================================================
+        // VARIABLES
+        // ============================================================
+
+        let selectedFile = null;
+        let selectedAudioId = null;
+        let separationResult = null;
+        let cachedSongsList = [];
+        let separationTimerInterval = null;
+        let separationElapsedSec = 0;
+
+
+        // ============================================================
+        // INSTRUMENTS
+        // ============================================================
+
+        const instruments = [
+
+            ["Tabla", "Indian Percussion", "🥁"],
+            ["Mridangam", "Indian Percussion", "🥁"],
+            ["Dholak", "Indian Percussion", "🥁"],
+            ["Ghatam", "Indian Percussion", "🏺"],
+            ["Kanjira", "Indian Percussion", "🥁"],
+            ["Pakhawaj", "Indian Percussion", "🥁"],
+            ["Dhol", "Indian Percussion", "🥁"],
+
+            ["Veena", "Indian String", "🎸"],
+            ["Sitar", "Indian String", "🎸"],
+            ["Sarod", "Indian String", "🎸"],
+            ["Sarangi", "Indian String", "🎻"],
+            ["Tanpura", "Indian String", "🎸"],
+            ["Santoor", "Indian String", "🎵"],
+
+            ["Bansuri", "Indian Wind", "🎶"],
+            ["Shehnai", "Indian Wind", "🎵"],
+            ["Nadaswaram", "Indian Wind", "🎵"],
+
+            ["Harmonium", "Keyboard", "🎹"],
+
+            ["Piano", "Keyboard", "🎹"],
+
+            ["Acoustic Guitar", "String", "🎸"],
+
+            ["Bass Guitar", "String", "🎸"]
+
+        ];
+
+
+        // ============================================================
+        // LOAD INSTRUMENTS
+        // ============================================================
+
+        function loadInstruments() {
+
+            const grid =
+                document.getElementById(
+                    "instrumentGrid"
+                );
+
+            grid.innerHTML = "";
+
+
+            instruments.forEach(
+                instrument => {
+
+                    const card =
+                        document.createElement("div");
+
+                    card.className =
+                        "instrument";
+
+
+                    card.innerHTML = `
+
+                <div class="instrument-icon">
+                    ${instrument[2]}
+                </div>
+
+                <strong>
+                    ${instrument[0]}
+                </strong>
+
+                <span>
+                    ${instrument[1]}
+                </span>
+
+            `;
+
+
+                    grid.appendChild(card);
+
+                }
+            );
+
+        }
+
+
+        // ============================================================
+        // INPUT MODE TOGGLE (CHOOSE EXISTING VS UPLOAD NEW)
+        // ============================================================
+
+        function switchInputMode(mode) {
+            const tabExisting = document.getElementById("tab-choose-existing");
+            const tabUpload = document.getElementById("tab-upload-new");
+            const existingSec = document.getElementById("existingSongSection");
+            const uploadSec = document.getElementById("uploadNewSection");
+
+            if (mode === "existing") {
+                tabExisting.classList.add("active");
+                tabUpload.classList.remove("active");
+                existingSec.style.display = "block";
+                uploadSec.style.display = "none";
+                selectedFile = null;
+                const dropdown = document.getElementById("songDropdown");
+                if (dropdown && dropdown.value) {
+                    onSelectExistingSong(dropdown.value);
+                }
+            } else {
+                tabExisting.classList.remove("active");
+                tabUpload.classList.add("active");
+                existingSec.style.display = "none";
+                uploadSec.style.display = "block";
+                const fileInput = document.getElementById("fileInput");
+                if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                    setSelectedFile(fileInput.files[0]);
+                } else {
+                    document.getElementById("fileInfo").style.display = "none";
+                    document.getElementById("waveStatus").textContent = "READY";
+                    showMessage("Drop an audio file or click browse to upload new music.", "info");
+                }
+            }
+        }
+
+
+        // ============================================================
+        // LOAD UPLOADED SONGS LIST FROM BACKEND
+        // ============================================================
+
+        async function loadUploadedSongsList(forceRefresh = false) {
+            try {
+                const response = await fetch(`${BASE_API}/separation/list`);
+                if (!response.ok) {
+                    await selectStoredUploadedAudio();
+                    return;
+                }
+                const data = await response.json();
+                if (!data.success || !Array.isArray(data.songs)) {
+                    await selectStoredUploadedAudio();
+                    return;
+                }
+
+                cachedSongsList = data.songs;
+                const badge = document.getElementById("songCountBadge");
+                if (badge) badge.textContent = data.songs.length;
+
+                const dropdown = document.getElementById("songDropdown");
+                if (!dropdown) return;
+
+                dropdown.innerHTML = "";
+
+                if (data.songs.length === 0) {
+                    const recovered = await recoverUploadedAudio();
+                    if (recovered) {
+                        cachedSongsList = [recovered];
+                        dropdown.innerHTML = `<option value="${recovered.audio_id}">${recovered.original_name} [Ready to Separate]</option>`;
+                        dropdown.value = String(recovered.audio_id);
+                        switchInputMode("existing");
+                        await onSelectExistingSong(recovered.audio_id);
+                    } else {
+                        dropdown.innerHTML = `<option value="">No audio files uploaded yet. Switch to "Upload New Audio".</option>`;
+                        switchInputMode("upload");
+                    }
+                    return;
+                }
+
+                const storedAudioId = localStorage.getItem("uploaded_audio_id");
+                let matchedId = null;
+
+                data.songs.forEach(song => {
+                    const opt = document.createElement("option");
+                    opt.value = song.audio_id;
+                    const durStr = song.duration ? ` (${formatDuration(song.duration)})` : "";
+                    const statusBadge = song.is_separated ? " [✓ Separated]" : " [Ready to Separate]";
+                    opt.textContent = `${song.original_name}${durStr}${statusBadge}`;
+                    if (storedAudioId && String(song.audio_id) === String(storedAudioId)) {
+                        matchedId = song.audio_id;
+                    }
+                    dropdown.appendChild(opt);
+                });
+
+                const activeId = matchedId || data.songs[0].audio_id;
+                dropdown.value = activeId;
+                switchInputMode("existing");
+                onSelectExistingSong(activeId);
+            } catch (err) {
+                console.error("Could not load songs list:", err);
+                const recovered = await recoverUploadedAudio();
+                if (recovered) {
+                    cachedSongsList = [recovered];
+                    const dropdown = document.getElementById("songDropdown");
+                    dropdown.innerHTML = `<option value="${recovered.audio_id}">${recovered.original_name} [Ready to Separate]</option>`;
+                    dropdown.value = String(recovered.audio_id);
+                    switchInputMode("existing");
+                    await onSelectExistingSong(recovered.audio_id);
+                }
+            }
+        }
+
+        async function selectStoredUploadedAudio() {
+            const recovered = await recoverUploadedAudio();
+            if (!recovered) return;
+
+            cachedSongsList = [recovered];
+            const dropdown = document.getElementById("songDropdown");
+            if (!dropdown) return;
+
+            dropdown.innerHTML = `<option value="${recovered.audio_id}">${recovered.original_name} [Ready to Separate]</option>`;
+            dropdown.value = String(recovered.audio_id);
+            switchInputMode("existing");
+            await onSelectExistingSong(recovered.audio_id);
+        }
+
+        async function recoverUploadedAudio() {
+            const storedAudioId = localStorage.getItem("uploaded_audio_id");
+            if (!storedAudioId) return null;
+
+            try {
+                const response = await fetch(`${BASE_API}/audio/${encodeURIComponent(storedAudioId)}`);
+                const data = await response.json();
+                if (!response.ok || !data.success || !data.audio) return null;
+
+                return {
+                    audio_id: data.audio.audio_id || storedAudioId,
+                    original_name: data.audio.original_name || localStorage.getItem("uploadedSong") || "Uploaded audio",
+                    file_path: data.audio.file_path || localStorage.getItem("uploaded_audio_path") || "",
+                    duration: data.audio.duration || null,
+                    is_separated: false
+                };
+            } catch (error) {
+                return null;
+            }
+        }
+
+
+        // ============================================================
+        // SELECT EXISTING SONG
+        // ============================================================
+
+        async function onSelectExistingSong(audioId) {
+            if (!audioId) return;
+            selectedAudioId = parseInt(audioId, 10);
+            selectedFile = null;
+
+            const song = cachedSongsList.find(s => String(s.audio_id) === String(audioId));
+            if (song) {
+                document.getElementById("fileName").textContent = song.original_name;
+                const formattedDur = song.duration ? ` · Length: ${formatDuration(song.duration)}` : "";
+                document.getElementById("fileSize").textContent = (song.is_separated ? "✓ Separated" : "Uploaded") + formattedDur;
+                document.getElementById("fileInfo").style.display = "flex";
+                if (song.duration) {
+                    syncDurationToAllTracks(song.duration);
+                }
+            }
+
+            localStorage.setItem("uploaded_audio_id", audioId);
+            if (song && song.original_name) {
+                localStorage.setItem("uploadedSong", song.original_name);
+            }
+
+            await checkSeparationStatus(selectedAudioId);
+        }
+
+
+        // ============================================================
+        // CHECK SEPARATION STATUS FOR ACTIVE AUDIO
+        // ============================================================
+
+        async function checkSeparationStatus(audioId) {
+            try {
+                const response = await fetch(`${BASE_API}/separation/status/${audioId}`);
+                if (!response.ok) return;
+                const data = await response.json();
+
+                const btn = document.getElementById("separateBtn");
+                const statusBox = document.getElementById("statusBox");
+                const cta = document.getElementById("transcriptionCta");
+                const waveStatus = document.getElementById("waveStatus");
+
+                if (data.success && data.is_separated) {
+                    separationResult = data;
+
+                    displayDetectedInstruments(
+                        data.detected_instruments || []
+                    );
+                    const dur = data.full_song?.duration || data.vocals?.duration || data.bgm?.duration;
+                    if (dur) {
+                        syncDurationToAllTracks(dur);
+                    }
+                    loadOutputDurations();
+
+                    localStorage.setItem("cached_separation_result", JSON.stringify(data));
+                    localStorage.setItem("cached_separated_stems", JSON.stringify(data.stems));
+                    if (data.bgm?.path) localStorage.setItem("bgm_path", data.bgm.path);
+                    if (data.vocals?.path) localStorage.setItem("vocals_path", data.vocals.path);
+
+                    if (waveStatus) waveStatus.textContent = "COMPLETE";
+                    if (statusBox) {
+                        statusBox.style.display = "block";
+                        statusBox.textContent = "✓ Stems ready. Vocals and BGM are fully separated and playable.";
+                    }
+                    document.querySelectorAll(".step").forEach(step => step.classList.add("done"));
+
+                    if (cta) cta.style.display = "block";
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = "↻ Re-Run AI Separation";
+                    }
+                    showMessage("✓ Audio stems loaded. Click Play on any track or Continue to Transcription.", "success");
+                } else {
+                    separationResult = null;
+                    if (waveStatus) waveStatus.textContent = "READY";
+                    if (statusBox) statusBox.style.display = "none";
+                    document.querySelectorAll(".step").forEach((step, idx) => {
+                        if (idx > 0) step.classList.remove("done");
+                    });
+                    if (cta) cta.style.display = "none";
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = "✨ Start AI Separation →";
+                    }
+                    showMessage("Audio loaded and ready for AI separation.", "info");
+                }
+            } catch (err) {
+                console.error("Error checking status:", err);
+            }
+        }
+
+
+        // ============================================================
+        // FILE INPUT
+        // ============================================================
+
+        document
+            .getElementById("fileInput")
+            .addEventListener(
+                "change",
+                function () {
+
+                    if (
+                        this.files &&
+                        this.files.length > 0
+                    ) {
+
+                        setSelectedFile(
+                            this.files[0]
+                        );
+
+                    }
+
+                }
+            );
+
+
+        // ============================================================
+        // DRAG AND DROP
+        // ============================================================
+
+        const dropZone =
+            document.getElementById(
+                "dropZone"
+            );
+
+
+        dropZone.addEventListener(
+            "dragover",
+            function (event) {
+
+                event.preventDefault();
+
+                dropZone.style.borderColor =
+                    "#533be1";
+
+            }
+        );
+
+
+        dropZone.addEventListener(
+            "dragleave",
+            function () {
+
+                dropZone.style.borderColor =
+                    "#8d80e9";
+
+            }
+        );
+
+
+        dropZone.addEventListener(
+            "drop",
+            function (event) {
+
+                event.preventDefault();
+
+                dropZone.style.borderColor =
+                    "#8d80e9";
+
+
+                const files =
+                    event.dataTransfer.files;
+
+
+                if (
+                    files.length > 0
+                ) {
+
+                    setSelectedFile(
+                        files[0]
+                    );
+
+                }
+
+            }
+        );
+
+
+        // ============================================================
+        // SET FILE
+        // ============================================================
+
+        function setSelectedFile(file) {
+
+            selectedFile =
+                file;
+
+            document.getElementById(
+                "fileName"
+            ).textContent =
+                file.name;
+
+            document.getElementById(
+                "fileSize"
+            ).textContent =
+                (
+                    file.size /
+                    (1024 * 1024)
+                ).toFixed(2)
+                + " MB";
+
+            document.getElementById(
+                "fileInfo"
+            ).style.display =
+                "flex";
+
+            document.getElementById(
+                "waveStatus"
+            ).textContent =
+                "LOADED";
+
+            // Read audio length directly from local file and sync length to Full Song, Vocals, and BGM
+            try {
+                const tempAudio = new Audio(URL.createObjectURL(file));
+                tempAudio.addEventListener("loadedmetadata", () => {
+                    if (Number.isFinite(tempAudio.duration) && tempAudio.duration > 0) {
+                        syncDurationToAllTracks(tempAudio.duration);
+                        document.getElementById("fileSize").textContent =
+                            (file.size / (1024 * 1024)).toFixed(2) + " MB · Length: " + formatDuration(tempAudio.duration);
+                    }
+                }, { once: true });
+            } catch (e) {
+                console.warn("Could not read local audio length:", e);
+            }
+
+            const btn = document.getElementById("separateBtn");
+            if (btn) {
+                btn.textContent = "✨ Start AI Separation →";
+                btn.disabled = false;
+            }
+            const cta = document.getElementById("transcriptionCta");
+            if (cta) cta.style.display = "none";
+
+            showMessage(
+                "Audio file selected. Ready for AI separation.",
+                "info"
+            );
+
+        }
+
+
+        // ============================================================
+        // REMOVE FILE
+        // ============================================================
+
+        function removeFile(event) {
+
+            event.stopPropagation();
+
+            selectedFile = null;
+
+            const fileInput = document.getElementById("fileInput");
+            if (fileInput) fileInput.value = "";
+
+            document.getElementById("fileInfo").style.display = "none";
+            document.getElementById("waveStatus").textContent = "READY";
+            showMessage("", "");
+
+        }
+
+
+        // ============================================================
+        // MESSAGE
+        // ============================================================
+
+        function showMessage(
+            text,
+            type
+        ) {
+
+            const message =
+                document.getElementById(
+                    "message"
+                );
+
+            message.textContent =
+                text;
+
+            message.className =
+                type || "";
+
+        }
+
+
+        // ============================================================
+        // DISPLAY AI DETECTED INSTRUMENTS
+        // ============================================================
+
+        function displayDetectedInstruments(detections, emptyMessage = "No instruments detected in the separated BGM yet.") {
+
+            const section = document.getElementById("detectedInstrumentSection");
+            const grid = document.getElementById("detectedInstrumentGrid");
+            const count = document.getElementById("detectedInstrumentCount");
+
+            if (!section || !grid || !count) {
+                return;
+            }
+
+            grid.innerHTML = "";
+
+            if (!Array.isArray(detections) || detections.length === 0) {
+                section.style.display = "block";
+                count.textContent = "0 Detected";
+                grid.innerHTML = `<div class="detected-empty-state">${emptyMessage}</div>`;
+                detectedInstrumentItems = [];
+                return;
+            }
+
+            section.style.display = "block";
+            const instrumentDetections = detections.filter(item => {
+                const detectedName = String(
+                    item.instrument_name || item.instrument || item.name || ""
+                ).toLowerCase();
+                return !/(^|\s)(vocal|vocals|voice|singing)(\s|$)/.test(detectedName);
+            });
+
+            if (instrumentDetections.length === 0) {
+                section.style.display = "block";
+                count.textContent = "0 Detected";
+                detectedInstrumentItems = [];
+                grid.innerHTML = `<div class="detected-empty-state">No non-vocal instruments were detected.</div>`;
+                return;
+            }
+
+            count.textContent = `${instrumentDetections.length} Detected`;
+            detectedInstrumentItems = instrumentDetections;
+
+            instrumentDetections.forEach((item, index) => {
+
+                const instrument =
+                    item.instrument_name ||
+                    item.instrument ||
+                    item.name ||
+                    "Unknown";
+
+                const name = instrument.toLowerCase();
+
+                let icon = "🎵";
+
+                if (
+                    name.includes("drum") ||
+                    name.includes("tabla") ||
+                    name.includes("mridangam") ||
+                    name.includes("dhol") ||
+                    name.includes("percussion")
+                ) {
+                    icon = "🥁";
+                } else if (
+                    name.includes("piano") ||
+                    name.includes("organ") ||
+                    name.includes("synth") ||
+                    name.includes("harmonium")
+                ) {
+                    icon = "🎹";
+                } else if (
+                    name.includes("guitar") ||
+                    name.includes("bass") ||
+                    name.includes("sitar") ||
+                    name.includes("veena") ||
+                    name.includes("sarod") ||
+                    name.includes("tanpura")
+                ) {
+                    icon = "🎸";
+                } else if (
+                    name.includes("flute") ||
+                    name.includes("bansuri") ||
+                    name.includes("shehnai") ||
+                    name.includes("nadaswaram")
+                ) {
+                    icon = "🎶";
+                } else if (
+                    name.includes("sarangi") ||
+                    name.includes("santoor") ||
+                    name.includes("string")
+                ) {
+                    icon = "🎻";
+                }
+
+                const bgmInfo = getAudioInfo("bgm");
+                const streamUrl = item.instrument_stream_url ||
+                    item.audio_url ||
+                    item.stem_url ||
+                    "";
+                const songDuration = Number(
+                    item.duration ||
+                    bgmInfo?.duration ||
+                    separationResult?.full_song?.duration ||
+                    uploadedAudioDuration ||
+                    0
+                );
+                const durationText = songDuration > 0 ? formatDuration(songDuration) : "--:--";
+                let confidence = Number(item.confidence ?? item.score ?? 0);
+                if (confidence <= 1) confidence *= 100;
+                confidence = Math.max(0, Math.min(100, confidence));
+
+                const card = document.createElement("div");
+                card.className = "detected-instrument-card";
+
+                const playId = `detected-play-${index}`;
+                card.innerHTML = `
+            <div class="detected-instrument-header">
+                <div class="detected-instrument-title">
+                    <div class="detected-instrument-icon">${icon}</div>
+                    <div>
+                        <h3 class="detected-instrument-name">${instrument}</h3>
+                        <p class="detected-instrument-source">AI detected from BGM</p>
+                    </div>
+                </div>
+            </div>
+            <div class="detected-instrument-confidence">AI Confidence: ${confidence.toFixed(1)}%</div>
+            <div class="detected-player">
+                <div class="detected-time-box">
+                    <div class="detected-time-row">
+                        <span class="detected-current-time" id="detected-current-${index}">00:00</span>
+                        <span class="detected-status" id="detected-status-${index}">Ready</span>
+                        <span id="detected-total-${index}">${durationText}</span>
+                    </div>
+                    <input type="range" class="detected-scrubber" id="detected-scrubber-${index}"
+                        min="0" max="${songDuration || 100}" value="0" step="0.1" aria-label="Seek ${instrument}"
+                        oninput="seekDetectedInstrument(${index}, this.value)" ${streamUrl ? "" : "disabled"}>
+                </div>
+                <div class="detected-transport">
+                    <button type="button" class="detected-skip" onclick="skipDetectedInstrument(${index}, -5)" ${streamUrl ? "" : "disabled"}>
+                        ↶ 5s
+                    </button>
+                    <button type="button" id="${playId}" class="detected-play"
+                        onclick="playDetectedInstrument(${index})" ${streamUrl ? "" : "disabled"}>
+                        ${streamUrl ? `▶ Play ${instrument}` : "Unavailable"}
+                    </button>
+                    <button type="button" class="detected-skip" onclick="skipDetectedInstrument(${index}, 5)" ${streamUrl ? "" : "disabled"}>
+                        5s ↷
+                    </button>
+                </div>
+                <button type="button" class="detected-download"
+                    onclick="downloadDetectedInstrument(${index})" ${item.download_url ? "" : "disabled"}>
+                    ↓ Download ${instrument}
+                </button>
+            </div>
+        `;
+
+                card.dataset.instrumentIndex = index;
+                grid.appendChild(card);
+            });
+        }
+
+
+        // ============================================================
+        // PLAY THE REAL SEPARATED STEM FOR AN AI DETECTED INSTRUMENT
+        // ============================================================
+
+        let detectedInstrumentAudio = null;
+        let detectedInstrumentIndex = null;
+        let detectedInstrumentItems = [];
+
+        async function playDetectedInstrument(index) {
+            const item = detectedInstrumentItems[index];
+            const button = document.getElementById(`detected-play-${index}`);
+            if (!item) return;
+
+            const instrument =
+                item.instrument_name ||
+                item.instrument ||
+                item.name ||
+                "Instrument";
+
+            const streamUrl = item.instrument_stream_url ||
+                item.audio_url ||
+                item.stem_url ||
+                "";
+
+            if (!streamUrl) {
+                showMessage(
+                    `${instrument} does not have a playable separated stem.`,
+                    "error"
+                );
+                return;
+            }
+
+            try {
+
+                const fullUrl = new URL(
+                    streamUrl,
+                    BASE_API
+                ).href;
+
+                if (detectedInstrumentAudio &&
+                    detectedInstrumentAudio.src === fullUrl &&
+                    detectedInstrumentIndex === index &&
+                    !detectedInstrumentAudio.paused) {
+                    detectedInstrumentAudio.pause();
+                    updateDetectedPlayButtons();
+                    return;
+                }
+
+                if (!detectedInstrumentAudio) {
+                    detectedInstrumentAudio = new Audio();
+                    detectedInstrumentAudio.preload = "metadata";
+                }
+
+                if (detectedInstrumentAudio.src !== fullUrl) {
+                    detectedInstrumentAudio.src = fullUrl;
+                    detectedInstrumentAudio.currentTime = 0;
+                }
+
+                detectedInstrumentIndex = index;
+                updateDetectedPlayButtons();
+
+                await detectedInstrumentAudio.play();
+
+                showMessage(
+                    `Playing the isolated ${instrument} instrument.`,
+                    "success"
+                );
+
+                // Keep other page players silent while detected stem plays.
+                document.querySelectorAll(".output audio").forEach(audio => {
+                    audio.pause();
+                });
+
+                detectedInstrumentAudio.onended = () => {
+                    detectedInstrumentAudio.currentTime = 0;
+                    updateDetectedTime(index, "Finished");
+                    updateDetectedPlayButtons();
+                };
+
+                detectedInstrumentAudio.onpause = () => {
+                    updateDetectedTime(index, "Paused");
+                    updateDetectedPlayButtons();
+                };
+
+                detectedInstrumentAudio.ontimeupdate = () => updateDetectedTime(index, "Playing");
+                detectedInstrumentAudio.onloadedmetadata = () => updateDetectedTime(index, "Ready");
+
+            } catch (error) {
+
+                console.error(
+                    "Detected instrument playback failed:",
+                    error
+                );
+
+                updateDetectedPlayButtons();
+
+                showMessage(
+                    `Could not play ${instrument}. Check that the separated stem exists.`,
+                    "error"
+                );
+            }
+        }
+
+        function updateDetectedPlayButtons() {
+            document.querySelectorAll(".detected-play").forEach(button => {
+                const index = Number(button.id.replace("detected-play-", ""));
+                const isPlaying = detectedInstrumentAudio &&
+                    detectedInstrumentIndex === index &&
+                    !detectedInstrumentAudio.paused;
+                const instrument = detectedInstrumentItems[index]?.instrument_name ||
+                    detectedInstrumentItems[index]?.instrument || "Instrument";
+                button.textContent = isPlaying ? `⏸ Pause ${instrument}` : `▶ Play ${instrument}`;
+                button.classList.toggle("playing", isPlaying);
+            });
+        }
+
+        function updateDetectedTime(index, status) {
+            if (!detectedInstrumentAudio) return;
+            const duration = Number.isFinite(detectedInstrumentAudio.duration) && detectedInstrumentAudio.duration > 0
+                ? detectedInstrumentAudio.duration
+                : Number(
+                    detectedInstrumentItems[index]?.duration ||
+                    getAudioInfo("bgm")?.duration ||
+                    separationResult?.full_song?.duration ||
+                    uploadedAudioDuration ||
+                    0
+                );
+            const current = document.getElementById(`detected-current-${index}`);
+            const total = document.getElementById(`detected-total-${index}`);
+            const statusLabel = document.getElementById(`detected-status-${index}`);
+            const scrubber = document.getElementById(`detected-scrubber-${index}`);
+            if (current) current.textContent = formatDuration(detectedInstrumentAudio.currentTime);
+            if (total && duration > 0) total.textContent = formatDuration(duration);
+            if (statusLabel && status) statusLabel.textContent = status;
+            if (scrubber) {
+                scrubber.max = duration || 100;
+                scrubber.value = detectedInstrumentAudio.currentTime;
+                const percent = duration > 0 ? (detectedInstrumentAudio.currentTime / duration) * 100 : 0;
+                scrubber.style.background = `linear-gradient(to right, #4f46e5 ${percent}%, #e2e8f0 ${percent}%)`;
+            }
+        }
+
+        function seekDetectedInstrument(index, value) {
+            if (!detectedInstrumentAudio || detectedInstrumentIndex !== index) return;
+            detectedInstrumentAudio.currentTime = Number(value);
+            updateDetectedTime(index, detectedInstrumentAudio.paused ? "Paused" : "Playing");
+        }
+
+        function skipDetectedInstrument(index, seconds) {
+            if (!detectedInstrumentAudio ||
+                detectedInstrumentIndex !== index ||
+                detectedInstrumentAudio.paused) {
+                showMessage("Play this BGM first, then use the 5-second controls.", "info");
+                return;
+            }
+
+            const duration = Number.isFinite(detectedInstrumentAudio.duration)
+                ? detectedInstrumentAudio.duration
+                : Infinity;
+            detectedInstrumentAudio.currentTime = Math.max(
+                0,
+                Math.min(duration, detectedInstrumentAudio.currentTime + seconds)
+            );
+            updateDetectedTime(index, "Playing");
+        }
+
+        function downloadDetectedInstrument(index) {
+            const item = detectedInstrumentItems[index];
+            const downloadUrl = item?.download_url || getAudioInfo("bgm")?.download_url;
+            if (!downloadUrl) {
+                showMessage("Instrument download is not available yet.", "error");
+                return;
+            }
+
+            const link = document.createElement("a");
+            link.href = new URL(downloadUrl, BASE_API).href;
+            link.download = `${item.instrument_name || item.instrument || "instrument"}.wav`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showMessage(`${item.instrument_name || item.instrument || "Instrument"} download started.`, "success");
+        }
+
+
+        // ============================================================
+        // START SEPARATION
+        // ============================================================
+
+        function uploadAudioWithProgress(file, onProgress) {
+            return new Promise((resolve, reject) => {
+                const request = new XMLHttpRequest();
+                const formData = new FormData();
+                formData.append("file", file);
+
+                request.open("POST", `${BASE_API}/audio/upload`);
+                request.upload.onprogress = event => {
+                    if (event.lengthComputable && onProgress) {
+                        onProgress(Math.round((event.loaded / event.total) * 100));
+                    }
+                };
+                request.onload = () => {
+                    let data = {};
+                    try {
+                        data = request.responseText ? JSON.parse(request.responseText) : {};
+                    } catch (error) {
+                        reject(new Error(`Upload service returned ${request.status} ${request.statusText}.`));
+                        return;
+                    }
+                    if (request.status < 200 || request.status >= 300 || !data.success) {
+                        reject(new Error(data.message || `Audio upload failed (${request.status}).`));
+                        return;
+                    }
+                    resolve(data);
+                };
+                request.onerror = () => reject(new Error("Audio upload connection failed."));
+                request.onabort = () => reject(new Error("Audio upload was cancelled."));
+                request.send(formData);
+            });
+        }
+
+        let separationOutputShown = false;
+
+        function renderSeparationResult(data) {
+            if (!data || !data.success || separationOutputShown) return;
+            separationOutputShown = true;
+            separationResult = data;
+
+            const progressBox = document.getElementById("separationProgressBox");
+            const progressBar = document.getElementById("separationProgressBar");
+            const progressTitle = document.getElementById("separationProgressTitle");
+            const uploadStatus = document.getElementById("uploadProgressStatus");
+            const waveStatus = document.getElementById("waveStatus");
+
+            if (progressBar) progressBar.style.width = "100%";
+            if (progressTitle) progressTitle.textContent = "✓ Separation complete!";
+            if (uploadStatus) uploadStatus.textContent = "AI separation complete. Outputs are ready.";
+            if (waveStatus) waveStatus.textContent = "COMPLETE";
+            if (progressBox) progressBox.style.display = "block";
+
+            displayDetectedInstruments(data.detected_instruments || []);
+
+            const targetDuration = data.full_song?.duration || data.vocals?.duration || data.bgm?.duration || uploadedAudioDuration;
+            if (targetDuration) syncDurationToAllTracks(targetDuration);
+            loadOutputDurations();
+
+            localStorage.setItem("cached_separation_result", JSON.stringify(data));
+            localStorage.setItem("cached_separated_stems", JSON.stringify(data.stems));
+            if (data.bgm?.path) localStorage.setItem("bgm_path", data.bgm.path);
+            if (data.vocals?.path) localStorage.setItem("vocals_path", data.vocals.path);
+            document.querySelectorAll(".step").forEach(step => step.classList.add("done"));
+            document.getElementById("statusBox").style.display = "block";
+        }
+
+        async function watchSeparationStatus(audioId) {
+            for (;;) {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                if (separationOutputShown) return;
+
+                try {
+                    const response = await fetch(`${BASE_API}/separation/status/${audioId}`);
+                    if (!response.ok) continue;
+                    const data = await response.json();
+                    if (data.success && data.is_separated) {
+                        renderSeparationResult(data);
+                        return;
+                    }
+                } catch (error) {
+                    console.warn("Separation status check failed:", error);
+                }
+            }
+        }
+
+        async function startSeparation() {
+
+            if (!selectedFile && !selectedAudioId) {
+
+                showMessage(
+                    "Please select an audio file first.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+            const button = document.getElementById("separateBtn");
+            const progressBox = document.getElementById("separationProgressBox");
+            const progressBar = document.getElementById("separationProgressBar");
+            const progressTimer = document.getElementById("separationProgressTimer");
+            const progressTitle = document.getElementById("separationProgressTitle");
+            const uploadStatus = document.getElementById("uploadProgressStatus");
+            const waveStatus = document.getElementById("waveStatus");
+            const cta = document.getElementById("transcriptionCta");
+
+            button.disabled = true;
+            separationOutputShown = false;
+            button.textContent = selectedFile ? "⬆ Uploading Audio..." : "⏳ AI Separation in Progress...";
+            if (waveStatus) waveStatus.textContent = selectedFile ? "UPLOADING" : "PROCESSING";
+            if (progressBox) progressBox.style.display = "block";
+            if (progressBar) progressBar.style.width = selectedFile ? "0%" : "10%";
+            if (progressTitle) progressTitle.textContent = selectedFile ? "⬆ Uploading audio..." : "⏳ AI separation is starting...";
+            if (uploadStatus) uploadStatus.textContent = selectedFile ? "Upload started: 0%" : "Upload already complete. Starting separation...";
+            if (cta) cta.style.display = "none";
+            displayDetectedInstruments([], "AI instrument detection will appear here after separation completes...");
+
+            separationElapsedSec = 0;
+            if (separationTimerInterval) clearInterval(separationTimerInterval);
+            separationTimerInterval = setInterval(() => {
+                separationElapsedSec++;
+                if (progressTimer) {
+                    progressTimer.textContent = `Elapsed: ${formatDuration(separationElapsedSec)}`;
+                }
+                if (!selectedFile) {
+                    if (separationElapsedSec < 4) {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 1/4: Analyzing audio signals...";
+                        if (progressBar) progressBar.style.width = "25%";
+                        document.querySelectorAll(".step")[0]?.classList.add("done");
+                    } else if (separationElapsedSec < 12) {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 2/4: Demucs deep neural separation...";
+                        if (progressBar) progressBar.style.width = "50%";
+                        document.querySelectorAll(".step")[1]?.classList.add("done");
+                    } else if (separationElapsedSec < 25) {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 3/4: Isolating vocal and accompaniment stems...";
+                        if (progressBar) progressBar.style.width = "75%";
+                        document.querySelectorAll(".step")[2]?.classList.add("done");
+                    } else {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 4/4: Generating BGM and normalizing output...";
+                        if (progressBar) progressBar.style.width = "90%";
+                        document.querySelectorAll(".step")[3]?.classList.add("done");
+                    }
+                } else if (uploadStatus && uploadStatus.textContent.includes("complete")) {
+                    if (separationElapsedSec < 4) {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 1/4: Analyzing audio signals...";
+                        if (progressBar) progressBar.style.width = "25%";
+                    } else if (separationElapsedSec < 12) {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 2/4: Demucs deep neural separation...";
+                        if (progressBar) progressBar.style.width = "50%";
+                    } else if (separationElapsedSec < 25) {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 3/4: Isolating vocal and accompaniment stems...";
+                        if (progressBar) progressBar.style.width = "75%";
+                    } else {
+                        if (progressTitle) progressTitle.textContent = "⏳ Step 4/4: Generating BGM and normalizing output...";
+                        if (progressBar) progressBar.style.width = "90%";
+                    }
+                } else if (selectedFile) {
+                    if (progressTitle) progressTitle.textContent = "⬆ Uploading audio...";
+                }
+            }, 1000);
+
+            showMessage(
+                selectedFile ? "Uploading your audio before AI separation..." : "AI is separating vocals and background music. Please wait...",
+                "info"
+            );
+
+            try {
+
+                let uploadData;
+                if (selectedFile) {
+                    uploadData = await uploadAudioWithProgress(selectedFile, percent => {
+                        if (progressBar) progressBar.style.width = `${percent}%`;
+                        if (uploadStatus) uploadStatus.textContent = `Uploading audio: ${percent}%`;
+                    });
+                    selectedAudioId = uploadData.audio_id;
+                    if (uploadStatus) uploadStatus.textContent = "Upload complete. Starting AI separation...";
+                    if (progressTitle) progressTitle.textContent = "✓ Upload complete. AI separation is starting...";
+                    if (waveStatus) waveStatus.textContent = "PROCESSING";
+                    if (button) button.textContent = "⏳ AI Separation in Progress...";
+                    if (progressBar) progressBar.style.width = "10%";
+                } else {
+                    uploadData = { audio_id: selectedAudioId };
+                }
+
+                localStorage.setItem(
+                    "uploaded_audio_id",
+                    uploadData.audio_id
+                );
+
+                if (uploadData.file_path) {
+                    localStorage.setItem(
+                        "uploaded_audio_path",
+                        uploadData.file_path
+                    );
+                }
+
+                if (uploadData.filename) {
+                    localStorage.setItem(
+                        "uploadedSong",
+                        uploadData.filename
+                    );
+                }
+
+                watchSeparationStatus(uploadData.audio_id);
+
+                const separationResponse =
+                    await fetch(
+                        `${BASE_API}/separation/run`,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+                            body: JSON.stringify({
+                                audio_id:
+                                    uploadData.audio_id
+                            })
+                        }
+                    );
+
+                const data =
+                    await separationResponse.json();
+
+                if (
+                    !separationResponse.ok ||
+                    !data.success
+                ) {
+                    throw new Error(
+                        data.message ||
+                        "Separation failed."
+                    );
+                }
+
+                if (data.in_progress) {
+                    if (progressTitle) progressTitle.textContent = "⏳ AI separation is still running...";
+                    if (uploadStatus) uploadStatus.textContent = "One separation job is active. Waiting for its outputs...";
+                    showMessage("AI separation is still running. Outputs will appear automatically when ready.", "info");
+                    return;
+                }
+
+                const completedDuration = data.full_song?.duration || data.vocals?.duration || data.bgm?.duration || uploadedAudioDuration || 0;
+                clearInterval(separationTimerInterval);
+                renderSeparationResult(data);
+                setTimeout(() => {
+                    const currentProgressBox = document.getElementById("separationProgressBox");
+                    if (currentProgressBox) currentProgressBox.style.display = "none";
+                }, 1200);
+
+                if (waveStatus) waveStatus.textContent = "COMPLETE";
+                document.getElementById("statusBox").style.display = "block";
+                document.querySelectorAll(".step").forEach(step => step.classList.add("done"));
+
+                switchOutputTab("all");
+                if (cta) cta.style.display = "block";
+
+                const outSection = document.getElementById("card-vocals") || document.querySelector(".outputs");
+                if (outSection) {
+                    outSection.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+
+                // Auto-play the separated vocals and inform user
+                setTimeout(() => {
+                    playAudio("vocals");
+                    showMessage("✓ Audio separated successfully! Playing Vocals (length: " + formatDuration(completedDuration) + "). Click BGM or Full Song to switch tracks.", "success");
+                }, 400);
+
+                loadUploadedSongsList(false);
+            }
+            catch (error) {
+                console.error(error);
+                clearInterval(separationTimerInterval);
+                if (progressBox) progressBox.style.display = "none";
+                if (waveStatus) waveStatus.textContent = "ERROR";
+                showMessage(error.message || "Something went wrong during separation.", "error");
+            }
+            finally {
+                button.disabled = false;
+                button.textContent = "↻ Re-Run AI Separation";
+            }
+        }
+
+
+        // ============================================================
+        // NAVIGATE TO TRANSCRIPTION
+        // ============================================================
+
+        function continueToTranscription() {
+            const audioId = selectedAudioId || localStorage.getItem("uploaded_audio_id");
+            const audioName = document.getElementById("fileName")?.textContent || localStorage.getItem("uploadedSong") || "audio.mp3";
+            if (!audioId) {
+                showMessage("Please select or separate audio first.", "error");
+                return;
+            }
+            localStorage.setItem("uploaded_audio_id", audioId);
+            localStorage.setItem("uploadedSong", audioName);
+            window.location.href = "transcription.html";
+        }
+
+
+
+        // ============================================================
+        // AUDIO PLAYER, SCRUBBER, LENGTH & TAB SWITCHING
+        // ============================================================
+
+        let currentActiveTab = "all";
+        const isDragging = { full_song: false, vocals: false, bgm: false };
+        let uploadedAudioDuration = parseFloat(localStorage.getItem("uploaded_audio_duration") || "0") || null;
+
+        function syncDurationToAllTracks(duration) {
+            if (!Number.isFinite(duration) || duration <= 0) return;
+            uploadedAudioDuration = duration;
+            localStorage.setItem("uploaded_audio_duration", duration);
+            const formatted = formatDuration(duration);
+            ["full_song", "vocals", "bgm"].forEach(type => {
+                const badgeLabel = document.getElementById(`badge-time-${type}`);
+                const badge = document.getElementById(`badge-${type}`);
+                const totalLabel = document.getElementById(`totaltime-${type}`);
+                const scrubber = document.getElementById(`scrubber-${type}`);
+                const fallbackLabel = document.getElementById(`duration-${type}`);
+
+                if (badgeLabel) badgeLabel.textContent = `Length: ${formatted}`;
+                if (badge) badge.classList.add("active-length");
+                if (totalLabel) totalLabel.textContent = formatted;
+                if (scrubber) scrubber.max = duration;
+                if (fallbackLabel) fallbackLabel.textContent = `Duration: ${formatted}`;
+            });
+        }
+
+        function switchOutputTab(tab) {
+            currentActiveTab = tab;
+            const tabs = ["all", "full_song", "vocals", "bgm"];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (btn) {
+                    if (t === tab) {
+                        btn.classList.add("active");
+                    } else {
+                        btn.classList.remove("active");
+                    }
+                }
+            });
+
+            const cards = ["full_song", "vocals", "bgm"];
+            cards.forEach(c => {
+                const card = document.getElementById(`card-${c}`);
+                if (card) {
+                    if (tab === "all" || tab === c) {
+                        card.classList.remove("hidden-tab");
+                    } else {
+                        card.classList.add("hidden-tab");
+                    }
+                }
+            });
+        }
+
+        function formatDuration(seconds) {
+            if (!Number.isFinite(seconds) || seconds < 0) {
+                return "--:--";
+            }
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+        }
+
+        function updateScrubberFill(type, currentTime, duration) {
+            const scrubber = document.getElementById(`scrubber-${type}`);
+            if (!scrubber) return;
+            const pct = (duration && duration > 0) ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0;
+            scrubber.style.background = `linear-gradient(to right, #4f46e5 ${pct}%, #e2e8f0 ${pct}%)`;
+        }
+
+        function onScrubberInput(type, val) {
+            isDragging[type] = true;
+            const curLabel = document.getElementById(`curtime-${type}`);
+            const statusLabel = document.getElementById(`status-${type}`);
+            const player = document.getElementById(`audio-${type}`);
+            const numVal = parseFloat(val);
+            if (curLabel) curLabel.textContent = formatDuration(numVal);
+            if (statusLabel) statusLabel.textContent = "Seeking";
+            if (player && player.duration) {
+                updateScrubberFill(type, numVal, player.duration);
+            }
+        }
+
+        function onScrubberChange(type, val) {
+            const player = document.getElementById(`audio-${type}`);
+            const statusLabel = document.getElementById(`status-${type}`);
+            const curLabel = document.getElementById(`curtime-${type}`);
+            const numVal = parseFloat(val);
+            if (player) {
+                const targetTime = Math.max(0, Math.min(player.duration || numVal, numVal));
+                player.currentTime = targetTime;
+                if (curLabel) curLabel.textContent = formatDuration(targetTime);
+                if (statusLabel) statusLabel.textContent = player.paused ? "Paused" : "Playing";
+                updateScrubberFill(type, targetTime, player.duration);
+            }
+            setTimeout(() => {
+                isDragging[type] = false;
+            }, 150);
+        }
+
+        function loadAudioDuration(type) {
+            const audioInfo = getAudioInfo(type);
+            const player = document.getElementById(`audio-${type}`);
+            const scrubber = document.getElementById(`scrubber-${type}`);
+            const curLabel = document.getElementById(`curtime-${type}`);
+            const totalLabel = document.getElementById(`totaltime-${type}`);
+            const badgeLabel = document.getElementById(`badge-time-${type}`);
+            const badge = document.getElementById(`badge-${type}`);
+            const statusLabel = document.getElementById(`status-${type}`);
+            const playBtn = document.getElementById(`playbtn-${type}`);
+            const fallbackLabel = document.getElementById(`duration-${type}`);
+
+            if (!audioInfo || !audioInfo.stream_url || !player) {
+                if (statusLabel) statusLabel.textContent = "Pending";
+                return;
+            }
+
+            // Expected duration matches uploaded audio
+            const expectedDuration = audioInfo.duration || uploadedAudioDuration || (separationResult?.full_song?.duration);
+            if (expectedDuration && expectedDuration > 0) {
+                const formatted = formatDuration(expectedDuration);
+                if (totalLabel) totalLabel.textContent = formatted;
+                if (badgeLabel) badgeLabel.textContent = `Length: ${formatted}`;
+                if (badge) badge.classList.add("active-length");
+                if (scrubber) scrubber.max = expectedDuration;
+                if (fallbackLabel) fallbackLabel.textContent = `Duration: ${formatted}`;
+                if (statusLabel && (statusLabel.textContent === "Pending" || statusLabel.textContent === "Ready")) {
+                    statusLabel.textContent = "Ready";
+                }
+            }
+
+            const fullStreamUrl = new URL(audioInfo.stream_url, BASE_API).href;
+            if (player.src !== fullStreamUrl) {
+                player.src = fullStreamUrl;
+                player.load();
+            }
+
+            // Set duration when metadata is ready
+            const handleMetadata = () => {
+                const dur = (Number.isFinite(player.duration) && player.duration > 0) ? player.duration : expectedDuration;
+                if (dur && dur > 0) {
+                    const formatted = formatDuration(dur);
+                    if (totalLabel) totalLabel.textContent = formatted;
+                    if (badgeLabel) badgeLabel.textContent = `Length: ${formatted}`;
+                    if (badge) badge.classList.add("active-length");
+                    if (scrubber) {
+                        scrubber.max = dur;
+                        scrubber.value = player.currentTime;
+                        updateScrubberFill(type, player.currentTime, dur);
+                    }
+                    if (fallbackLabel) fallbackLabel.textContent = `Duration: ${formatted}`;
+                    if (statusLabel && statusLabel.textContent === "Pending") {
+                        statusLabel.textContent = "Ready";
+                    }
+                }
+            };
+
+            player.onloadedmetadata = handleMetadata;
+            player.ondurationchange = handleMetadata;
+
+            // Time update during playback
+            player.ontimeupdate = () => {
+                const maxDur = (Number.isFinite(player.duration) && player.duration > 0) ? player.duration : expectedDuration;
+                if (!isDragging[type]) {
+                    if (curLabel) curLabel.textContent = formatDuration(player.currentTime);
+                    if (scrubber) {
+                        if (maxDur && scrubber.max != maxDur) scrubber.max = maxDur;
+                        scrubber.value = player.currentTime;
+                    }
+                    updateScrubberFill(type, player.currentTime, maxDur);
+                }
+            };
+
+            // State changes
+            player.onplay = () => {
+                if (playBtn) {
+                    playBtn.textContent = "⏸ Pause";
+                    playBtn.classList.add("playing");
+                }
+                if (statusLabel) statusLabel.textContent = "Playing";
+            };
+
+            player.onpause = () => {
+                if (playBtn) {
+                    playBtn.textContent = "▶ Play";
+                    playBtn.classList.remove("playing");
+                }
+                if (statusLabel && player.currentTime > 0 && player.currentTime < (player.duration || expectedDuration || 0)) {
+                    statusLabel.textContent = "Paused";
+                }
+            };
+
+            player.onended = () => {
+                if (playBtn) {
+                    playBtn.textContent = "▶ Play";
+                    playBtn.classList.remove("playing");
+                }
+                player.currentTime = 0;
+                if (scrubber) scrubber.value = 0;
+                if (curLabel) curLabel.textContent = "00:00";
+                updateScrubberFill(type, 0, player.duration || expectedDuration);
+                if (statusLabel) statusLabel.textContent = "Finished";
+            };
+
+            player.onerror = () => {
+                if (statusLabel) statusLabel.textContent = "Unavailable";
+                if (badgeLabel && !expectedDuration) badgeLabel.textContent = "Length: --:--";
+            };
+
+            // If metadata already loaded
+            if (player.readyState >= 1) {
+                handleMetadata();
+            }
+        }
+
+        function loadOutputDurations() {
+            ["full_song", "vocals", "bgm"].forEach(loadAudioDuration);
+        }
+
+        function getAudioInfo(type) {
+            const result = separationResult || JSON.parse(
+                localStorage.getItem("cached_separation_result") || "null"
+            );
+            if (!result) {
+                return null;
+            }
+            if (type === "full_song") {
+                return result.full_song;
+            }
+            if (result[type] && result[type].stream_url) {
+                return result[type];
+            }
+            return result.stem_urls ? result.stem_urls[type] : null;
+        }
+
+        function togglePlayAudio(type) {
+            const audioInfo = getAudioInfo(type);
+            if (!audioInfo || !audioInfo.stream_url) {
+                showMessage("Audio is not available yet. Run separation first.", "error");
+                return;
+            }
+            const player = document.getElementById(`audio-${type}`);
+            if (!player) {
+                return;
+            }
+
+            if (!player.src) {
+                player.src = new URL(audioInfo.stream_url, BASE_API).href;
+            }
+
+            // If already playing, pause
+            if (!player.paused) {
+                player.pause();
+                return;
+            }
+
+            // Pause other audio players to avoid cacophony
+            document.querySelectorAll(".output audio").forEach(other => {
+                if (other !== player && !other.paused) {
+                    other.pause();
+                }
+            });
+
+            player.play().then(() => {
+                const title = type === "full_song" ? "Full Song" : (type === "vocals" ? "Vocals" : "BGM");
+                showMessage(`${title} is playing. Drag seeker or use skip buttons to move through song.`, "info");
+            }).catch(err => {
+                console.error("Playback failed:", err);
+                showMessage("Could not play audio in this browser.", "error");
+            });
+        }
+
+        function playAudio(type) {
+            togglePlayAudio(type);
+        }
+
+        function skipAudio(type, seconds) {
+            const player = document.getElementById(`audio-${type}`);
+            if (!player || !player.src) {
+                showMessage("Audio is not available yet. Run separation first.", "error");
+                return;
+            }
+            const targetTime = Math.max(0, Math.min(player.duration || 999999, player.currentTime + seconds));
+            player.currentTime = targetTime;
+
+            const curLabel = document.getElementById(`curtime-${type}`);
+            const scrubber = document.getElementById(`scrubber-${type}`);
+            if (curLabel) curLabel.textContent = formatDuration(targetTime);
+            if (scrubber) scrubber.value = targetTime;
+            updateScrubberFill(type, targetTime, player.duration);
+        }
+
+        function stopAudio(type) {
+            const player = document.getElementById(`audio-${type}`);
+            if (!player) return;
+            player.pause();
+            player.currentTime = 0;
+            const curLabel = document.getElementById(`curtime-${type}`);
+            const scrubber = document.getElementById(`scrubber-${type}`);
+            const statusLabel = document.getElementById(`status-${type}`);
+            if (curLabel) curLabel.textContent = "00:00";
+            if (scrubber) scrubber.value = 0;
+            if (statusLabel) statusLabel.textContent = "Ready";
+            updateScrubberFill(type, 0, player.duration);
+        }
+
+        function toggleMute(type) {
+            const player = document.getElementById(`audio-${type}`);
+            const muteBtn = document.getElementById(`mutebtn-${type}`);
+            const volSlider = document.getElementById(`vol-${type}`);
+            if (!player || !muteBtn) return;
+
+            player.muted = !player.muted;
+            if (player.muted) {
+                muteBtn.textContent = "🔇";
+                if (volSlider) volSlider.value = 0;
+            } else {
+                muteBtn.textContent = "🔊";
+                if (volSlider) volSlider.value = player.volume || 1;
+            }
+        }
+
+        function setAudioVolume(type, val) {
+            const player = document.getElementById(`audio-${type}`);
+            const muteBtn = document.getElementById(`mutebtn-${type}`);
+            if (!player) return;
+            const vol = parseFloat(val);
+            player.volume = vol;
+            player.muted = (vol === 0);
+            if (muteBtn) {
+                muteBtn.textContent = vol === 0 ? "🔇" : (vol < 0.5 ? "🔉" : "🔊");
+            }
+        }
+
+        function downloadAudio(type) {
+            const audioInfo = getAudioInfo(type);
+            if (!audioInfo || !audioInfo.download_url) {
+                showMessage("Audio is not available yet. Run separation first.", "error");
+                return;
+            }
+            const link = document.createElement("a");
+            link.href = new URL(audioInfo.download_url, BASE_API).href;
+            link.download = `${type}.wav`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showMessage("Download started.", "success");
+        }
+
+
+        // ============================================================
+        // AUDIO PREVIEW
+        // ============================================================
+
+        function legacyPlayAudio(type) {
+
+            let path = "";
+
+
+            if (type === "vocals") {
+
+                path =
+                    localStorage.getItem(
+                        "vocals_path"
+                    );
+
+            }
+
+
+            if (type === "bgm") {
+
+                path =
+                    localStorage.getItem(
+                        "bgm_path"
+                    );
+
+            }
+
+
+            if (!path) {
+
+                showMessage(
+                    "Audio is not available yet. Run separation first.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /*
+               The backend currently returns a local Windows
+               file path. Browsers cannot directly play a
+               Windows server path such as C:\...\file.wav.
+        
+               This button therefore checks availability.
+               A Flask audio-serving route can be added next
+               to enable browser playback.
+            */
+
+            showMessage(
+                type.toUpperCase() +
+                " audio is ready at the backend.",
+                "success"
+            );
+
+        }
+
+
+        // ============================================================
+        // LOAD USER
+        // ============================================================
+
+        function loadUser() {
+
+            const user =
+                JSON.parse(
+                    localStorage.getItem(
+                        "user"
+                    )
+                );
+
+
+            if (
+                user &&
+                user.name
+            ) {
+
+                document.getElementById(
+                    "userName"
+                ).textContent =
+                    user.name;
+
+            }
+
+        }
+
+
+        // ============================================================
+        // PAGE INITIALIZATION
+        // ============================================================
+
+        loadInstruments();
+
+        loadUser();
+
+        loadUploadedSongsList();
+
+        if (uploadedAudioDuration) {
+            syncDurationToAllTracks(uploadedAudioDuration);
+        }
+
+        loadOutputDurations();
+
+
+
+    </script>
+
+    <script src="sidebar.js"></script>
+
+</body>
+
+</html>

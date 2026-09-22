@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Music Transcription | Polyphonic AI</title>
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        body {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f7f9ff,
+                    #eef4ff,
+                    #faf5ff
+                );
+
+            min-height: 100vh;
+
+            color: #17245f;
+        }
+
+
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
+
+        .navbar {
+
+            height: 68px;
+
+            background: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 28px;
+
+            border-bottom: 1px solid #e5e8f4;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+
+        .logo {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            font-size: 25px;
+
+            font-weight: 700;
+
+            color: #172d78;
+        }
+
+
+        .logo-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: white;
+
+            font-size: 23px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #674cff,
+                    #2f8cff
+                );
+
+            box-shadow:
+                0 7px 18px rgba(80,80,220,0.20);
+        }
+
+
+        .nav-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 25px;
+        }
+
+
+        .notification {
+
+            font-size: 22px;
+
+            color: #243b83;
+
+            cursor: pointer;
+        }
+
+
+        .profile {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            background: #f4f5ff;
+
+            color: #182d78;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        .profile-circle {
+
+            width: 35px;
+
+            height: 35px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6448df,
+                    #327fe8
+                );
+        }
+
+
+        /* =====================================================
+           LAYOUT
+        ===================================================== */
+
+        .layout {
+
+            display: flex;
+
+            min-height: calc(100vh - 68px);
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+
+            width: 225px;
+
+            background:
+                rgba(255,255,255,0.88);
+
+            border-right: 1px solid #e3e8f5;
+
+            padding: 25px 15px;
+
+            flex-shrink: 0;
+        }
+
+
+        .menu-title {
+
+            color: #8a94b5;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            padding: 0 15px;
+
+            margin-bottom: 12px;
+
+            letter-spacing: 1px;
+        }
+
+
+        .menu-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 15px;
+
+            margin-bottom: 6px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            color: #52618e;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            transition: 0.25s;
+        }
+
+
+        .menu-item:hover {
+
+            background: #f1f2ff;
+
+            color: #5144dd;
+        }
+
+
+        .menu-item.active {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #efebff,
+                    #edf5ff
+                );
+
+            color: #503ee2;
+
+            box-shadow:
+                inset 3px 0 0 #644cff;
+        }
+
+
+        .menu-icon {
+
+            width: 25px;
+
+            text-align: center;
+
+            font-size: 20px;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+
+            flex: 1;
+
+            padding: 30px;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .hero {
+
+            min-height: 245px;
+
+            border-radius: 20px;
+
+            padding: 35px 45px;
+
+            position: relative;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    110deg,
+                    #f8edff,
+                    #edf4ff 55%,
+                    #e9fbff
+                );
+
+            border: 1px solid #e6e9ff;
+
+            display: flex;
+
+            align-items: center;
+
+            margin-bottom: 22px;
+        }
+
+
+        .hero-content {
+
+            position: relative;
+
+            z-index: 2;
+
+            max-width: 550px;
+        }
+
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 7px 17px;
+
+            border-radius: 20px;
+
+            background: #efe3ff;
+
+            color: #7140dc;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 12px;
+        }
+
+
+        .hero h1 {
+
+            font-size: 40px;
+
+            line-height: 1.12;
+
+            margin-bottom: 13px;
+
+            color: #182a76;
+        }
+
+
+        .gradient-text {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #1b8fe9,
+                    #6848ee
+                );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+        }
+
+
+        .hero p {
+
+            color: #5c6c98;
+
+            font-size: 16px;
+
+            line-height: 1.6;
+
+            max-width: 550px;
+        }
+
+
+        /* =====================================================
+           HERO MUSIC ART
+        ===================================================== */
+
+        .hero-art {
+
+            position: absolute;
+
+            right: 35px;
+
+            top: 0;
+
+            width: 43%;
+
+            height: 100%;
+
+            pointer-events: none;
+        }
+
+
+        .music-note {
+
+            position: absolute;
+
+            font-size: 32px;
+
+            color: #6b58ed;
+
+            opacity: 0.85;
+        }
+
+
+        .note-1 {
+
+            top: 35px;
+
+            right: 330px;
+        }
+
+
+        .note-2 {
+
+            top: 80px;
+
+            right: 220px;
+
+            color: #298fe9;
+        }
+
+
+        .note-3 {
+
+            bottom: 40px;
+
+            right: 130px;
+        }
+
+
+        .note-4 {
+
+            top: 25px;
+
+            right: 60px;
+
+            color: #8362ef;
+        }
+
+
+        .piano {
+
+            position: absolute;
+
+            bottom: 0;
+
+            left: 100px;
+
+            width: 230px;
+
+            height: 75px;
+
+            border-radius: 8px 8px 0 0;
+
+            background: #26307d;
+
+            box-shadow:
+                0 -8px 30px rgba(50,60,160,0.15);
+        }
+
+
+        .keys {
+
+            display: flex;
+
+            height: 62px;
+
+            padding: 5px;
+
+            gap: 2px;
+        }
+
+
+        .key {
+
+            background: white;
+
+            flex: 1;
+
+            border-radius: 2px;
+
+            border-bottom: 3px solid #d4d7e7;
+        }
+
+
+        .guitar {
+
+            position: absolute;
+
+            width: 105px;
+
+            height: 155px;
+
+            border-radius: 50% 50% 45% 45%;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #6b5ee9,
+                    #9d68e9
+                );
+
+            right: 75px;
+
+            top: 55px;
+
+            transform: rotate(-20deg);
+
+            box-shadow:
+                0 15px 30px rgba(90,80,190,0.25);
+        }
+
+
+        .guitar::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 28px;
+
+            height: 95px;
+
+            background: #573e9d;
+
+            top: -75px;
+
+            left: 39px;
+
+            border-radius: 8px;
+
+            transform: rotate(-3deg);
+        }
+
+
+        .guitar::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 23px;
+
+            height: 23px;
+
+            background: #22295c;
+
+            border-radius: 50%;
+
+            left: 41px;
+
+            top: 65px;
+        }
+
+
+        /* =====================================================
+           CONTENT GRID
+        ===================================================== */
+
+        .content-grid {
+
+            display: grid;
+
+            grid-template-columns: minmax(0, 1fr) 285px;
+
+            gap: 20px;
+        }
+
+
+        /* =====================================================
+           MAIN CARD
+        ===================================================== */
+
+        .card {
+
+            background: white;
+
+            border-radius: 18px;
+
+            border: 1px solid #e7e9f3;
+
+            box-shadow:
+                0 8px 25px rgba(55,65,120,0.06);
+
+            padding: 24px;
+        }
+
+
+        .section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .number {
+
+            width: 34px;
+
+            height: 34px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6a48ec,
+                    #396fea
+                );
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: 700;
+        }
+
+
+        .section-title h2 {
+
+            font-size: 20px;
+
+            color: #17276e;
+        }
+
+
+        /* =====================================================
+           AUDIO SELECTION
+        ===================================================== */
+
+        .audio-options {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 13px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .audio-option {
+
+            border: 1.5px solid #dfe3ef;
+
+            border-radius: 13px;
+
+            padding: 15px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+
+        .audio-option:hover {
+
+            border-color: #7864ef;
+
+            background: #faf9ff;
+        }
+
+
+        .audio-option.selected {
+
+            border-color: #7255ed;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5f0ff,
+                    #f2f6ff
+                );
+
+            box-shadow:
+                0 4px 15px rgba(95,80,220,0.08);
+        }
+
+
+        .audio-icon {
+
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 12px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #704cf1,
+                    #387fed
+                );
+
+            font-size: 21px;
+
+            flex-shrink: 0;
+        }
+
+
+        .audio-option h3 {
+
+            font-size: 14px;
+
+            color: #202f73;
+
+            margin-bottom: 4px;
+        }
+
+
+        .audio-option p {
+
+            font-size: 12px;
+
+            color: #7a85a3;
+        }
+
+
+        /* =====================================================
+           AUDIO FILE
+        ===================================================== */
+
+        .audio-file {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #f4f6ff,
+                    #f7f8ff
+                );
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .audio-file-left {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .audio-file-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 11px;
+
+            background: #6253e9;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .audio-file strong {
+
+            display: block;
+
+            font-size: 14px;
+
+            color: #1e2c70;
+
+            margin-bottom: 4px;
+        }
+
+
+        .audio-file span {
+
+            color: #7b86a5;
+
+            font-size: 12px;
+        }
+
+        .instrument-audio-preview {
+            margin: 16px 0;
+            padding: 14px;
+            border: 1px solid #dfe5f4;
+            border-radius: 12px;
+            background: #f7f9ff;
+        }
+
+        .instrument-audio-preview strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #243678;
+            font-size: 13px;
+        }
+
+        .instrument-audio-preview audio {
+            width: 100%;
+            height: 38px;
+        }
+
+
+        .change-btn {
+
+            border: 1px solid #dce0ef;
+
+            background: white;
+
+            color: #4c51bf;
+
+            padding: 8px 14px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           INSTRUMENTS
+        ===================================================== */
+
+        .instrument-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 15px;
+        }
+
+
+        .select-all {
+
+            color: #4d55dd;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+
+        .instrument-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, minmax(100px, 1fr));
+
+            gap: 10px;
+
+            max-height: 395px;
+
+            overflow-y: auto;
+
+            padding: 2px;
+        }
+
+
+        .instrument {
+
+            min-height: 105px;
+
+            border: 1.5px solid #e0e3ed;
+
+            border-radius: 13px;
+
+            background: white;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            position: relative;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+
+            padding: 8px;
+        }
+
+
+        .instrument:hover {
+
+            border-color: #8067ed;
+
+            transform: translateY(-2px);
+        }
+
+
+        .instrument.selected {
+
+            border-color: #6947ed;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #f5efff,
+                    #f0f6ff
+                );
+
+            box-shadow:
+                0 5px 15px rgba(100,75,230,0.09);
+        }
+
+
+        .instrument-icon {
+
+            width: 45px;
+
+            height: 45px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f1e9ff,
+                    #e8f1ff
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 25px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .instrument-name {
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #19286d;
+
+            text-align: center;
+        }
+
+
+        .instrument-type {
+
+            font-size: 10px;
+
+            color: #7b85a4;
+
+            margin-top: 3px;
+
+            text-align: center;
+        }
+
+
+        .check {
+
+            position: absolute;
+
+            top: 7px;
+
+            right: 7px;
+
+            width: 17px;
+
+            height: 17px;
+
+            border-radius: 4px;
+
+            border: 1px solid #b9bfd2;
+
+            background: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 10px;
+
+            color: white;
+        }
+
+
+        .instrument.selected .check {
+
+            background: #6249e7;
+
+            border-color: #6249e7;
+        }
+
+
+        /* =====================================================
+           START BUTTON
+        ===================================================== */
+
+        .start-btn {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            margin-top: 22px;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #6846ef,
+                    #318fe9
+                );
+
+            box-shadow:
+                0 9px 20px rgba(82,73,220,0.22);
+
+            transition: 0.25s;
+        }
+
+
+        .start-btn:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 25px rgba(82,73,220,0.30);
+        }
+
+
+        .start-btn:disabled {
+
+            background: #a5a8b7;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+            box-shadow: none;
+        }
+
+
+        /* =====================================================
+           RIGHT INFORMATION
+        ===================================================== */
+
+        .side-card {
+
+            background: white;
+
+            border-radius: 18px;
+
+            border: 1px solid #e7e9f3;
+
+            padding: 20px;
+
+            margin-bottom: 18px;
+
+            box-shadow:
+                0 8px 25px rgba(55,65,120,0.05);
+        }
+
+
+        .side-card-header {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 16px;
+        }
+
+
+        .side-icon {
+
+            width: 45px;
+
+            height: 45px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 22px;
+
+            color: #624ae8;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eee8ff,
+                    #e6f2ff
+                );
+        }
+
+
+        .side-card h3 {
+
+            color: #17286e;
+
+            font-size: 15px;
+        }
+
+
+        .side-card p {
+
+            color: #7a85a4;
+
+            font-size: 12px;
+
+            margin-top: 4px;
+        }
+
+
+        .check-list {
+
+            list-style: none;
+        }
+
+
+        .check-list li {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            color: #56658d;
+
+            font-size: 13px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .green-check {
+
+            width: 19px;
+
+            height: 19px;
+
+            border-radius: 50%;
+
+            background: #35c79c;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 11px;
+
+            flex-shrink: 0;
+        }
+
+
+        .midi-card {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #eef7ff,
+                    #f5fbff
+                );
+        }
+
+
+        .score-card {
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #effcf8,
+                    #f8fffd
+                );
+        }
+
+
+        /* =====================================================
+           RESULT
+        ===================================================== */
+
+        .result {
+
+            display: none;
+
+            margin-top: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f0fff8,
+                    #f3f8ff
+                );
+
+            border: 1px solid #bce8d5;
+
+            border-radius: 15px;
+
+            padding: 22px;
+        }
+
+
+        .result h2 {
+
+            color: #168353;
+
+            margin-bottom: 10px;
+
+            font-size: 19px;
+        }
+
+
+        .result p {
+
+            color: #596b8f;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+        }
+
+
+        .notes-box {
+
+            background: white;
+
+            border-radius: 10px;
+
+            padding: 12px;
+
+            max-height: 180px;
+
+            overflow-y: auto;
+
+            margin-top: 12px;
+
+            font-family: monospace;
+
+            font-size: 12px;
+
+            color: #39466f;
+        }
+
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        #message {
+
+            text-align: center;
+
+            margin-top: 15px;
+
+            min-height: 20px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        .success {
+
+            color: #1d995b;
+        }
+
+
+        .error {
+
+            color: #df4254;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media(max-width:1200px) {
+
+            .instrument-grid {
+
+                grid-template-columns:
+                    repeat(4, 1fr);
+            }
+
+            .content-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+            .side-section {
+
+                display: grid;
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+                gap: 15px;
+            }
+        }
+
+
+        @media(max-width:900px) {
+
+            .sidebar {
+
+                width: 70px;
+
+                padding: 20px 8px;
+            }
+
+            .menu-item span:not(.menu-icon) {
+
+                display: none;
+            }
+
+            .menu-title {
+
+                display: none;
+            }
+
+            .menu-item {
+
+                justify-content: center;
+            }
+
+            .hero-art {
+
+                opacity: 0.3;
+            }
+
+            .instrument-grid {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+        }
+
+
+        @media(max-width:650px) {
+
+            .main {
+
+                padding: 15px;
+            }
+
+            .navbar {
+
+                padding: 0 15px;
+            }
+
+            .logo {
+
+                font-size: 19px;
+            }
+
+            .sidebar {
+
+                display: none;
+            }
+
+            .hero {
+
+                padding: 25px;
+
+                min-height: 250px;
+            }
+
+            .hero h1 {
+
+                font-size: 30px;
+            }
+
+            .audio-options {
+
+                grid-template-columns: 1fr;
+            }
+
+            .instrument-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .side-section {
+
+                display: block;
+            }
+
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="sidebar.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     LAYOUT
+========================================================= -->
+
+<div class="layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ===================================================== -->
+
+    <div id="sidebarContainer" data-active="transcription"></div>
+    <aside class="sidebar legacy-sidebar">
+
+        <div class="menu-title">
+            Workspace
+        </div>
+
+
+        <a
+            href="dashboard.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                ⌂
+            </span>
+
+            <span>
+                Home
+            </span>
+
+        </a>
+
+
+        <a
+            href="upload.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                ☁
+            </span>
+
+            <span>
+                Upload
+            </span>
+
+        </a>
+
+
+        <a
+            href="separation.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                〽
+            </span>
+
+            <span>
+                Separation
+            </span>
+
+        </a>
+
+
+        <a
+            href="transcription.html"
+            class="menu-item active"
+        >
+
+            <span class="menu-icon">
+                ♫
+            </span>
+
+            <span>
+                Transcription
+            </span>
+
+        </a>
+
+
+        <a
+            href="performance.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                ◉
+            </span>
+
+            <span>
+                Performance
+            </span>
+
+        </a>
+
+
+        <a
+            href="progress.html"
+            class="menu-item"
+        >
+
+            <span class="menu-icon">
+                ▦
+            </span>
+
+            <span>
+                Progress
+            </span>
+
+        </a>
+
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             HERO
+        ================================================= -->
+
+        <section class="hero">
+
+
+            <div class="hero-content">
+
+                <span class="badge">
+                    Music Transcription
+                </span>
+
+
+                <h1>
+
+                    Turn Music into
+
+                    <br>
+
+                    <span class="gradient-text">
+                        Musical Notes
+                    </span>
+
+                </h1>
+
+
+                <p>
+
+                    Convert separated audio into notes,
+                    MIDI and musical score. Explore the
+                    structure, melody and harmony of your music.
+
+                </p>
+
+            </div>
+
+
+            <div class="hero-art">
+
+                <div class="music-note note-1">
+                    ♪
+                </div>
+
+                <div class="music-note note-2">
+                    ♫
+                </div>
+
+                <div class="music-note note-3">
+                    ♪
+                </div>
+
+                <div class="music-note note-4">
+                    ♬
+                </div>
+
+
+                <div class="piano">
+
+                    <div class="keys">
+
+                        <div class="key"></div>
+                        <div class="key"></div>
+                        <div class="key"></div>
+                        <div class="key"></div>
+                        <div class="key"></div>
+                        <div class="key"></div>
+                        <div class="key"></div>
+                        <div class="key"></div>
+                        <div class="key"></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="guitar"></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             CONTENT
+        ================================================= -->
+
+        <div class="content-grid">
+
+
+            <!-- =============================================
+                 LEFT MAIN CARD
+            ============================================= -->
+
+            <section class="card">
+
+
+                <!-- =========================================
+                     STEP 1
+                ========================================= -->
+
+                <div class="section-title">
+
+                    <div class="number">
+                        1
+                    </div>
+
+                    <h2>
+                        Select Audio
+                    </h2>
+
+                </div>
+
+
+                <div class="audio-options">
+
+
+                    <div
+                        class="audio-option selected"
+                        id="separatedOption"
+                        onclick="selectAudioType('separated')"
+                    >
+
+                        <div class="audio-icon">
+                            〽
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Separated Audio
+                            </h3>
+
+                            <p>
+                                Vocals / BGM / Stems
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="audio-option"
+                        id="uploadOption"
+                        onclick="selectAudioType('upload')"
+                    >
+
+                        <div class="audio-icon">
+                            ☁
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Upload New File
+                            </h3>
+
+                            <p>
+                                MP3, WAV, FLAC, etc.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- AUDIO FILE -->
+
+                <div class="audio-file">
+
+                    <div class="audio-file-left">
+
+                        <div class="audio-file-icon">
+                            ♫
+                        </div>
+
+                        <div>
+
+                            <strong id="audioFileName">
+                                No separated audio selected
+                            </strong>
+
+                            <span id="audioFileDetails">
+                                Complete separation first
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="change-btn"
+                        onclick="changeAudio()"
+                    >
+                        ⇄ Change
+                    </button>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     STEP 2
+                ========================================= -->
+
+                <div class="instrument-header">
+
+                    <div class="section-title"
+                         style="margin-bottom:0;">
+
+                        <div class="number">
+                            2
+                        </div>
+
+                        <h2>
+                            Select Instruments to Transcribe
+                        </h2>
+
+                    </div>
+
+
+                    <div
+                        class="select-all"
+                        onclick="toggleAllInstruments()"
+                    >
+                        Select All ☑
+                    </div>
+
+                </div>
+
+
+
+                <!-- INSTRUMENTS -->
+
+                <div
+                    class="instrument-grid"
+                    id="instrumentGrid"
+                ></div>
+
+
+
+                <!-- START -->
+
+                <button
+                    class="start-btn"
+                    id="startBtn"
+                    onclick="startTranscription()"
+                >
+
+                    ✨ &nbsp;
+                    Start Transcription
+                    &nbsp; →
+
+                </button>
+
+
+
+                <!-- MESSAGE -->
+
+                <div id="message"></div>
+
+
+
+                <!-- RESULT -->
+
+                <div
+                    class="result"
+                    id="result"
+                >
+
+                    <h2>
+                        ✓ Transcription Completed
+                    </h2>
+
+
+                    <p>
+                        Instrument:
+                        <strong id="resultInstrument"></strong>
+                    </p>
+
+
+                    <p>
+                        Musical notes detected:
+                        <strong id="noteCount"></strong>
+                    </p>
+
+                    <div class="instrument-audio-preview">
+                        <strong id="resultAudioLabel">Selected instrument audio</strong>
+                        <audio id="resultInstrumentAudio" controls preload="metadata"></audio>
+                    </div>
+
+
+                    <div class="notes-box" id="notesBox"></div>
+
+                    <button type="button" class="start-btn" onclick="continueToPerformance()">
+                        Continue to Performance Analysis &nbsp; →
+                    </button>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =============================================
+                 RIGHT SIDE
+            ============================================= -->
+
+            <section class="side-section">
+
+
+                <!-- MUSIC NOTES -->
+
+                <div class="side-card">
+
+                    <div class="side-card-header">
+
+                        <div class="side-icon">
+                            ♫
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Get Musical Notes
+                            </h3>
+
+                            <p>
+                                Analyze your music
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <ul class="check-list">
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Note detection
+
+                        </li>
+
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Pitch tracking
+
+                        </li>
+
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Rhythm analysis
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+
+                <!-- MIDI -->
+
+                <div class="side-card midi-card">
+
+                    <div class="side-card-header">
+
+                        <div class="side-icon">
+                            MIDI
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Generate MIDI Files
+                            </h3>
+
+                            <p>
+                                Editable musical data
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <ul class="check-list">
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Standard MIDI format
+
+                        </li>
+
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Compatible with DAWs
+
+                        </li>
+
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Edit & remix easily
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+
+                <!-- MUSICAL SCORE -->
+
+                <div class="side-card score-card">
+
+                    <div class="side-card-header">
+
+                        <div class="side-icon">
+                            ▤
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                View Musical Score
+                            </h3>
+
+                            <p>
+                                Readable notation
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <ul class="check-list">
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Sheet music notation
+
+                        </li>
+
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Multiple instruments
+
+                        </li>
+
+
+                        <li>
+
+                            <span class="green-check">
+                                ✓
+                            </span>
+
+                            Clean & readable format
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<script>
+
+
+// ============================================================
+// BACKEND
+// ============================================================
+
+const BASE_API =
+    "http://127.0.0.1:5000/api";
+
+
+// ============================================================
+// 20 INSTRUMENTS
+// ============================================================
+
+const instruments = [
+
+    {
+        name: "Tabla",
+        type: "Indian Percussion",
+        icon: "🥁"
+    },
+
+    {
+        name: "Mridangam",
+        type: "Indian Percussion",
+        icon: "🥁"
+    },
+
+    {
+        name: "Dholak",
+        type: "Indian Percussion",
+        icon: "🥁"
+    },
+
+    {
+        name: "Ghatam",
+        type: "Indian Percussion",
+        icon: "🏺"
+    },
+
+    {
+        name: "Kanjira",
+        type: "Indian Percussion",
+        icon: "🥁"
+    },
+
+    {
+        name: "Pakhawaj",
+        type: "Indian Percussion",
+        icon: "🥁"
+    },
+
+    {
+        name: "Dhol",
+        type: "Indian Percussion",
+        icon: "🥁"
+    },
+
+    {
+        name: "Veena",
+        type: "Indian String",
+        icon: "🎸"
+    },
+
+    {
+        name: "Sitar",
+        type: "Indian String",
+        icon: "🎸"
+    },
+
+    {
+        name: "Sarod",
+        type: "Indian String",
+        icon: "🎸"
+    },
+
+    {
+        name: "Sarangi",
+        type: "Indian String",
+        icon: "🎻"
+    },
+
+    {
+        name: "Tanpura",
+        type: "Indian String",
+        icon: "🎸"
+    },
+
+    {
+        name: "Santoor",
+        type: "Indian String",
+        icon: "🎵"
+    },
+
+    {
+        name: "Bansuri",
+        type: "Indian Wind",
+        icon: "🎶"
+    },
+
+    {
+        name: "Shehnai",
+        type: "Indian Wind",
+        icon: "🎵"
+    },
+
+    {
+        name: "Nadaswaram",
+        type: "Indian Wind",
+        icon: "🎵"
+    },
+
+    {
+        name: "Harmonium",
+        type: "Keyboard",
+        icon: "🎹"
+    },
+
+    {
+        name: "Piano",
+        type: "Keyboard",
+        icon: "🎹"
+    },
+
+    {
+        name: "Acoustic Guitar",
+        type: "String",
+        icon: "🎸"
+    },
+
+    {
+        name: "Bass Guitar",
+        type: "String",
+        icon: "🎸"
+    }
+
+];
+
+
+// ============================================================
+// SELECTED INSTRUMENTS
+// ============================================================
+
+let selectedInstruments = [];
+let activeAudioId = localStorage.getItem("uploaded_audio_id") || "";
+let detectedInstrumentData = [];
+
+
+// ============================================================
+// CREATE INSTRUMENT CARDS
+// ============================================================
+
+function loadInstruments(detectedInstruments = null) {
+
+    const grid =
+        document.getElementById(
+            "instrumentGrid"
+        );
+
+
+    grid.innerHTML = "";
+
+
+    detectedInstrumentData = Array.isArray(detectedInstruments) ? detectedInstruments : [];
+
+    const availableInstruments = Array.isArray(detectedInstruments) && detectedInstruments.length
+        ? detectedInstruments.map(item => {
+            const name = item.instrument_name || item.instrument || item.name || "Unknown";
+            const known = instruments.find(entry => entry.name.toLowerCase() === name.toLowerCase());
+            return known || {
+                name,
+                type: item.source_stem || item.source || "Detected instrument",
+                icon: "🎵"
+            };
+        })
+        : instruments;
+
+    selectedInstruments = [];
+
+    availableInstruments.forEach(
+        (instrument, index) => {
+
+            const div =
+                document.createElement("div");
+
+
+            div.className =
+                "instrument";
+
+
+            div.dataset.name =
+                instrument.name;
+
+
+            div.onclick =
+                function () {
+
+                    toggleInstrument(
+                        instrument.name,
+                        div
+                    );
+
+                };
+
+
+            div.innerHTML = `
+
+                <div class="check">
+                    ✓
+                </div>
+
+                <div class="instrument-icon">
+                    ${instrument.icon}
+                </div>
+
+                <div class="instrument-name">
+                    ${instrument.name}
+                </div>
+
+                <div class="instrument-type">
+                    ${instrument.type}
+                </div>
+
+            `;
+
+
+            grid.appendChild(div);
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// TOGGLE INSTRUMENT
+// ============================================================
+
+function toggleInstrument(
+    name,
+    element
+) {
+
+    const index =
+        selectedInstruments.indexOf(name);
+
+
+    if (index === -1) {
+
+        selectedInstruments.push(name);
+
+        element.classList.add(
+            "selected"
+        );
+
+    } else {
+
+        selectedInstruments.splice(
+            index,
+            1
+        );
+
+        element.classList.remove(
+            "selected"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// SELECT ALL
+// ============================================================
+
+function toggleAllInstruments() {
+
+    const cards =
+        document.querySelectorAll(
+            ".instrument"
+        );
+
+
+    const availableCards = document.querySelectorAll(".instrument");
+
+    if (
+        selectedInstruments.length
+        === availableCards.length
+    ) {
+
+        selectedInstruments = [];
+
+
+        cards.forEach(
+            card => {
+
+                card.classList.remove(
+                    "selected"
+                );
+
+            }
+        );
+
+    } else {
+
+        selectedInstruments =
+                Array.from(availableCards).map(
+                instrument =>
+                    instrument.dataset.name
+            );
+
+
+        cards.forEach(
+            card => {
+
+                card.classList.add(
+                    "selected"
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// AUDIO TYPE
+// ============================================================
+
+function selectAudioType(type) {
+
+    const separated =
+        document.getElementById(
+            "separatedOption"
+        );
+
+    const upload =
+        document.getElementById(
+            "uploadOption"
+        );
+
+
+    if (type === "separated") {
+
+        separated.classList.add(
+            "selected"
+        );
+
+        upload.classList.remove(
+            "selected"
+        );
+
+        loadSeparatedAudio();
+
+    } else {
+
+        upload.classList.add(
+            "selected"
+        );
+
+        separated.classList.remove(
+            "selected"
+        );
+
+        window.location.href =
+            "upload.html";
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD SEPARATED AUDIO
+// ============================================================
+
+function formatAudioDuration(seconds) {
+    const totalSeconds = Math.max(0, Math.round(Number(seconds) || 0));
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+    const remainingSeconds = (totalSeconds % 60).toString().padStart(2, "0");
+    return `${minutes}:${remainingSeconds}`;
+}
+
+async function loadSeparatedAudio() {
+
+    const audioName =
+        document.getElementById(
+            "audioFileName"
+        );
+
+    const audioDetails =
+        document.getElementById(
+            "audioFileDetails"
+        );
+
+
+    const audioId = localStorage.getItem("uploaded_audio_id");
+    activeAudioId = audioId || "";
+    const uploadedSong = localStorage.getItem("uploadedSong");
+    let separationData = null;
+
+    if (audioId) {
+        try {
+            const response = await fetch(`${BASE_API}/separation/status/${audioId}`);
+            if (response.ok) {
+                separationData = await response.json();
+            }
+        } catch (error) {
+            console.warn("Could not load separation status:", error);
+        }
+    }
+
+
+    if (separationData?.is_separated) {
+        const duration = separationData.full_song?.duration ||
+            separationData.bgm?.duration ||
+            separationData.duration;
+        audioName.textContent = separationData.original_name || uploadedSong || "Uploaded audio";
+        audioDetails.textContent = `Separated BGM ready${duration ? ` · Length: ${formatAudioDuration(duration)}` : ""}`;
+        loadInstruments(separationData.detected_instruments || []);
+        return separationData;
+    }
+
+    const cached = localStorage.getItem("cached_separation_result");
+    if (cached) {
+        try {
+            const cachedData = JSON.parse(cached);
+            if (cachedData?.is_separated) {
+                const duration = cachedData.full_song?.duration || cachedData.bgm?.duration;
+                audioName.textContent = cachedData.original_name || uploadedSong || "Uploaded audio";
+                audioDetails.textContent = `Separated BGM ready${duration ? ` · Length: ${formatAudioDuration(duration)}` : ""}`;
+                loadInstruments(cachedData.detected_instruments || []);
+                return cachedData;
+            }
+        } catch (error) {
+            console.warn("Cached separation data invalid:", error);
+        }
+    }
+
+    if (uploadedSong) {
+        audioName.textContent = uploadedSong;
+        audioDetails.textContent = "Uploaded audio found. Complete separation to load BGM and instruments.";
+        loadInstruments();
+        return null;
+    }
+
+    audioName.textContent = "No uploaded audio selected";
+    audioDetails.textContent = "Upload and separate an audio file first";
+    loadInstruments([]);
+    return null;
+
+}
+
+
+// ============================================================
+// CHANGE AUDIO
+// ============================================================
+
+function changeAudio() {
+
+    window.location.href =
+        "separation.html";
+
+}
+
+
+// ============================================================
+// MESSAGE
+// ============================================================
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent =
+        text;
+
+
+    message.className =
+        type;
+
+}
+
+
+// ============================================================
+// START TRANSCRIPTION
+// ============================================================
+
+async function startTranscription() {
+
+
+    // --------------------------------------------------------
+    // CHECK INSTRUMENT
+    // --------------------------------------------------------
+
+    if (
+        selectedInstruments.length === 0
+    ) {
+
+        showMessage(
+            "Please select at least one instrument.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // FIND AUDIO PATH
+    // --------------------------------------------------------
+
+    let audioPath =
+        localStorage.getItem(
+            "bgm_path"
+        );
+
+
+    if (!audioPath) {
+
+        audioPath =
+            localStorage.getItem(
+                "uploaded_audio_path"
+            );
+
+    }
+
+
+    if (!audioPath) {
+
+        const cached =
+            localStorage.getItem(
+                "cached_separated_stems"
+            );
+
+
+        if (cached) {
+
+            try {
+
+                const data =
+                    JSON.parse(cached);
+
+
+                audioPath =
+                    data.bgm ||
+                    data.other ||
+                    data.vocals ||
+                    "";
+
+            } catch (error) {
+
+                console.log(error);
+
+            }
+
+        }
+
+    }
+
+
+    if (!audioPath) {
+
+        showMessage(
+            "No separated audio found. Please complete audio separation first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // BUTTON
+    // --------------------------------------------------------
+
+    const button =
+        document.getElementById(
+            "startBtn"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Transcribing...";
+
+
+    showMessage(
+        "AI is analyzing the selected audio...",
+        ""
+    );
+
+
+    document.getElementById(
+        "result"
+    ).style.display =
+        "none";
+
+
+    try {
+
+
+        const transcriptionResults = await Promise.all(selectedInstruments.map(async instrument => {
+            const selectedDetection = detectedInstrumentData.find(item =>
+                (item.instrument_name || item.instrument || item.name || "").toLowerCase() === instrument.toLowerCase()
+            );
+            const response = await fetch(`${BASE_API}/transcription/run`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    audio_path: audioPath,
+                    audio_id: activeAudioId || null,
+                    instrument,
+                    instrument_stream_url: selectedDetection?.instrument_stream_url || null
+                })
+            });
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(`${instrument}: ${data.message || "Transcription failed"}`);
+            }
+            return { instrument, notes: data.result?.notes || [], streamUrl: selectedDetection?.instrument_stream_url || `${BASE_API}/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&instrument=${encodeURIComponent(instrument)}` };
+        }));
+
+        const totalNotes = transcriptionResults.reduce((total, item) => total + item.notes.length, 0);
+        document.getElementById("resultInstrument").textContent = transcriptionResults.map(item => item.instrument).join(", ");
+        document.getElementById("noteCount").textContent = totalNotes;
+
+        const notesBox = document.getElementById("notesBox");
+        notesBox.innerHTML = transcriptionResults.map(item => {
+            const noteText = item.notes.length
+                ? item.notes.slice(0, 200).map(note => `Note: ${note.note} | Pitch: ${Number(note.pitch).toFixed(2)} Hz | Time: ${Number(note.time).toFixed(2)} sec`).join("<br>")
+                : "No musical notes were detected in this instrument audio.";
+            return `<section class="instrument-transcription-result">
+                <h3>${item.instrument} Notes (${item.notes.length})</h3>
+                <audio controls preload="metadata" src="${new URL(item.streamUrl, BASE_API).href}"></audio>
+                <div>${noteText}</div>
+            </section>`;
+        }).join("");
+
+        const firstResult = transcriptionResults[0];
+        const instrumentAudio = document.getElementById("resultInstrumentAudio");
+        const instrumentAudioLabel = document.getElementById("resultAudioLabel");
+        if (instrumentAudio && firstResult) {
+            instrumentAudio.src = new URL(firstResult.streamUrl, BASE_API).href;
+            instrumentAudio.load();
+        }
+        if (instrumentAudioLabel && firstResult) instrumentAudioLabel.textContent = `${firstResult.instrument} isolated audio`;
+
+
+        document.getElementById(
+            "result"
+        ).style.display =
+            "block";
+
+
+        showMessage(
+            "Transcription completed successfully!",
+            "success"
+        );
+
+
+        // ====================================================
+        // SAVE TRANSCRIPTION
+        // ====================================================
+
+        localStorage.setItem(
+            "transcription_result",
+            JSON.stringify({
+                success: true,
+                results: transcriptionResults,
+                instruments: selectedInstruments
+            })
+        );
+        localStorage.setItem("reference_audio_path", audioPath);
+        localStorage.setItem("performance_audio_id", activeAudioId || "");
+        localStorage.setItem("performance_instrument", selectedInstruments[0] || "");
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "Transcription Error:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Transcription failed.",
+            "error"
+        );
+
+    }
+
+
+    finally {
+
+        button.disabled =
+            false;
+
+        button.innerHTML =
+            "✨ &nbsp; Start Transcription &nbsp; →";
+
+    }
+
+}
+
+function continueToPerformance() {
+    if (!activeAudioId && !localStorage.getItem("uploaded_audio_path")) {
+        showMessage("Complete audio separation before opening Performance Analysis.", "error");
+        return;
+    }
+    window.location.href = "performance.html";
+}
+
+
+// ============================================================
+// LOAD USER
+// ============================================================
+
+function loadUser() {
+
+    const user =
+        JSON.parse(
+            localStorage.getItem("user")
+        );
+
+
+    if (
+        user &&
+        user.name
+    ) {
+
+        document.getElementById(
+            "userName"
+        ).textContent =
+            user.name;
+
+    }
+
+}
+
+
+// ============================================================
+// PAGE START
+// ============================================================
+
+loadSeparatedAudio();
+
+loadUser();
+
+</script>
+
+
+<script src="sidebar.js"></script>
+</body>
+
+</html>

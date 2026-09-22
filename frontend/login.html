@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login | Polyphonic AI</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Arial,sans-serif;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body{
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #100b32,
+            #27116b 45%,
+            #073d78
+        );
+
+    position:relative;
+
+}
+
+
+/* =========================================================
+   BACKGROUND IMAGE
+========================================================= */
+
+body::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(31,10,91,.88),
+            rgba(24,49,135,.78)
+        ),
+        url("https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=2000&q=85");
+
+    background-size:cover;
+
+    background-position:center;
+
+    opacity:.9;
+
+    z-index:0;
+
+}
+
+
+/* =========================================================
+   GLOWING BACKGROUND CIRCLES
+========================================================= */
+
+.glow{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    filter:blur(5px);
+
+    opacity:.5;
+
+    z-index:1;
+
+}
+
+
+.glow-one{
+
+    width:300px;
+    height:300px;
+
+    background:#743cff;
+
+    left:-120px;
+    top:-100px;
+
+}
+
+
+.glow-two{
+
+    width:350px;
+    height:350px;
+
+    background:#168cff;
+
+    right:-150px;
+    bottom:-140px;
+
+}
+
+
+/* =========================================================
+   FLOATING MUSIC NOTES
+========================================================= */
+
+.music-note{
+
+    position:absolute;
+
+    color:rgba(255,255,255,.18);
+
+    font-size:45px;
+
+    z-index:1;
+
+    animation:floatNote 5s infinite ease-in-out;
+
+}
+
+
+.note1{
+
+    left:8%;
+    top:18%;
+
+}
+
+
+.note2{
+
+    left:17%;
+    bottom:15%;
+
+    font-size:65px;
+
+    animation-delay:1s;
+
+}
+
+
+.note3{
+
+    right:8%;
+    top:17%;
+
+    font-size:55px;
+
+    animation-delay:2s;
+
+}
+
+
+.note4{
+
+    right:16%;
+    bottom:20%;
+
+    font-size:40px;
+
+    animation-delay:3s;
+
+}
+
+
+@keyframes floatNote{
+
+    0%,100%{
+
+        transform:translateY(0)
+        rotate(-8deg);
+
+    }
+
+    50%{
+
+        transform:translateY(-22px)
+        rotate(8deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   MAIN LOGIN WRAPPER
+========================================================= */
+
+.login-wrapper{
+
+    width:min(1100px,94%);
+
+    min-height:650px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    position:relative;
+
+    z-index:5;
+
+    border-radius:30px;
+
+    overflow:hidden;
+
+    background:rgba(255,255,255,.96);
+
+    box-shadow:
+        0 30px 90px rgba(0,0,0,.4);
+
+    border:1px solid rgba(255,255,255,.4);
+
+}
+
+
+/* =========================================================
+   LEFT PANEL
+========================================================= */
+
+.left-panel{
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:55px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(74,25,180,.96),
+            rgba(32,82,220,.94)
+        );
+
+}
+
+
+/* Background image inside left */
+
+.left-panel::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(67,20,175,.85),
+            rgba(18,104,224,.72)
+        ),
+        url("https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1200&q=85");
+
+    background-size:cover;
+
+    background-position:center;
+
+    opacity:.6;
+
+}
+
+
+/* Decorative circle */
+
+.left-panel::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:350px;
+
+    height:350px;
+
+    border-radius:50%;
+
+    border:1px solid rgba(255,255,255,.15);
+
+    right:-160px;
+
+    bottom:-140px;
+
+}
+
+
+/* =========================================================
+   LEFT CONTENT
+========================================================= */
+
+.left-content{
+
+    position:relative;
+
+    z-index:3;
+
+}
+
+
+/* =========================================================
+   AI BADGE
+========================================================= */
+
+.ai-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px 13px;
+
+    border-radius:30px;
+
+    background:rgba(255,255,255,.13);
+
+    border:1px solid rgba(255,255,255,.2);
+
+    backdrop-filter:blur(10px);
+
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:.5px;
+
+    margin-bottom:30px;
+
+}
+
+
+.ai-dot{
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#65f5c2;
+
+    box-shadow:
+        0 0 12px #65f5c2;
+
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo-box{
+
+    width:76px;
+
+    height:76px;
+
+    border-radius:24px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:40px;
+
+    background:
+        rgba(255,255,255,.15);
+
+    border:
+        1px solid rgba(255,255,255,.25);
+
+    box-shadow:
+        0 15px 35px rgba(0,0,0,.18);
+
+    margin-bottom:25px;
+
+}
+
+
+/* =========================================================
+   HEADING
+========================================================= */
+
+.left-panel h1{
+
+    font-size:42px;
+
+    line-height:1.1;
+
+    margin-bottom:12px;
+
+}
+
+
+.left-panel h1 span{
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #bde9ff
+        );
+
+    background-clip:text;
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+}
+
+
+.tagline{
+
+    font-size:18px;
+
+    font-weight:600;
+
+    margin-bottom:20px;
+
+}
+
+
+.description{
+
+    max-width:440px;
+
+    line-height:1.8;
+
+    color:rgba(255,255,255,.82);
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   WAVE
+========================================================= */
+
+.wave-container{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    height:55px;
+
+    margin-top:35px;
+
+}
+
+
+.wave{
+
+    width:4px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.7);
+
+    animation:waveAnimation 1.3s infinite ease-in-out;
+
+}
+
+
+.wave:nth-child(1){height:18px}
+.wave:nth-child(2){height:31px}
+.wave:nth-child(3){height:45px}
+.wave:nth-child(4){height:25px}
+.wave:nth-child(5){height:39px}
+.wave:nth-child(6){height:50px}
+.wave:nth-child(7){height:29px}
+.wave:nth-child(8){height:44px}
+.wave:nth-child(9){height:22px}
+.wave:nth-child(10){height:38px}
+.wave:nth-child(11){height:48px}
+.wave:nth-child(12){height:27px}
+.wave:nth-child(13){height:42px}
+.wave:nth-child(14){height:20px}
+.wave:nth-child(15){height:35px}
+.wave:nth-child(16){height:46px}
+.wave:nth-child(17){height:24px}
+.wave:nth-child(18){height:40px}
+
+
+@keyframes waveAnimation{
+
+    0%,100%{
+        transform:scaleY(.7);
+    }
+
+    50%{
+        transform:scaleY(1.15);
+    }
+
+}
+
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+.features{
+
+    display:flex;
+
+    gap:10px;
+
+    flex-wrap:wrap;
+
+    margin-top:25px;
+
+}
+
+
+.feature{
+
+    padding:8px 12px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.1);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    font-size:11px;
+
+    color:rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   RIGHT PANEL
+========================================================= */
+
+.right-panel{
+
+    background:#ffffff;
+
+    padding:55px 65px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+
+/* =========================================================
+   LOGIN HEADER
+========================================================= */
+
+.login-header{
+
+    margin-bottom:32px;
+
+}
+
+
+.login-header .mini{
+
+    color:#6941e8;
+
+    font-size:12px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+
+    margin-bottom:10px;
+
+}
+
+
+.login-header h2{
+
+    font-size:34px;
+
+    color:#17204f;
+
+    margin-bottom:8px;
+
+}
+
+
+.login-header p{
+
+    color:#7b849d;
+
+    font-size:14px;
+
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-group{
+
+    margin-bottom:18px;
+
+}
+
+
+.form-label{
+
+    display:block;
+
+    color:#303b67;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    margin-bottom:8px;
+
+}
+
+
+.input-wrapper{
+
+    position:relative;
+
+}
+
+
+.input-icon{
+
+    position:absolute;
+
+    left:17px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#6a42e5;
+
+    font-size:17px;
+
+}
+
+
+.input-wrapper input{
+
+    width:100%;
+
+    height:54px;
+
+    border:1px solid #dfe2ec;
+
+    border-radius:13px;
+
+    outline:none;
+
+    padding:0 45px;
+
+    font-size:14px;
+
+    color:#27345f;
+
+    background:#fbfcff;
+
+    transition:.2s;
+
+}
+
+
+.input-wrapper input:focus{
+
+    border-color:#6941e8;
+
+    background:white;
+
+    box-shadow:
+        0 0 0 4px rgba(105,65,232,.08);
+
+}
+
+
+.input-wrapper input::placeholder{
+
+    color:#a0a7b8;
+
+}
+
+
+/* =========================================================
+   PASSWORD BUTTON
+========================================================= */
+
+.password-toggle{
+
+    position:absolute;
+
+    right:15px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    color:#7c8499;
+
+    font-size:16px;
+
+}
+
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+.options{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin:4px 0 22px;
+
+}
+
+
+.remember{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    color:#727b92;
+
+    font-size:12px;
+
+}
+
+
+.remember input{
+
+    accent-color:#6941e8;
+
+}
+
+
+.forgot{
+
+    border:none;
+
+    background:none;
+
+    color:#673ce3;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.login-btn{
+
+    width:100%;
+
+    height:55px;
+
+    border:none;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #681fd5,
+            #276ff0
+        );
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 12px 25px rgba(75,70,210,.25);
+
+    transition:.25s;
+
+}
+
+
+.login-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 17px 32px rgba(75,70,210,.32);
+
+}
+
+
+.login-btn:disabled{
+
+    opacity:.7;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#message{
+
+    min-height:22px;
+
+    text-align:center;
+
+    margin-top:15px;
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+
+.success{
+
+    color:#149765;
+
+}
+
+
+.error{
+
+    color:#dd4057;
+
+}
+
+
+.info{
+
+    color:#6044d7;
+
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.divider{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:24px 0;
+
+    color:#a1a7b7;
+
+    font-size:11px;
+
+}
+
+
+.divider::before,
+.divider::after{
+
+    content:"";
+
+    flex:1;
+
+    height:1px;
+
+    background:#e7e9f0;
+
+}
+
+
+/* =========================================================
+   REGISTER
+========================================================= */
+
+.register-text{
+
+    text-align:center;
+
+    color:#747d94;
+
+    font-size:13px;
+
+}
+
+
+.register-text a{
+
+    color:#6638dd;
+
+    text-decoration:none;
+
+    font-weight:800;
+
+}
+
+
+.register-text a:hover{
+
+    text-decoration:underline;
+
+}
+
+
+/* =========================================================
+   SECURITY TEXT
+========================================================= */
+
+.security{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    margin-top:25px;
+
+    color:#9aa1b3;
+
+    font-size:10px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:850px){
+
+    body{
+
+        overflow:auto;
+
+        padding:20px 0;
+
+    }
+
+
+    .login-wrapper{
+
+        grid-template-columns:1fr;
+
+        min-height:auto;
+
+    }
+
+
+    .left-panel{
+
+        padding:40px;
+
+        min-height:430px;
+
+    }
+
+
+    .right-panel{
+
+        padding:40px;
+
+    }
+
+}
+
+
+@media(max-width:500px){
+
+    .left-panel{
+
+        padding:30px;
+
+    }
+
+
+    .right-panel{
+
+        padding:32px 24px;
+
+    }
+
+
+    .left-panel h1{
+
+        font-size:32px;
+
+    }
+
+
+    .login-header h2{
+
+        font-size:28px;
+
+    }
+
+}
+
+/* =========================================================
+   DISTINCTIVE STUDIO THEME
+========================================================= */
+
+:root{
+    --ink:#111b1a;
+    --ink-soft:#1c2b29;
+    --paper:#f4efe5;
+    --paper-deep:#e9e1d3;
+    --coral:#ef705d;
+    --mint:#a6e3c4;
+    --muted:#74817b;
+}
+
+body{
+    background:
+        radial-gradient(circle at 12% 15%, rgba(239,112,93,.22), transparent 24%),
+        linear-gradient(135deg, #0b1212, #1b302c 58%, #253e38);
+    font-family:"Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+body::before{
+    background:
+        linear-gradient(115deg, rgba(8,16,16,.94), rgba(19,48,42,.74)),
+        url("https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=2000&q=85");
+    background-position:center;
+    opacity:.62;
+}
+
+.glow{
+    filter:blur(0);
+    opacity:.7;
+    border-radius:22% 78% 35% 65%;
+    transform:rotate(18deg);
+}
+
+.glow-one{
+    width:260px;
+    height:180px;
+    background:var(--coral);
+}
+
+.glow-two{
+    width:280px;
+    height:210px;
+    background:var(--mint);
+    opacity:.34;
+    transform:rotate(-24deg);
+}
+
+.music-note{
+    color:rgba(244,239,229,.2);
+    font-family:Georgia, serif;
+}
+
+.login-wrapper{
+    width:min(1080px,92%);
+    min-height:630px;
+    border-radius:8px 48px 8px 48px;
+    background:var(--paper);
+    border:1px solid rgba(244,239,229,.7);
+    box-shadow:0 32px 80px rgba(0,0,0,.42);
+}
+
+.left-panel{
+    padding:64px 58px;
+    background:var(--ink);
+}
+
+.left-panel::before{
+    background:
+        linear-gradient(135deg, rgba(17,27,26,.86), rgba(24,57,49,.72)),
+        url("https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1200&q=85");
+    opacity:.8;
+}
+
+.left-panel::after{
+    width:420px;
+    height:420px;
+    border:1px solid rgba(166,227,196,.25);
+    right:-220px;
+    bottom:-190px;
+}
+
+.ai-badge{
+    padding:9px 14px;
+    border-radius:4px;
+    background:rgba(166,227,196,.12);
+    border:1px solid rgba(166,227,196,.35);
+    color:var(--mint);
+    letter-spacing:1.3px;
+}
+
+.ai-dot{
+    background:var(--coral);
+    box-shadow:0 0 12px var(--coral);
+}
+
+.logo-box{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:var(--coral);
+    border:6px solid rgba(244,239,229,.18);
+    box-shadow:0 12px 28px rgba(0,0,0,.25);
+}
+
+.left-panel h1{
+    max-width:420px;
+    font-family:Georgia, "Times New Roman", serif;
+    font-size:46px;
+    letter-spacing:-1px;
+}
+
+.left-panel h1 span{
+    background:linear-gradient(90deg, var(--coral), var(--mint));
+    background-clip:text;
+    -webkit-background-clip:text;
+}
+
+.tagline{
+    color:var(--mint);
+    font-family:Georgia, "Times New Roman", serif;
+    font-style:italic;
+}
+
+.description{
+    color:rgba(244,239,229,.73);
+}
+
+.wave{
+    background:var(--coral);
+}
+
+.feature{
+    border-radius:3px;
+    background:rgba(244,239,229,.08);
+    border-color:rgba(166,227,196,.25);
+    color:rgba(244,239,229,.86);
+}
+
+.right-panel{
+    background:var(--paper);
+    padding:55px 68px;
+}
+
+.login-header .mini{
+    color:var(--coral);
+    letter-spacing:2px;
+}
+
+.login-header h2{
+    color:var(--ink);
+    font-family:Georgia, "Times New Roman", serif;
+    font-size:38px;
+    letter-spacing:-.6px;
+}
+
+.login-header p,
+.register-text{
+    color:var(--muted);
+}
+
+.form-label{
+    color:var(--ink-soft);
+    letter-spacing:1px;
+}
+
+.input-wrapper input{
+    height:56px;
+    border:1px solid #d6cec0;
+    border-radius:4px;
+    color:var(--ink);
+    background:rgba(255,255,255,.42);
+}
+
+.input-icon{
+    color:var(--coral);
+}
+
+.input-wrapper input:focus{
+    border-color:var(--coral);
+    background:#fffaf1;
+    box-shadow:0 0 0 4px rgba(239,112,93,.12);
+}
+
+.remember input{
+    accent-color:var(--coral);
+}
+
+.forgot,
+.register-text a{
+    color:#c85345;
+}
+
+.login-btn{
+    border-radius:4px;
+    background:var(--ink);
+    box-shadow:0 12px 25px rgba(17,27,26,.2);
+    letter-spacing:.2px;
+}
+
+.login-btn:hover{
+    background:var(--coral);
+    box-shadow:0 17px 32px rgba(200,83,69,.26);
+}
+
+.info{
+    color:#55796b;
+}
+
+.divider::before,
+.divider::after{
+    background:#d8d0c3;
+}
+
+.security{
+    color:#8c938a;
+}
+
+@media(max-width:850px){
+    .login-wrapper{
+        border-radius:8px 32px 8px 32px;
+    }
+
+    .left-panel{
+        padding:44px 40px;
+    }
+}
+
+@media(max-width:500px){
+    .left-panel h1{
+        font-size:35px;
+    }
+
+    .right-panel{
+        padding:36px 24px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     BACKGROUND DECORATIONS
+========================================================= -->
+
+<div class="glow glow-one"></div>
+
+<div class="glow glow-two"></div>
+
+
+<div class="music-note note1">♪</div>
+
+<div class="music-note note2">♫</div>
+
+<div class="music-note note3">♬</div>
+
+<div class="music-note note4">♪</div>
+
+
+
+<!-- =========================================================
+     LOGIN WRAPPER
+========================================================= -->
+
+<div class="login-wrapper">
+
+
+    <!-- =====================================================
+         LEFT SIDE
+    ===================================================== -->
+
+    <section class="left-panel">
+
+        <div class="left-content">
+
+
+            <div class="ai-badge">
+
+                <span class="ai-dot"></span>
+
+                AI MUSIC INTELLIGENCE
+
+            </div>
+
+
+            <div class="logo-box">
+                🎵
+            </div>
+
+
+            <h1>
+
+                Welcome to
+                <span>
+                    Polyphonic AI
+                </span>
+
+            </h1>
+
+
+            <div class="tagline">
+
+                Hear Music.
+                Understand Music.
+                Master Music.
+
+            </div>
+
+
+            <p class="description">
+
+                An intelligent music analysis platform
+                that separates musical sources, identifies
+                instruments, converts audio into musical
+                notes and helps musicians improve their
+                performance.
+
+            </p>
+
+
+
+            <!-- AUDIO WAVE -->
+
+            <div class="wave-container">
+
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+
+            </div>
+
+
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+                <div class="feature">
+                    🎤 Vocal Separation
+                </div>
+
+                <div class="feature">
+                    🎹 Instrument Analysis
+                </div>
+
+                <div class="feature">
+                    🎼 Music Transcription
+                </div>
+
+                <div class="feature">
+                    📊 Performance Analysis
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RIGHT SIDE
+    ===================================================== -->
+
+    <section class="right-panel">
+
+
+        <div class="login-header">
+
+            <div class="mini">
+                MUSICIAN PORTAL
+            </div>
+
+            <h2>
+                Welcome Back
+            </h2>
+
+            <p>
+                Sign in to continue your musical journey.
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             LOGIN FORM
+        ================================================= -->
+
+        <form
+            id="loginForm"
+            onsubmit="loginUser(event)"
+        >
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    EMAIL ADDRESS
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        ✉
+                    </span>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    PASSWORD
+                </label>
+
+                <div class="input-wrapper">
+
+                    <span class="input-icon">
+                        🔒
+                    </span>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        onclick="togglePassword()"
+                        id="passwordToggle"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- OPTIONS -->
+
+            <div class="options">
+
+                <label class="remember">
+
+                    <input
+                        type="checkbox"
+                        id="rememberMe"
+                    >
+
+                    Remember me
+
+                </label>
+
+
+                <button
+                    type="button"
+                    class="forgot"
+                    onclick="forgotPassword()"
+                >
+                    Forgot Password?
+                </button>
+
+            </div>
+
+
+
+            <!-- LOGIN BUTTON -->
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn"
+            >
+
+                🚀
+                Login to Dashboard
+
+            </button>
+
+
+            <div id="message"></div>
+
+
+        </form>
+
+
+
+        <div class="divider">
+            OR
+        </div>
+
+
+
+        <!-- REGISTER -->
+
+        <div class="register-text">
+
+            Don't have an account?
+
+            <a href="register.html">
+                Create Account
+            </a>
+
+        </div>
+
+
+
+        <div class="security">
+
+            🔐
+            Your account is securely connected to
+            Polyphonic AI
+
+        </div>
+
+
+    </section>
+
+</div>
+
+
+
+<script>
+
+
+// ============================================================
+// BACKEND URL
+// ============================================================
+
+const API_URL =
+    "http://127.0.0.1:5000/api";
+
+
+// ============================================================
+// TOGGLE PASSWORD
+// ============================================================
+
+function togglePassword(){
+
+    const password =
+        document.getElementById(
+            "password"
+        );
+
+    const button =
+        document.getElementById(
+            "passwordToggle"
+        );
+
+
+    if(
+        password.type === "password"
+    ){
+
+        password.type =
+            "text";
+
+        button.textContent =
+            "🙈";
+
+    }
+    else{
+
+        password.type =
+            "password";
+
+        button.textContent =
+            "👁";
+
+    }
+
+}
+
+
+// ============================================================
+// MESSAGE
+// ============================================================
+
+function showMessage(
+    text,
+    type
+){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    message.textContent =
+        text;
+
+    message.className =
+        type || "";
+
+}
+
+
+// ============================================================
+// LOGIN
+// ============================================================
+
+async function loginUser(event){
+
+    event.preventDefault();
+
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    const rememberMe =
+        document.getElementById(
+            "rememberMe"
+        ).checked;
+
+
+    const loginButton =
+        document.getElementById(
+            "loginBtn"
+        );
+
+
+    if(!email || !password){
+
+        showMessage(
+            "Please enter email and password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    loginButton.disabled =
+        true;
+
+
+    loginButton.textContent =
+        "⏳ Signing in...";
+
+
+    showMessage(
+        "Connecting to Polyphonic AI...",
+        "info"
+    );
+
+
+    try{
+
+
+        const response =
+            await fetch(
+                `${API_URL}/auth/login`,
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        email:email,
+
+                        password:password
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Login response:",
+            data
+        );
+
+
+        if(
+            !response.ok ||
+            !data.success
+        ){
+
+            throw new Error(
+                data.message ||
+                "Invalid email or password."
+            );
+
+        }
+
+
+
+        // ====================================================
+        // SAVE USER
+        // ====================================================
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(
+                data.user
+            )
+        );
+
+        localStorage.setItem(
+            "polyphonic_user",
+            JSON.stringify(
+                data.user
+            )
+        );
+
+
+        // Save user ID separately
+        localStorage.setItem(
+            "user_id",
+            data.user.id
+        );
+
+        localStorage.setItem(
+            "user_name",
+            data.user.name
+        );
+
+
+        // Remember email
+        if(rememberMe){
+
+            localStorage.setItem(
+                "remembered_email",
+                email
+            );
+
+        }
+        else{
+
+            localStorage.removeItem(
+                "remembered_email"
+            );
+
+        }
+
+
+
+        // ====================================================
+        // SUCCESS
+        // ====================================================
+
+        showMessage(
+            "✓ Login successful! Opening your dashboard...",
+            "success"
+        );
+
+
+        loginButton.textContent =
+            "✓ Login Successful";
+
+
+        // ====================================================
+        // REDIRECT
+        // ====================================================
+
+        setTimeout(
+            function(){
+
+                window.location.href =
+                    "dashboard.html";
+
+            },
+            900
+        );
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Login Error:",
+            error
+        );
+
+
+        showMessage(
+            error instanceof TypeError
+                ? "Cannot connect to the backend. Make sure Flask is running on port 5000."
+                : error.message || "Unable to connect to the backend.",
+            "error"
+        );
+
+
+        loginButton.disabled =
+            false;
+
+
+        loginButton.textContent =
+            "🚀 Login to Dashboard";
+
+    }
+
+}
+
+
+// ============================================================
+// FORGOT PASSWORD
+// ============================================================
+
+function forgotPassword(){
+    const email = window.prompt(
+        "Enter the email address for your account:",
+        document.getElementById("email").value.trim()
+    );
+
+    if (email === null) {
+        return;
+    }
+
+    const newPassword = window.prompt(
+        "Enter a new password (at least 6 characters):"
+    );
+
+    if (newPassword === null) {
+        return;
+    }
+
+    if (!email.trim() || newPassword.length < 6) {
+        showMessage(
+            "Enter a valid email and a password with at least 6 characters.",
+            "error"
+        );
+        return;
+    }
+
+    fetch(`${API_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: email.trim(),
+            new_password: newPassword
+        })
+    })
+        .then(async response => {
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Password reset failed.");
+            }
+            return data;
+        })
+        .then(data => {
+            document.getElementById("email").value = email.trim();
+            document.getElementById("password").value = "";
+            showMessage(data.message + ". You can now sign in.", "success");
+        })
+        .catch(error => {
+            showMessage(
+                error instanceof TypeError
+                    ? "Cannot connect to the backend. Make sure Flask is running."
+                    : error.message,
+                "error"
+            );
+        });
+
+}
+
+
+// ============================================================
+// LOAD REMEMBERED EMAIL
+// ============================================================
+
+function loadRememberedEmail(){
+
+    const savedEmail =
+        localStorage.getItem(
+            "remembered_email"
+        );
+
+
+    if(savedEmail){
+
+        document.getElementById(
+            "email"
+        ).value =
+            savedEmail;
+
+
+        document.getElementById(
+            "rememberMe"
+        ).checked =
+            true;
+
+    }
+
+}
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+loadRememberedEmail();
+
+
+</script>
+
+
+</body>
+
+</html>

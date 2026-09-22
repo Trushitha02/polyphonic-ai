@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Progress Tracking - Polyphonic AI</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Global Sidebar Navigation -->
+    <link rel="stylesheet" href="sidebar.css">
+    <!-- Chart.js for Multi-session Practice Heatmap & Trends -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            height: 70px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .logo i {
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .logout {
+            background: rgba(255,255,255,0.18);
+            padding: 9px 15px;
+            border-radius: 20px;
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 35px auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: #777;
+        }
+
+        /* HERO */
+
+        .hero {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+
+            padding: 35px;
+            border-radius: 22px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            margin-bottom: 25px;
+
+            box-shadow: 0 8px 25px rgba(37,117,252,0.25);
+        }
+
+        .hero-text {
+            max-width: 68%;
+        }
+
+        .hero-text h2 {
+            font-size: 29px;
+            margin-bottom: 12px;
+        }
+
+        .hero-text p {
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .progress-icon {
+            width: 125px;
+            height: 125px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.18);
+            border: 4px solid rgba(255,255,255,0.5);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 55px;
+        }
+
+        /* STAT CARDS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 17px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 27px;
+            color: #2575fc;
+            margin-bottom: 10px;
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #777;
+            font-size: 13px;
+        }
+
+        /* GRID */
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        }
+
+        .card h3 {
+            color: #333;
+            margin-bottom: 22px;
+        }
+
+        /* OVERALL PROGRESS */
+
+        .overall-area {
+            text-align: center;
+        }
+
+        .progress-circle {
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            background:
+                conic-gradient(
+                    #2575fc 0deg,
+                    #e8ecf5 0deg
+                );
+
+            margin: 10px auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+        }
+
+        .progress-circle::before {
+            content: "";
+
+            position: absolute;
+
+            width: 135px;
+            height: 135px;
+
+            background: white;
+            border-radius: 50%;
+        }
+
+        .progress-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-content strong {
+            display: block;
+            font-size: 38px;
+            color: #2575fc;
+        }
+
+        .progress-content span {
+            font-size: 13px;
+            color: #777;
+        }
+
+        .progress-status {
+            font-size: 19px;
+            font-weight: bold;
+            color: #2575fc;
+            margin-bottom: 8px;
+        }
+
+        .progress-description {
+            color: #777;
+            line-height: 1.5;
+        }
+
+        /* GOALS */
+
+        .goal {
+            margin-bottom: 20px;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .goal-header span:last-child {
+            font-weight: bold;
+            color: #2575fc;
+        }
+
+        .bar {
+            height: 10px;
+            background: #e9edf5;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            width: 0%;
+            height: 100%;
+
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+
+            border-radius: 20px;
+
+            transition: width 1s ease;
+        }
+
+        /* JOURNEY */
+
+        .journey {
+            background: white;
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+        }
+
+        .journey h3 {
+            margin-bottom: 25px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .timeline::before {
+            content: "";
+
+            position: absolute;
+
+            left: 10px;
+            top: 5px;
+            bottom: 5px;
+
+            width: 3px;
+
+            background: #e0e5ef;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+
+            left: -33px;
+            top: 0;
+
+            width: 23px;
+            height: 23px;
+
+            border-radius: 50%;
+
+            background: #e8ecf5;
+
+            border: 3px solid white;
+
+            box-shadow: 0 2px 7px rgba(0,0,0,0.12);
+        }
+
+        .timeline-item.active .timeline-dot {
+            background: #2575fc;
+        }
+
+        .timeline-item h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .timeline-item p {
+            color: #777;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ACHIEVEMENTS */
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .achievement {
+            background: white;
+            padding: 23px;
+            border-radius: 17px;
+            text-align: center;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.07);
+        }
+
+        .achievement-icon {
+            width: 60px;
+            height: 60px;
+
+            border-radius: 50%;
+
+            background: #eef2ff;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 13px;
+
+            font-size: 25px;
+            color: #2575fc;
+        }
+
+        .achievement h4 {
+            margin-bottom: 7px;
+        }
+
+        .achievement p {
+            color: #777;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .locked {
+            opacity: 0.55;
+        }
+
+        /* AI INSIGHT */
+
+        .insight {
+            background: linear-gradient(135deg, #f0e9ff, #e8f1ff);
+            padding: 28px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+        }
+
+        .insight h3 {
+            margin-bottom: 18px;
+        }
+
+        .insight-content {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+        }
+
+        .insight-content i {
+            font-size: 28px;
+            color: #6a11cb;
+        }
+
+        .insight-content p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* INFO */
+
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #2575fc;
+            margin-bottom: 25px;
+        }
+
+        .info p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* BUTTON */
+
+        .button-area {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .next-btn {
+            border: none;
+
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+
+            color: white;
+
+            padding: 14px 28px;
+
+            border-radius: 25px;
+
+            font-size: 15px;
+
+            cursor: pointer;
+
+            box-shadow: 0 5px 15px rgba(37,117,252,0.25);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #2575fc;
+            border: 1px solid #d7e1f7;
+            margin-right: 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 900px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievement-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 650px) {
+
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                gap: 25px;
+            }
+
+            .hero-text {
+                max-width: 100%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links a:not(.logout) {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="app-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <div id="sidebarContainer" data-active="progress"></div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-area">
+
+        <!-- TOP BAR -->
+        <header class="main-topbar">
+            <div style="display: flex; align-items: center;">
+                <button class="mobile-toggle" aria-label="Toggle Sidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="topbar-title">
+                    <i class="fa-solid fa-chart-line" style="color: #1746b8;"></i>
+                    <span>Progress Tracking</span>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <a href="profile.html" class="topbar-user">
+                    <div class="topbar-user-avatar">M</div>
+                    <span class="topbar-user-name">Musician</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="page-container">
+
+
+    <!-- PAGE TITLE -->
+
+    <div class="page-title">
+
+        <h1>
+            Progress Tracking
+        </h1>
+
+        <p>
+            Track your musical journey and see how your skills improve over time
+        </p>
+
+    </div>
+
+
+    <!-- HERO -->
+
+    <div class="hero">
+
+        <div class="hero-text">
+
+            <h2 id="heroTitle">
+                🌱 Your Musical Journey Starts Here
+            </h2>
+
+            <p id="heroDescription">
+
+                You have not completed any performance analysis yet.
+                Start practicing and complete your first analysis to
+                begin tracking your musical progress.
+
+            </p>
+
+        </div>
+
+
+        <div class="progress-icon">
+            📈
+        </div>
+
+    </div>
+
+
+    <!-- STAT CARDS -->
+
+    <div class="stats">
+
+
+        <div class="stat-card">
+
+            <i class="fa-solid fa-music"></i>
+
+            <h3 id="songsAnalyzed">
+                0
+            </h3>
+
+            <p>
+                Songs Analyzed
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <i class="fa-solid fa-microphone"></i>
+
+            <h3 id="performances">
+                0
+            </h3>
+
+            <p>
+                Performances
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <i class="fa-solid fa-star"></i>
+
+            <h3 id="bestScore">
+                0%
+            </h3>
+
+            <p>
+                Best Score
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <i class="fa-solid fa-ranking-star"></i>
+
+            <h3 id="currentLevel">
+                Musical Starter
+            </h3>
+
+            <p>
+                Current Level
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- OVERALL + GOALS -->
+
+    <div class="grid">
+
+
+        <!-- OVERALL PROGRESS -->
+
+        <div class="card">
+
+            <h3>
+                <i class="fa-solid fa-chart-pie"></i>
+                Overall Progress
+            </h3>
+
+            <div class="overall-area">
+
+                <div class="progress-circle"
+                     id="progressCircle">
+
+                    <div class="progress-content">
+
+                        <strong id="overallProgress">
+                            0%
+                        </strong>
+
+                        <span>
+                            Progress
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="progress-status"
+                     id="progressStatus">
+
+                    Not Started
+
+                </div>
+
+
+                <p class="progress-description"
+                   id="progressDescription">
+
+                    Your progress will appear here after
+                    completing your first performance analysis.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- SKILL GOALS -->
+
+        <div class="card">
+
+            <h3>
+                <i class="fa-solid fa-bullseye"></i>
+                Skill Development
+            </h3>
+
+
+            <div class="goal">
+
+                <div class="goal-header">
+
+                    <span>
+                        Pitch Control
+                    </span>
+
+                    <span id="pitchValue">
+                        0%
+                    </span>
+
+                </div>
+
+                <div class="bar">
+
+                    <div class="bar-fill"
+                         id="pitchBar">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="goal">
+
+                <div class="goal-header">
+
+                    <span>
+                        Rhythm Control
+                    </span>
+
+                    <span id="rhythmValue">
+                        0%
+                    </span>
+
+                </div>
+
+                <div class="bar">
+
+                    <div class="bar-fill"
+                         id="rhythmBar">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="goal">
+
+                <div class="goal-header">
+
+                    <span>
+                        Timing Accuracy
+                    </span>
+
+                    <span id="timingValue">
+                        0%
+                    </span>
+
+                </div>
+
+                <div class="bar">
+
+                    <div class="bar-fill"
+                         id="timingBar">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="goal">
+
+                <div class="goal-header">
+
+                    <span>
+                        Note Accuracy
+                    </span>
+
+                    <span id="noteValue">
+                        0%
+                    </span>
+
+                </div>
+
+                <div class="bar">
+
+                    <div class="bar-fill"
+                         id="noteBar">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MUSICAL JOURNEY -->
+
+    <div class="journey">
+
+        <h3>
+            <i class="fa-solid fa-route"></i>
+            Progress Journey
+        </h3>
+
+
+        <div class="timeline">
+
+
+            <div class="timeline-item active">
+
+                <div class="timeline-dot"></div>
+
+                <h4>
+                    🌱 Starting Point
+                </h4>
+
+                <p>
+                    Your account is ready. Complete your first
+                    music analysis and performance evaluation.
+                </p>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot"></div>
+
+                <h4>
+                    🎵 First Performance
+                </h4>
+
+                <p>
+                    Perform a selected musical section and let
+                    the AI analyze your pitch, rhythm and timing.
+                </p>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot"></div>
+
+                <h4>
+                    📈 Skill Development
+                </h4>
+
+                <p>
+                    Practice based on AI recommendations and
+                    monitor your improvement.
+                </p>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot"></div>
+
+                <h4>
+                    ⭐ Musical Growth
+                </h4>
+
+                <p>
+                    Improve your performance score and progress
+                    through higher musical skill levels.
+                </p>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <div class="timeline-dot"></div>
+
+                <h4>
+                    🏆 Master Performer
+                </h4>
+
+                <p>
+                    Reach advanced performance accuracy and
+                    consistency through continuous practice.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PRACTICE HEATMAP & TREND CHART -->
+    <div class="card" style="background: white; border-radius: 18px; padding: 25px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+        <h3 style="font-size: 19px; color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-chart-line" style="color: #6a11cb;"></i> Multi-Session Practice Heatmap & Metric Trajectory
+        </h3>
+        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+            Visualizing pitch, rhythm, timing, and note accuracy progress across your recorded practice sessions.
+        </p>
+        <div style="width: 100%; min-height: 260px;">
+            <canvas id="practiceHeatmapChart"></canvas>
+        </div>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+
+    <div class="achievement-grid">
+
+
+        <div class="achievement locked">
+
+            <div class="achievement-icon">
+                🎧
+            </div>
+
+            <h4>
+                First Analysis
+            </h4>
+
+            <p>
+                Analyze your first song to unlock this achievement.
+            </p>
+
+        </div>
+
+
+        <div class="achievement locked">
+
+            <div class="achievement-icon">
+                🎤
+            </div>
+
+            <h4>
+                First Performance
+            </h4>
+
+            <p>
+                Complete your first performance evaluation.
+            </p>
+
+        </div>
+
+
+        <div class="achievement locked">
+
+            <div class="achievement-icon">
+                🏆
+            </div>
+
+            <h4>
+                High Performer
+            </h4>
+
+            <p>
+                Reach a performance score of 90% or higher.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- AI INSIGHT -->
+
+    <div class="insight">
+
+        <h3>
+            <i class="fa-solid fa-brain"></i>
+            AI Progress Insight
+        </h3>
+
+
+        <div class="insight-content">
+
+            <i class="fa-solid fa-lightbulb"></i>
+
+            <p id="aiInsight">
+
+                Your progress profile is currently empty because
+                no performance data has been entered. Start with
+                one song and one performance. The system will then
+                track your musical development and generate
+                personalized insights.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFORMATION -->
+
+    <div class="info">
+
+        <p>
+
+            <strong>How progress tracking works:</strong>
+
+            The system records your music analyses, performance
+            scores and musical skill measurements. As you practice
+            more, your progress can be compared across performances
+            to identify improvement and areas that need more practice.
+
+        </p>
+
+    </div>
+
+
+    <!-- BUTTON -->
+
+    <div class="button-area">
+
+        <button class="next-btn secondary-btn"
+                onclick="goToConfidence()">
+
+            View Confidence
+
+            <i class="fa-solid fa-shield-heart"></i>
+
+        </button>
+
+        <button class="next-btn secondary-btn"
+                onclick="goToSkillLevel()">
+
+            View Skill Profile
+
+            <i class="fa-solid fa-ranking-star"></i>
+
+        </button>
+
+        <button class="next-btn"
+                onclick="goToPerformance()">
+
+            Start Your First Performance
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+        </main>
+    </div>
+</div>
+
+
+<script src="api.js"></script>
+<script>
+    let heatmapChartInstance = null;
+
+    function clampScore(value) {
+        return Math.max(0, Math.min(100, Number(value) || 0));
+    }
+
+    function average(history, key) {
+        if (!history.length) return 0;
+        return history.reduce((total, item) => total + clampScore(item[key]), 0) / history.length;
+    }
+
+    function updateProgressPage() {
+        const history = JSON.parse(localStorage.getItem("performance_history") || "[]");
+        const latest = history[history.length - 1] || {
+            pitch_score: localStorage.getItem("pitch_score"),
+            rhythm_score: localStorage.getItem("rhythm_score"),
+            timing_score: localStorage.getItem("timing_score"),
+            note_score: localStorage.getItem("note_score"),
+            overall_score: localStorage.getItem("overall_score")
+        };
+        const hasPerformance = latest.overall_score !== null && latest.overall_score !== undefined;
+        const overall = clampScore(latest.overall_score);
+        const best = history.length ? Math.max(...history.map(item => clampScore(item.overall_score))) : overall;
+        const source = history.length ? history : [latest];
+        const pitch = Math.round(average(source, "pitch_score"));
+        const rhythm = Math.round(average(source, "rhythm_score"));
+        const timing = Math.round(average(source, "timing_score"));
+        const note = Math.round(average(source, "note_score"));
+        const consistency = Math.round((pitch + rhythm + timing + note) / 4);
+        const level = overall >= 96 ? "Master Performer" : overall >= 90 ? "Advanced" : overall >= 75 ? "Intermediate" : overall >= 60 ? "Developing Musician" : overall >= 40 ? "Beginner" : "Musical Starter";
+
+        document.getElementById("songsAnalyzed").innerText = hasPerformance ? "1" : "0";
+        document.getElementById("performances").innerText = history.length || (hasPerformance ? "1" : "0");
+        document.getElementById("bestScore").innerText = Math.round(best) + "%";
+        document.getElementById("currentLevel").innerText = level;
+        document.getElementById("overallProgress").innerText = Math.round(overall) + "%";
+        document.getElementById("progressCircle").style.background =
+            `conic-gradient(#1d4038 ${Math.round(overall * 3.6)}deg, #d5eee1 ${Math.round(overall * 3.6)}deg)`;
+
+        [["pitch", pitch], ["rhythm", rhythm], ["timing", timing], ["note", note]].forEach(([name, value]) => {
+            document.getElementById(`${name}Value`).innerText = value + "%";
+            document.getElementById(`${name}Bar`).style.width = value + "%";
+        });
+
+        document.getElementById("progressStatus").innerText = hasPerformance ? level : "Not Started";
+        document.getElementById("progressDescription").innerText = hasPerformance
+            ? `Your best performance is ${Math.round(best)}%. Average skill consistency is ${consistency}%.`
+            : "Your progress will appear here after completing your first performance analysis.";
+        document.getElementById("heroTitle").innerText = hasPerformance ? "🎯 Your Musical Progress" : "🌱 Your Musical Journey Starts Here";
+        document.getElementById("heroDescription").innerText = hasPerformance
+            ? `You have completed ${history.length || 1} performance session(s). Keep practicing to improve your skill profile.`
+            : "Complete your first performance analysis to begin tracking your musical progress.";
+        document.getElementById("aiInsight").innerText = hasPerformance
+            ? `Your current average skill consistency is ${consistency}%. Focus on your lowest metric and compare your next session.`
+            : "Complete one performance analysis to start tracking your musical development.";
+
+        renderProgressChart(history);
+        updateAchievements(history, best);
+    }
+
+    function updateAchievements(history, best) {
+        const achievements = [
+            ["🎧", "First Analysis", "Analyze your first song to unlock this achievement.", history.length > 0],
+            ["🎤", "First Performance", "Complete your first performance evaluation.", history.length > 0],
+            ["🏆", "High Performer", "Reach a performance score of 90% or higher.", best >= 90]
+        ];
+        document.querySelector(".achievement-grid").innerHTML = achievements.map(([icon, title, description, unlocked]) => `
+            <div class="achievement ${unlocked ? "unlocked" : "locked"}">
+                <div class="achievement-icon">${icon}</div>
+                <h4>${title}</h4>
+                <p>${description}</p>
+                <span>${unlocked ? "✓ UNLOCKED" : "🔒 Locked"}</span>
+            </div>
+        `).join("");
+    }
+
+    updateProgressPage();
+    window.addEventListener("storage", event => {
+        if (["performance_history", "overall_score", "pitch_score", "rhythm_score", "timing_score", "note_score"].includes(event.key)) {
+            updateProgressPage();
+        }
+    });
+
+    function renderProgressChart(heatmapData) {
+        const ctx = document.getElementById("practiceHeatmapChart");
+        if (!ctx) return;
+
+        if (!heatmapData || heatmapData.length === 0) {
+            heatmapData = [
+                { session_number: "Baseline", pitch: 0, rhythm: 0, timing: 0, note: 0, overall: 0 }
+            ];
+        }
+
+        const labels = heatmapData.map((item, index) => `Session ${item.session_number || index + 1}`);
+        const pitchData = heatmapData.map(item => clampScore(item.pitch || item.pitch_score));
+        const rhythmData = heatmapData.map(item => clampScore(item.rhythm || item.rhythm_score));
+        const timingData = heatmapData.map(item => clampScore(item.timing || item.timing_score));
+        const noteData = heatmapData.map(item => clampScore(item.note || item.note_score));
+        const overallData = heatmapData.map(item => clampScore(item.overall || item.overall_score));
+
+        if (heatmapChartInstance) {
+            heatmapChartInstance.destroy();
+        }
+
+        heatmapChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Overall Score',
+                        data: overallData,
+                        borderColor: '#6a11cb',
+                        backgroundColor: 'rgba(106, 17, 203, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Pitch',
+                        data: pitchData,
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'Rhythm',
+                        data: rhythmData,
+                        borderColor: '#f59e0b',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'Timing',
+                        data: timingData,
+                        borderColor: '#2575fc',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'Notes',
+                        data: noteData,
+                        borderColor: '#ec4899',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { stepSize: 20 }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    function goToPerformance() {
+        window.location.href = "performance.html";
+    }
+
+    function goToConfidence() {
+        window.location.href = "confidence.html";
+    }
+
+    function goToSkillLevel() {
+        window.location.href = "level.html";
+    }
+</script>
+<script src="sidebar.js"></script>
+</body>
+</html>

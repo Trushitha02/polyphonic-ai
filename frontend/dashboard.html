@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard | Polyphonic AI</title>
+
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Arial,sans-serif;
+}
+
+
+body{
+
+    min-height:100vh;
+
+    background:#f5f6fb;
+
+    color:#17203f;
+
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar{
+
+    position:fixed;
+
+    left:0;
+    top:0;
+    bottom:0;
+
+    width:245px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #17134d,
+            #32117b 55%,
+            #172b70
+        );
+
+    color:white;
+
+    padding:25px 16px;
+
+    z-index:20;
+
+    box-shadow:
+        8px 0 30px rgba(30,20,80,.15);
+
+}
+
+
+/* LOGO */
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:0 12px 25px;
+
+    border-bottom:
+        1px solid rgba(255,255,255,.12);
+
+}
+
+
+.logo-icon{
+
+    width:44px;
+    height:44px;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8c42ff,
+            #3b82f6
+        );
+
+    font-size:22px;
+
+    box-shadow:
+        0 8px 25px rgba(105,55,240,.4);
+
+}
+
+
+.logo-text h2{
+
+    font-size:18px;
+
+}
+
+
+.logo-text span{
+
+    display:block;
+
+    font-size:9px;
+
+    color:#aaa8d2;
+
+    letter-spacing:1.4px;
+
+    margin-top:3px;
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.nav{
+
+    margin-top:25px;
+
+}
+
+
+.nav-title{
+
+    color:#8886ad;
+
+    font-size:9px;
+
+    letter-spacing:1.5px;
+
+    font-weight:700;
+
+    padding:0 13px 10px;
+
+}
+
+
+.nav-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+
+    padding:12px 14px;
+
+    margin:5px 0;
+
+    border-radius:12px;
+
+    color:#c9c7df;
+
+    text-decoration:none;
+
+    font-size:12px;
+
+    transition:.25s;
+
+}
+
+
+.nav-item:hover{
+
+    color:white;
+
+    background:
+        rgba(255,255,255,.09);
+
+    transform:translateX(3px);
+
+}
+
+
+.nav-item.active{
+
+    color:white;
+
+    background:
+        linear-gradient(
+            90deg,
+            #7337df,
+            #316ff1
+        );
+
+    box-shadow:
+        0 8px 20px rgba(83,48,214,.25);
+
+}
+
+
+.nav-icon{
+
+    width:22px;
+
+    text-align:center;
+
+    font-size:16px;
+
+}
+
+
+/* BOTTOM */
+
+.sidebar-bottom{
+
+    position:absolute;
+
+    bottom:20px;
+
+    left:16px;
+    right:16px;
+
+    border-top:
+        1px solid rgba(255,255,255,.1);
+
+    padding-top:12px;
+
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main{
+
+    margin-left:245px;
+
+    min-height:100vh;
+
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar{
+
+    height:70px;
+
+    background:white;
+
+    border-bottom:
+        1px solid #e8eaf1;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 32px;
+
+}
+
+
+.page-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+.page-title span{
+
+    font-size:20px;
+
+}
+
+
+.page-title h3{
+
+    font-size:16px;
+
+}
+
+
+.top-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+
+.ai-status{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    padding:7px 12px;
+
+    border-radius:20px;
+
+    background:#edfff7;
+
+    color:#149566;
+
+    font-size:10px;
+
+    font-weight:700;
+
+}
+
+
+.status-dot{
+
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:#1dc98a;
+
+    box-shadow:
+        0 0 8px #1dc98a;
+
+}
+
+
+.user{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+}
+
+
+.avatar{
+
+    width:35px;
+    height:35px;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    border-radius:50%;
+
+    color:white;
+
+    font-weight:800;
+
+    font-size:13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7028dd,
+            #2674ed
+        );
+
+}
+
+
+.user-name{
+
+    font-size:11px;
+
+    font-weight:700;
+
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.content{
+
+    padding:30px;
+
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+
+    position:relative;
+
+    overflow:hidden;
+
+    min-height:210px;
+
+    border-radius:24px;
+
+    padding:32px 35px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            120deg,
+            #25116c,
+            #5721c7 50%,
+            #1e6ce8
+        );
+
+    box-shadow:
+        0 20px 45px rgba(53,40,150,.2);
+
+}
+
+
+.hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:400px;
+    height:400px;
+
+    border-radius:50%;
+
+    border:
+        1px solid rgba(255,255,255,.12);
+
+    right:-160px;
+    top:-230px;
+
+}
+
+
+.hero::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:250px;
+    height:250px;
+
+    border-radius:50%;
+
+    background:
+        rgba(113,53,255,.25);
+
+    filter:blur(40px);
+
+    right:80px;
+    bottom:-160px;
+
+}
+
+
+.hero-content{
+
+    position:relative;
+
+    z-index:2;
+
+    max-width:650px;
+
+}
+
+
+.hero-small{
+
+    font-size:9px;
+
+    letter-spacing:2px;
+
+    color:#c9baff;
+
+    font-weight:800;
+
+    margin-bottom:8px;
+
+}
+
+
+.hero h1{
+
+    font-size:30px;
+
+    margin-bottom:8px;
+
+}
+
+
+.hero h1 span{
+
+    color:#a9dcff;
+
+}
+
+
+.hero p{
+
+    color:#d9d9f2;
+
+    font-size:12px;
+
+    line-height:1.7;
+
+}
+
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:22px;
+
+}
+
+
+.hero-btn{
+
+    border:none;
+
+    padding:10px 17px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+    font-size:10px;
+
+    text-decoration:none;
+
+}
+
+
+.hero-btn.primary{
+
+    background:white;
+
+    color:#4820a5;
+
+}
+
+
+.hero-btn.secondary{
+
+    background:
+        rgba(255,255,255,.12);
+
+    color:white;
+
+    border:
+        1px solid rgba(255,255,255,.2);
+
+}
+
+
+/* =========================================================
+   WAVEFORM
+========================================================= */
+
+.wave-area{
+
+    position:absolute;
+
+    right:40px;
+
+    bottom:35px;
+
+    width:250px;
+
+    height:80px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:4px;
+
+    opacity:.6;
+
+    z-index:2;
+
+}
+
+
+.wave-bar{
+
+    width:4px;
+
+    border-radius:10px;
+
+    background:#fff;
+
+    animation:wave 1.3s infinite ease-in-out;
+
+}
+
+
+.wave-bar:nth-child(1){height:20px}
+.wave-bar:nth-child(2){height:40px}
+.wave-bar:nth-child(3){height:65px}
+.wave-bar:nth-child(4){height:35px}
+.wave-bar:nth-child(5){height:55px}
+.wave-bar:nth-child(6){height:30px}
+.wave-bar:nth-child(7){height:70px}
+.wave-bar:nth-child(8){height:43px}
+.wave-bar:nth-child(9){height:62px}
+.wave-bar:nth-child(10){height:27px}
+.wave-bar:nth-child(11){height:52px}
+.wave-bar:nth-child(12){height:72px}
+.wave-bar:nth-child(13){height:35px}
+.wave-bar:nth-child(14){height:57px}
+.wave-bar:nth-child(15){height:25px}
+.wave-bar:nth-child(16){height:46px}
+.wave-bar:nth-child(17){height:65px}
+.wave-bar:nth-child(18){height:30px}
+.wave-bar:nth-child(19){height:52px}
+.wave-bar:nth-child(20){height:38px}
+
+
+@keyframes wave{
+
+    0%,100%{
+        transform:scaleY(.65);
+    }
+
+    50%{
+        transform:scaleY(1.1);
+    }
+
+}
+
+
+/* =========================================================
+   SECTION TITLE
+========================================================= */
+
+.section-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin:28px 0 15px;
+
+}
+
+
+.section-header h2{
+
+    font-size:18px;
+
+}
+
+
+.section-header span{
+
+    color:#858ba0;
+
+    font-size:10px;
+
+}
+
+
+/* =========================================================
+   STAT CARDS
+========================================================= */
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:16px;
+
+}
+
+
+.stat-card{
+
+    background:white;
+
+    border:
+        1px solid #eaebf2;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    transition:.25s;
+
+}
+
+
+.stat-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 15px 30px rgba(30,30,70,.08);
+
+}
+
+
+.stat-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+
+.stat-icon{
+
+    width:40px;
+    height:40px;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    border-radius:12px;
+
+    font-size:18px;
+
+    background:#f0eaff;
+
+}
+
+
+.stat-value{
+
+    font-size:25px;
+
+    font-weight:800;
+
+    margin-top:13px;
+
+}
+
+
+.stat-label{
+
+    font-size:10px;
+
+    color:#858b9d;
+
+    margin-top:3px;
+
+}
+
+
+.stat-change{
+
+    margin-top:10px;
+
+    font-size:9px;
+
+    color:#1a9a6b;
+
+    font-weight:700;
+
+}
+
+
+/* =========================================================
+   WORKFLOW
+========================================================= */
+
+.workflow{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:15px;
+
+}
+
+
+.workflow-card{
+
+    position:relative;
+
+    background:white;
+
+    border:
+        1px solid #e9eaf1;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    min-height:180px;
+
+    overflow:hidden;
+
+    transition:.25s;
+
+}
+
+
+.workflow-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 15px 35px rgba(40,30,90,.08);
+
+}
+
+
+.workflow-number{
+
+    position:absolute;
+
+    right:15px;
+
+    top:12px;
+
+    color:#ececf4;
+
+    font-size:32px;
+
+    font-weight:900;
+
+}
+
+
+.workflow-icon{
+
+    width:46px;
+    height:46px;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eee7ff,
+            #e4efff
+        );
+
+    font-size:21px;
+
+    margin-bottom:16px;
+
+}
+
+
+.workflow-card h3{
+
+    font-size:13px;
+
+    margin-bottom:7px;
+
+}
+
+
+.workflow-card p{
+
+    font-size:10px;
+
+    line-height:1.6;
+
+    color:#7d8498;
+
+}
+
+
+.workflow-link{
+
+    display:inline-block;
+
+    margin-top:14px;
+
+    color:#6736d9;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    text-decoration:none;
+
+}
+
+
+/* =========================================================
+   BOTTOM GRID
+========================================================= */
+
+.bottom-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        1.3fr .7fr;
+
+    gap:18px;
+
+    margin-top:18px;
+
+}
+
+
+/* =========================================================
+   ACTIVITY
+========================================================= */
+
+.panel{
+
+    background:white;
+
+    border:
+        1px solid #e9eaf1;
+
+    border-radius:18px;
+
+    padding:22px;
+
+}
+
+
+.panel-title{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+
+.panel-title h3{
+
+    font-size:14px;
+
+}
+
+
+.panel-title span{
+
+    font-size:9px;
+
+    color:#7e8498;
+
+}
+
+
+.activity{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+
+    padding:12px 0;
+
+    border-bottom:
+        1px solid #f0f1f5;
+
+}
+
+
+.activity:last-child{
+
+    border-bottom:none;
+
+}
+
+
+.activity-icon{
+
+    width:38px;
+    height:38px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:11px;
+
+    background:#f0eaff;
+
+}
+
+
+.activity-info{
+
+    flex:1;
+
+}
+
+
+.activity-info h4{
+
+    font-size:10px;
+
+}
+
+
+.activity-info p{
+
+    font-size:9px;
+
+    color:#8a90a1;
+
+    margin-top:3px;
+
+}
+
+
+.activity-score{
+
+    font-size:12px;
+
+    font-weight:800;
+
+    color:#6132d2;
+
+}
+
+
+/* =========================================================
+   SKILL PANEL
+========================================================= */
+
+.level-box{
+
+    text-align:center;
+
+}
+
+
+.level-circle{
+
+    width:105px;
+    height:105px;
+
+    border-radius:50%;
+
+    margin:8px auto 15px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:
+        conic-gradient(
+            #6d35e0 0deg,
+            #3279ee 250deg,
+            #e8e9f0 250deg
+        );
+
+    position:relative;
+
+}
+
+
+.level-circle::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:78px;
+    height:78px;
+
+    border-radius:50%;
+
+    background:white;
+
+}
+
+
+.level-circle strong{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:22px;
+
+}
+
+
+.level-circle small{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:8px;
+
+    color:#8a90a1;
+
+}
+
+
+.level-name{
+
+    font-size:15px;
+
+    font-weight:800;
+
+}
+
+
+.level-text{
+
+    font-size:9px;
+
+    color:#858b9c;
+
+    margin-top:6px;
+
+    line-height:1.6;
+
+}
+
+
+.level-btn{
+
+    display:block;
+
+    margin:15px auto 0;
+
+    padding:9px 17px;
+
+    border:none;
+
+    border-radius:9px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6824d8,
+            #3678ee
+        );
+
+    color:white;
+
+    font-size:9px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+
+    text-align:center;
+
+    padding:25px;
+
+    color:#9ca1b0;
+
+    font-size:9px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1100px){
+
+    .stats{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+
+    .workflow{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+}
+
+
+@media(max-width:800px){
+
+    .sidebar{
+
+        width:70px;
+
+        padding:20px 8px;
+
+    }
+
+
+    .logo-text,
+    .nav-title,
+    .nav-item span:not(.nav-icon){
+
+        display:none;
+
+    }
+
+
+    .logo{
+
+        justify-content:center;
+
+        padding:0 0 20px;
+
+    }
+
+
+    .nav-item{
+
+        justify-content:center;
+
+        padding:13px;
+
+    }
+
+
+    .main{
+
+        margin-left:70px;
+
+    }
+
+
+    .topbar{
+
+        padding:0 18px;
+
+    }
+
+
+    .content{
+
+        padding:18px;
+
+    }
+
+
+    .bottom-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .wave-area{
+
+        opacity:.2;
+
+        right:10px;
+
+    }
+
+}
+
+
+@media(max-width:550px){
+
+    .stats,
+    .workflow{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .hero{
+
+        padding:25px;
+
+    }
+
+
+    .hero h1{
+
+        font-size:24px;
+
+    }
+
+
+    .ai-status{
+
+        display:none;
+
+    }
+
+}
+
+</style>
+
+<style>
+    .topbar .page-title h3 {
+        font-size: 20px;
+    }
+
+    .ai-status,
+    .user-name {
+        font-size: 13px;
+    }
+
+    .hero-small {
+        font-size: 12px;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .hero-btn {
+        font-size: 14px;
+    }
+
+    .section-header h2 {
+        font-size: 22px;
+    }
+
+    .section-header span,
+    .stat-label {
+        font-size: 13px;
+    }
+
+    .stat-value {
+        font-size: 30px;
+    }
+
+    .stat-change {
+        font-size: 12px;
+    }
+
+    .workflow-card h3 {
+        font-size: 17px;
+    }
+
+    .workflow-card p,
+    .workflow-link {
+        font-size: 13px;
+    }
+
+    .panel-title h3 {
+        font-size: 18px;
+    }
+
+    .panel-title span,
+    .activity-info p,
+    .level-text {
+        font-size: 13px;
+    }
+
+    .activity-info h4,
+    .activity-score,
+    .level-btn {
+        font-size: 14px;
+    }
+
+    .level-name {
+        font-size: 20px;
+    }
+
+    .level-circle small {
+        font-size: 11px;
+    }
+
+    @media (max-width: 550px) {
+        .hero h1 {
+            font-size: 28px;
+        }
+
+        .hero p {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<link rel="stylesheet" href="sidebar.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<div id="sidebarContainer" data-active="dashboard"></div>
+<!-- Legacy sidebar is replaced by sidebar.js. -->
+<aside class="sidebar legacy-sidebar">
+
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            🎼
+        </div>
+
+        <div class="logo-text">
+
+            <h2>
+                Polyphonic AI
+            </h2>
+
+            <span>
+                MUSIC INTELLIGENCE STUDIO
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <nav class="nav">
+
+
+        <div class="nav-title">
+            WORKSPACE
+        </div>
+
+
+        <a
+            href="dashboard.html"
+            class="nav-item active"
+        >
+
+            <span class="nav-icon">
+                ▦
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <a
+            href="upload.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ☁
+            </span>
+
+            <span>
+                Upload Music
+            </span>
+
+        </a>
+
+
+        <a
+            href="separation.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ◈
+            </span>
+
+            <span>
+                Instrument Separation
+            </span>
+
+        </a>
+
+
+        <a
+            href="transcription.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ♫
+            </span>
+
+            <span>
+                Music Transcription
+            </span>
+
+        </a>
+
+
+
+        <div class="nav-title"
+             style="margin-top:22px;">
+
+            PERFORMANCE
+
+        </div>
+
+
+        <a
+            href="performance.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ◉
+            </span>
+
+            <span>
+                Performance Analysis
+            </span>
+
+        </a>
+
+
+        <a
+            href="level.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ★
+            </span>
+
+            <span>
+                Skill Level
+            </span>
+
+        </a>
+
+
+        <a
+            href="confidence.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ◇
+            </span>
+
+            <span>
+                Confidence Score
+            </span>
+
+        </a>
+
+
+        <a
+            href="progress.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ↗
+            </span>
+
+            <span>
+                Progress Tracking
+            </span>
+
+        </a>
+
+    </nav>
+
+
+
+    <div class="sidebar-bottom">
+
+
+        <a
+            href="profile.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ●
+            </span>
+
+            <span>
+                Profile
+            </span>
+
+        </a>
+
+
+        <a
+            href="login.html"
+            class="nav-item"
+            onclick="logout()"
+        >
+
+            <span class="nav-icon">
+                ⇥
+            </span>
+
+            <span>
+                Logout
+            </span>
+
+        </a>
+
+
+    </div>
+
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <!-- TOPBAR -->
+
+    <header class="topbar">
+
+
+        <div class="page-title">
+
+            <span>▦</span>
+
+            <h3>
+                Music Intelligence Dashboard
+            </h3>
+
+        </div>
+
+
+        <div class="top-right">
+
+
+            <div class="ai-status">
+
+                <span class="status-dot"></span>
+
+                AI SYSTEM ONLINE
+
+            </div>
+
+
+            <div class="user">
+
+                <div
+                    class="avatar"
+                    id="avatar"
+                >
+                    M
+                </div>
+
+                <div
+                    class="user-name"
+                    id="userName"
+                >
+                    Musician
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- CONTENT -->
+
+    <div class="content">
+
+
+        <!-- =================================================
+             HERO
+        ================================================= -->
+
+        <section class="hero">
+
+
+            <div class="hero-content">
+
+
+                <div class="hero-small">
+                    WELCOME TO YOUR MUSIC LAB
+                </div>
+
+
+                <h1>
+
+                    Turn Music Into
+
+                    <span>
+                        Intelligence.
+                    </span>
+
+                </h1>
+
+
+                <p>
+
+                    Analyze your music with AI, separate
+                    musical components, discover instruments,
+                    generate notes and improve your performance.
+
+                </p>
+
+
+                <div class="hero-buttons">
+
+
+                    <a
+                        href="upload.html"
+                        class="hero-btn primary"
+                    >
+                        🎵 Start Music Analysis
+                    </a>
+
+
+                    <a
+                        href="progress.html"
+                        class="hero-btn secondary"
+                    >
+                        📈 View Progress
+                    </a>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- WAVEFORM -->
+
+            <div class="wave-area">
+
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================= -->
+
+        <div class="section-header">
+
+            <h2>
+                Your Music Overview
+            </h2>
+
+            <span>
+                Live workspace statistics
+            </span>
+
+        </div>
+
+
+        <section class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+                        🎵
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="songsCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Songs Analyzed
+                </div>
+
+                <div class="stat-change">
+                    ✓ Ready for analysis
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+                        🎤
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="performanceCount"
+                >
+                    0
+                </div>
+
+                <div class="stat-label">
+                    Performances
+                </div>
+
+                <div class="stat-change">
+                    ✓ Keep practicing
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+                        🎯
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="scoreValue"
+                >
+                    0%
+                </div>
+
+                <div class="stat-label">
+                    Overall Score
+                </div>
+
+                <div class="stat-change">
+                    AI performance score
+                </div>
+
+            </div>
+
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div class="stat-icon">
+                        🧠
+                    </div>
+
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="confidenceValue"
+                >
+                    0%
+                </div>
+
+                <div class="stat-label">
+                    Confidence
+                </div>
+
+                <div class="stat-change">
+                    Build confidence through practice
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             AI WORKFLOW
+        ================================================= -->
+
+        <div class="section-header">
+
+            <h2>
+                AI Music Workflow
+            </h2>
+
+            <span>
+                Four stages of intelligent analysis
+            </span>
+
+        </div>
+
+
+        <section class="workflow">
+
+
+            <!-- UPLOAD -->
+
+            <div class="workflow-card">
+
+                <div class="workflow-number">
+                    01
+                </div>
+
+                <div class="workflow-icon">
+                    ☁
+                </div>
+
+                <h3>
+                    Upload Music
+                </h3>
+
+                <p>
+
+                    Upload MP3, WAV or other supported
+                    audio files to begin your analysis.
+
+                </p>
+
+                <a
+                    href="upload.html"
+                    class="workflow-link"
+                >
+                    Start Upload →
+                </a>
+
+            </div>
+
+
+
+            <!-- SEPARATION -->
+
+            <div class="workflow-card">
+
+                <div class="workflow-number">
+                    02
+                </div>
+
+                <div class="workflow-icon">
+                    🎛
+                </div>
+
+                <h3>
+                    Separate & Detect
+                </h3>
+
+                <p>
+
+                    Separate vocals and BGM, then analyze
+                    the BGM for supported musical instruments.
+
+                </p>
+
+                <a
+                    href="separation.html"
+                    class="workflow-link"
+                >
+                    Open Separation →
+                </a>
+
+            </div>
+
+
+
+            <!-- TRANSCRIPTION -->
+
+            <div class="workflow-card">
+
+                <div class="workflow-number">
+                    03
+                </div>
+
+                <div class="workflow-icon">
+                    🎼
+                </div>
+
+                <h3>
+                    Transcribe Notes
+                </h3>
+
+                <p>
+
+                    Convert suitable musical audio into
+                    detected notes and MIDI representation.
+
+                </p>
+
+                <a
+                    href="transcription.html"
+                    class="workflow-link"
+                >
+                    Open Transcription →
+                </a>
+
+            </div>
+
+
+
+            <!-- PERFORMANCE -->
+
+            <div class="workflow-card">
+
+                <div class="workflow-number">
+                    04
+                </div>
+
+                <div class="workflow-icon">
+                    🎯
+                </div>
+
+                <h3>
+                    Evaluate Performance
+                </h3>
+
+                <p>
+
+                    Analyze pitch, rhythm, timing and note
+                    accuracy to understand your performance.
+
+                </p>
+
+                <a
+                    href="performance.html"
+                    class="workflow-link"
+                >
+                    Analyze Performance →
+                </a>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             BOTTOM
+        ================================================= -->
+
+        <section class="bottom-grid">
+
+
+            <!-- RECENT ACTIVITY -->
+
+            <div class="panel">
+
+
+                <div class="panel-title">
+
+                    <h3>
+                        Recent Music Activity
+                    </h3>
+
+                    <span>
+                        Your workspace
+                    </span>
+
+                </div>
+
+
+
+                <div class="activity" id="recentActivity">
+
+                    <div class="activity-icon">
+                        🎵
+                    </div>
+
+                    <div class="activity-info">
+
+                        <h4>
+                            Music Analysis
+                        </h4>
+
+                        <p>
+                            Upload a song to start your first analysis
+                        </p>
+
+                    </div>
+
+                    <div class="activity-score">
+                        —
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+
+
+            <!-- LEVEL -->
+
+            <div class="panel">
+
+
+                <div class="panel-title">
+
+                    <h3>
+                        Current Skill
+                    </h3>
+
+                    <span>
+                        AI evaluation
+                    </span>
+
+                </div>
+
+
+                <div class="level-box">
+
+
+                    <div class="level-circle">
+
+                        <strong id="levelScore">
+                            0
+                        </strong>
+
+                        <small>
+                            SCORE
+                        </small>
+
+                    </div>
+
+
+                    <div
+                        class="level-name"
+                        id="levelName"
+                    >
+                        Musical Starter
+                    </div>
+
+
+                    <div class="level-text">
+
+                        Complete a performance analysis
+                        to receive your personalized skill level.
+
+                    </div>
+
+
+                    <button
+                        class="level-btn"
+                        onclick="window.location.href='level.html'"
+                    >
+
+                        View Skill Analysis
+
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <div class="footer">
+
+            © 2026 Polyphonic AI ·
+            Intelligent Music Analysis & Practice System
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+
+<script>
+
+/* =========================================================
+   LOAD USER INFORMATION
+========================================================= */
+
+function loadUser(){
+
+    const storedUser =
+        localStorage.getItem(
+            "user"
+        );
+
+
+    const registeredUser =
+        localStorage.getItem(
+            "registered_user"
+        );
+
+    const sessionUser =
+        localStorage.getItem(
+            "polyphonic_user"
+        );
+
+
+    let user = null;
+
+
+    try{
+
+        if(storedUser){
+
+            user =
+                JSON.parse(
+                    storedUser
+                );
+
+        }
+
+        else if(registeredUser){
+
+            user =
+                JSON.parse(
+                    registeredUser
+                );
+
+        }
+
+        else if(sessionUser){
+
+            user =
+                JSON.parse(
+                    sessionUser
+                );
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(
+            "User data error:",
+            error
+        );
+
+    }
+
+
+    if(user){
+
+        const name =
+            user.name ||
+            "Musician";
+
+        document.getElementById(
+            "userName"
+        ).textContent =
+            name;
+
+        document.getElementById(
+            "avatar"
+        ).textContent =
+            name
+                .charAt(0)
+                .toUpperCase();
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD PROGRESS
+========================================================= */
+
+async function loadProgress(){
+
+    const getUser = key => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || "null");
+        } catch(error) {
+            return null;
+        }
+    };
+
+    const user = getUser("user") || getUser("polyphonic_user") || getUser("registered_user");
+    const userId = (user && user.id) || localStorage.getItem("user_id");
+    const history = getUser("performance_history") || [];
+
+    const renderRecentActivity = records => {
+        const container = document.getElementById("recentActivity");
+        if (!container) return;
+        container.parentElement.querySelectorAll(".activity:not(#recentActivity)").forEach(item => item.remove());
+        container.innerHTML = "";
+        if (!records.length) {
+            container.innerHTML = `<div class="activity-icon">🎵</div><div class="activity-info"><h4>Music Analysis</h4><p>Upload a song to start your first analysis</p></div><div class="activity-score">—</div>`;
+            return;
+        }
+        records.slice(0, 3).forEach(record => {
+            const activity = document.createElement("div");
+            activity.className = "activity";
+            const date = record.created_at ? new Date(record.created_at).toLocaleDateString() : "Recent session";
+            const instrument = record.instrument_name || "Performance";
+            const score = Math.round(Number(record.overall_score) || 0);
+            activity.innerHTML = `<div class="activity-icon">🎯</div><div class="activity-info"><h4>${instrument} Performance</h4><p>${date} · Pitch ${Math.round(Number(record.pitch_score) || 0)}% · Rhythm ${Math.round(Number(record.rhythm_score) || 0)}%</p></div><div class="activity-score">${score}%</div>`;
+            container.parentElement.appendChild(activity);
+        });
+    };
+
+    const renderDashboard = (dashboard, useFallback = false) => {
+        const stats = dashboard.stats || {};
+        const skills = dashboard.skill_scores || {};
+        const records = dashboard.recent_performances || [];
+        const latest = records[0] || history[history.length - 1] || {};
+        const overall = Number(stats.latest_score ?? latest.overall_score ?? localStorage.getItem("overall_score")) || 0;
+        const pitch = Number(skills.pitch ?? latest.pitch_score ?? localStorage.getItem("pitch_score")) || 0;
+        const rhythm = Number(skills.rhythm ?? latest.rhythm_score ?? localStorage.getItem("rhythm_score")) || 0;
+        const timing = Number(skills.timing ?? latest.timing_score ?? localStorage.getItem("timing_score")) || 0;
+        const notes = Number(skills.notes ?? latest.note_score ?? localStorage.getItem("note_score")) || 0;
+        const confidence = Math.round((pitch + rhythm + timing + notes) / 4);
+        const totalPerformances = Number(stats.total_performances) || (history.length || (overall ? 1 : 0));
+        const totalSongs = Number(stats.total_songs) || (overall ? 1 : 0);
+        const level = dashboard.level || (overall >= 96 ? "Master Performer" : overall >= 90 ? "Advanced" : overall >= 75 ? "Intermediate" : overall >= 60 ? "Developing Musician" : overall >= 40 ? "Beginner" : "Musical Starter");
+
+        document.getElementById("scoreValue").textContent = `${Math.round(overall)}%`;
+        document.getElementById("confidenceValue").textContent = `${confidence}%`;
+        document.getElementById("performanceCount").textContent = totalPerformances;
+        document.getElementById("songsCount").textContent = totalSongs;
+        document.getElementById("levelName").textContent = level;
+        document.getElementById("levelScore").textContent = Math.round(overall);
+        renderRecentActivity(useFallback ? history.slice().reverse() : records);
+    };
+
+    if (!userId) {
+        renderDashboard({ recent_performances: history }, true);
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Dashboard data unavailable");
+        renderDashboard(data);
+    } catch(error) {
+        console.log("Dashboard history unavailable; using saved browser results.");
+        renderDashboard({ recent_performances: history }, true);
+    }
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout(){
+
+    localStorage.removeItem(
+        "user"
+    );
+
+    localStorage.removeItem(
+        "registered_user"
+    );
+
+    localStorage.removeItem(
+        "uploadedSong"
+    );
+
+    localStorage.removeItem(
+        "uploaded_audio_id"
+    );
+
+    localStorage.removeItem(
+        "cached_separated_stems"
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+loadUser();
+
+loadProgress();
+
+</script>
+
+
+<script src="sidebar.js"></script>
+</body>
+
+</html>
+<!--
+    const getUser = key => {
+        try {
+            return JSON.parse(localStorage.getItem(key) || "null");
+        } catch(error) {
+            return null;
+        }
+    };
+
+    const user = getUser("user") || getUser("polyphonic_user") || getUser("registered_user");
+    const userId = (user && user.id) || localStorage.getItem("user_id");
+    const history = getUser("performance_history") || [];
+
+    const renderDashboard = (dashboard, useFallback = false) => {
+        const stats = dashboard.stats || {};
+        const skills = dashboard.skill_scores || {};
+        const records = dashboard.recent_performances || [];
+        const latest = records[0] || history[history.length - 1] || {};
+        const overall = Number(stats.latest_score ?? latest.overall_score ?? localStorage.getItem("overall_score")) || 0;
+        const pitch = Number(skills.pitch ?? latest.pitch_score ?? localStorage.getItem("pitch_score")) || 0;
+        const rhythm = Number(skills.rhythm ?? latest.rhythm_score ?? localStorage.getItem("rhythm_score")) || 0;
+        const timing = Number(skills.timing ?? latest.timing_score ?? localStorage.getItem("timing_score")) || 0;
+        const notes = Number(skills.notes ?? latest.note_score ?? localStorage.getItem("note_score")) || 0;
+        const confidence = Math.round((pitch + rhythm + timing + notes) / 4);
+        const totalPerformances = Number(stats.total_performances) || (history.length || (overall ? 1 : 0));
+        const totalSongs = Number(stats.total_songs) || (overall ? 1 : 0);
+        const level = dashboard.level || (overall >= 96 ? "Master Performer" : overall >= 90 ? "Advanced" : overall >= 75 ? "Intermediate" : overall >= 60 ? "Developing Musician" : overall >= 40 ? "Beginner" : "Musical Starter");
+
+        document.getElementById("scoreValue").textContent = `${Math.round(overall)}%`;
+        document.getElementById("confidenceValue").textContent = `${confidence}%`;
+        document.getElementById("performanceCount").textContent = totalPerformances;
+        document.getElementById("songsCount").textContent = totalSongs;
+        document.getElementById("levelName").textContent = level;
+        document.getElementById("levelScore").textContent = Math.round(overall);
+        renderRecentActivity(useFallback ? history.slice().reverse() : records);
+    };
+
+    const renderRecentActivity = records => {
+        const container = document.getElementById("recentActivity");
+        if (!container) return;
+        container.parentElement.querySelectorAll(".activity:not(#recentActivity)").forEach(item => item.remove());
+        container.innerHTML = "";
+        if (!records.length) {
+            container.innerHTML = `<div class="activity-icon">🎵</div><div class="activity-info"><h4>Music Analysis</h4><p>Upload a song to start your first analysis</p></div><div class="activity-score">—</div>`;
+            return;
+        }
+        records.slice(0, 3).forEach(record => {
+            const activity = document.createElement("div");
+            activity.className = "activity";
+            const date = record.created_at ? new Date(record.created_at).toLocaleDateString() : "Recent session";
+            const instrument = record.instrument_name || "Performance";
+            const score = Math.round(Number(record.overall_score) || 0);
+            activity.innerHTML = `<div class="activity-icon">🎯</div><div class="activity-info"><h4>${instrument} Performance</h4><p>${date} · Pitch ${Math.round(Number(record.pitch_score) || 0)}% · Rhythm ${Math.round(Number(record.rhythm_score) || 0)}%</p></div><div class="activity-score">${score}%</div>`;
+            container.parentElement.appendChild(activity);
+        });
+    };
+
+    if (!userId) {
+        renderDashboard({ recent_performances: history }, true);
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Dashboard data unavailable");
+        renderDashboard(data);
+    } catch(error) {
+        console.log("Dashboard history unavailable; using saved browser results.");
+        renderDashboard({ recent_performances: history }, true);
+    }
+
+
+            document.getElementById(
+                "performanceCount"
+            ).textContent =
+                progress.performances_count || 0;
+
+
+            document.getElementById(
+                "songsCount"
+            ).textContent =
+                progress.songs_completed || 0;
+
+
+            document.getElementById(
+                "levelName"
+            ).textContent =
+                progress.current_level ||
+                "Musical Starter";
+
+
+            document.getElementById(
+                "levelScore"
+            ).textContent =
+                Math.round(
+                    progress.overall_score || 0
+                );
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(
+            "Progress not available yet."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout(){
+
+    localStorage.removeItem(
+        "user"
+    );
+
+    localStorage.removeItem(
+        "registered_user"
+    );
+
+    localStorage.removeItem(
+        "uploadedSong"
+    );
+
+    localStorage.removeItem(
+        "uploaded_audio_id"
+    );
+
+    localStorage.removeItem(
+        "cached_separated_stems"
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+loadUser();
+
+loadProgress();
+
+</script>
+
+
+<script src="sidebar.js"></script>
+</body>
+
+</html>
+-->

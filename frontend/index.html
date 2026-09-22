@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Account | Polyphonic AI</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Arial,sans-serif;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body{
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    overflow:hidden;
+
+    position:relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            #13072f,
+            #4b16bd,
+            #146ee8
+        );
+}
+
+
+/* =========================================================
+   BACKGROUND IMAGE
+========================================================= */
+
+body::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+            120deg,
+            rgba(55,10,130,.88),
+            rgba(14,87,190,.78)
+        ),
+
+        url("https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=2000&q=85");
+
+    background-size:cover;
+
+    background-position:center;
+
+    z-index:0;
+
+}
+
+
+/* =========================================================
+   GLOW EFFECTS
+========================================================= */
+
+.glow{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    filter:blur(8px);
+
+    z-index:1;
+
+}
+
+
+.glow1{
+
+    width:320px;
+
+    height:320px;
+
+    background:#9b4dff;
+
+    left:-130px;
+
+    top:-120px;
+
+    opacity:.45;
+
+}
+
+
+.glow2{
+
+    width:350px;
+
+    height:350px;
+
+    background:#1a8cff;
+
+    right:-150px;
+
+    bottom:-130px;
+
+    opacity:.45;
+
+}
+
+
+/* =========================================================
+   FLOATING MUSIC NOTES
+========================================================= */
+
+.music{
+
+    position:absolute;
+
+    z-index:2;
+
+    color:rgba(255,255,255,.18);
+
+    font-size:50px;
+
+    animation:
+        floating 6s ease-in-out infinite;
+
+}
+
+
+.music1{
+
+    left:7%;
+
+    top:20%;
+
+}
+
+
+.music2{
+
+    left:15%;
+
+    bottom:13%;
+
+    font-size:70px;
+
+    animation-delay:1s;
+
+}
+
+
+.music3{
+
+    right:8%;
+
+    top:15%;
+
+    font-size:65px;
+
+    animation-delay:2s;
+
+}
+
+
+.music4{
+
+    right:16%;
+
+    bottom:18%;
+
+    font-size:45px;
+
+    animation-delay:3s;
+
+}
+
+
+@keyframes floating{
+
+    0%,100%{
+
+        transform:
+            translateY(0)
+            rotate(-8deg);
+
+    }
+
+    50%{
+
+        transform:
+            translateY(-25px)
+            rotate(8deg);
+
+    }
+
+}
+
+
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
+
+.register-container{
+
+    width:min(1120px,94%);
+
+    min-height:700px;
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    position:relative;
+
+    z-index:5;
+
+    overflow:hidden;
+
+    border-radius:30px;
+
+    background:rgba(255,255,255,.96);
+
+    box-shadow:
+        0 35px 90px rgba(0,0,0,.42);
+
+}
+
+
+/* =========================================================
+   LEFT SIDE
+========================================================= */
+
+.left-section{
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:55px;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    background:
+        linear-gradient(
+            145deg,
+            #5b18c9,
+            #256eea
+        );
+
+}
+
+
+/* LEFT BACKGROUND IMAGE */
+
+.left-section::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+            140deg,
+            rgba(77,20,185,.85),
+            rgba(20,107,229,.70)
+        ),
+
+        url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=85");
+
+    background-size:cover;
+
+    background-position:center;
+
+    opacity:.6;
+
+}
+
+
+/* CIRCLE DECORATION */
+
+.left-section::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:400px;
+
+    height:400px;
+
+    border-radius:50%;
+
+    border:1px solid rgba(255,255,255,.18);
+
+    right:-220px;
+
+    top:-150px;
+
+}
+
+
+/* =========================================================
+   LEFT CONTENT
+========================================================= */
+
+.left-content{
+
+    position:relative;
+
+    z-index:3;
+
+}
+
+
+/* =========================================================
+   AI BADGE
+========================================================= */
+
+.ai-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px 14px;
+
+    border-radius:30px;
+
+    background:rgba(255,255,255,.12);
+
+    border:1px solid rgba(255,255,255,.2);
+
+    backdrop-filter:blur(10px);
+
+    font-size:11px;
+
+    font-weight:800;
+
+    letter-spacing:.8px;
+
+    margin-bottom:28px;
+
+}
+
+
+.ai-dot{
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#6fffd0;
+
+    box-shadow:
+        0 0 15px #6fffd0;
+
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo{
+
+    width:82px;
+
+    height:82px;
+
+    border-radius:25px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:43px;
+
+    background:
+        rgba(255,255,255,.14);
+
+    border:
+        1px solid rgba(255,255,255,.25);
+
+    box-shadow:
+        0 18px 35px rgba(0,0,0,.2);
+
+    margin-bottom:25px;
+
+}
+
+
+/* =========================================================
+   LEFT TITLE
+========================================================= */
+
+.left-content h1{
+
+    font-size:42px;
+
+    line-height:1.1;
+
+    margin-bottom:12px;
+
+}
+
+
+.left-content h1 span{
+
+    display:block;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #b9e9ff
+        );
+
+    background-clip:text;
+    -webkit-background-clip:text;
+
+    -webkit-text-fill-color:transparent;
+
+}
+
+
+.tagline{
+
+    font-size:18px;
+
+    font-weight:600;
+
+    margin-bottom:20px;
+
+}
+
+
+.description{
+
+    max-width:430px;
+
+    font-size:14px;
+
+    line-height:1.8;
+
+    color:rgba(255,255,255,.84);
+
+}
+
+
+/* =========================================================
+   SOUND WAVE
+========================================================= */
+
+.wave{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:5px;
+
+    height:55px;
+
+    margin-top:32px;
+
+}
+
+
+.bar{
+
+    width:4px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.72);
+
+    animation:
+        sound 1.4s ease-in-out infinite;
+
+}
+
+
+.bar:nth-child(1){height:18px}
+.bar:nth-child(2){height:32px}
+.bar:nth-child(3){height:45px}
+.bar:nth-child(4){height:25px}
+.bar:nth-child(5){height:38px}
+.bar:nth-child(6){height:50px}
+.bar:nth-child(7){height:28px}
+.bar:nth-child(8){height:43px}
+.bar:nth-child(9){height:20px}
+.bar:nth-child(10){height:35px}
+.bar:nth-child(11){height:48px}
+.bar:nth-child(12){height:27px}
+.bar:nth-child(13){height:40px}
+.bar:nth-child(14){height:22px}
+.bar:nth-child(15){height:34px}
+.bar:nth-child(16){height:46px}
+
+
+@keyframes sound{
+
+    0%,100%{
+
+        transform:scaleY(.7);
+
+    }
+
+    50%{
+
+        transform:scaleY(1.15);
+
+    }
+
+}
+
+
+/* =========================================================
+   FEATURE PILLS
+========================================================= */
+
+.features{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:9px;
+
+    margin-top:22px;
+
+}
+
+
+.feature{
+
+    padding:8px 12px;
+
+    border-radius:10px;
+
+    background:rgba(255,255,255,.10);
+
+    border:
+        1px solid rgba(255,255,255,.16);
+
+    font-size:10px;
+
+    color:rgba(255,255,255,.9);
+
+}
+
+
+/* =========================================================
+   RIGHT SECTION
+========================================================= */
+
+.right-section{
+
+    background:#fff;
+
+    padding:42px 62px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+
+    text-align:center;
+
+    margin-bottom:24px;
+
+}
+
+
+.header .mini{
+
+    color:#6b3ce4;
+
+    font-size:11px;
+
+    font-weight:800;
+
+    letter-spacing:1.2px;
+
+    margin-bottom:7px;
+
+}
+
+
+.header h2{
+
+    font-size:32px;
+
+    color:#17204c;
+
+    margin-bottom:7px;
+
+}
+
+
+.header p{
+
+    color:#7d8498;
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-group{
+
+    margin-bottom:13px;
+
+}
+
+
+.form-label{
+
+    display:block;
+
+    color:#344067;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    letter-spacing:.4px;
+
+    margin-bottom:6px;
+
+}
+
+
+.input-box{
+
+    position:relative;
+
+}
+
+
+.input-icon{
+
+    position:absolute;
+
+    left:16px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#6a35dd;
+
+    font-size:16px;
+
+}
+
+
+.input-box input{
+
+    width:100%;
+
+    height:50px;
+
+    border:1px solid #e0e3eb;
+
+    border-radius:12px;
+
+    outline:none;
+
+    padding:
+        0 45px;
+
+    font-size:13px;
+
+    color:#26325c;
+
+    background:#fafbff;
+
+    transition:.25s;
+
+}
+
+
+.input-box input:focus{
+
+    border-color:#6b3ce4;
+
+    background:white;
+
+    box-shadow:
+        0 0 0 4px rgba(107,60,228,.08);
+
+}
+
+
+.input-box input::placeholder{
+
+    color:#a1a7b5;
+
+}
+
+
+/* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
+
+.toggle-password{
+
+    position:absolute;
+
+    right:15px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    border:none;
+
+    background:none;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    color:#7c8495;
+
+}
+
+
+/* =========================================================
+   PASSWORD STRENGTH
+========================================================= */
+
+.password-strength{
+
+    height:4px;
+
+    width:100%;
+
+    border-radius:10px;
+
+    background:#eceef4;
+
+    margin-top:7px;
+
+    overflow:hidden;
+
+}
+
+
+.strength-bar{
+
+    height:100%;
+
+    width:0%;
+
+    transition:.3s;
+
+    background:#6b3ce4;
+
+}
+
+
+/* =========================================================
+   TERMS
+========================================================= */
+
+.terms{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:8px;
+
+    margin:8px 0 17px;
+
+    color:#7b8295;
+
+    font-size:10px;
+
+    line-height:1.5;
+
+}
+
+
+.terms input{
+
+    margin-top:2px;
+
+    accent-color:#6b3ce4;
+
+}
+
+
+.terms a{
+
+    color:#6636d9;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+}
+
+
+/* =========================================================
+   REGISTER BUTTON
+========================================================= */
+
+.register-btn{
+
+    width:100%;
+
+    height:52px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #6b18d5,
+            #286ef2
+        );
+
+    color:white;
+
+    font-size:14px;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 12px 25px rgba(76,67,205,.25);
+
+    transition:.25s;
+
+}
+
+
+.register-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 17px 30px rgba(76,67,205,.32);
+
+}
+
+
+.register-btn:disabled{
+
+    opacity:.7;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#message{
+
+    min-height:20px;
+
+    margin-top:12px;
+
+    text-align:center;
+
+    font-size:11px;
+
+    font-weight:700;
+
+}
+
+
+.success{
+
+    color:#119466;
+
+}
+
+
+.error{
+
+    color:#dc4057;
+
+}
+
+
+.info{
+
+    color:#6740dc;
+
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.divider{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    color:#a3a8b6;
+
+    font-size:10px;
+
+    margin:17px 0;
+
+}
+
+
+.divider::before,
+.divider::after{
+
+    content:"";
+
+    flex:1;
+
+    height:1px;
+
+    background:#e6e8ef;
+
+}
+
+
+/* =========================================================
+   LOGIN LINK
+========================================================= */
+
+.login-text{
+
+    text-align:center;
+
+    color:#777f93;
+
+    font-size:12px;
+
+}
+
+
+.login-text a{
+
+    color:#6636dc;
+
+    font-weight:800;
+
+    text-decoration:none;
+
+}
+
+
+.login-text a:hover{
+
+    text-decoration:underline;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.security{
+
+    text-align:center;
+
+    margin-top:18px;
+
+    color:#a0a6b5;
+
+    font-size:9px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:850px){
+
+    body{
+
+        overflow:auto;
+
+        padding:20px 0;
+
+    }
+
+
+    .register-container{
+
+        grid-template-columns:1fr;
+
+        min-height:auto;
+
+    }
+
+
+    .left-section{
+
+        min-height:450px;
+
+        padding:40px;
+
+    }
+
+
+    .right-section{
+
+        padding:40px;
+
+    }
+
+}
+
+
+@media(max-width:500px){
+
+    .left-section{
+
+        padding:30px;
+
+    }
+
+
+    .right-section{
+
+        padding:32px 24px;
+
+    }
+
+
+    .left-content h1{
+
+        font-size:32px;
+
+    }
+
+
+    .header h2{
+
+        font-size:27px;
+
+    }
+
+}
+
+/* =========================================================
+   ALBUM-SLEEVE LANDING THEME
+========================================================= */
+
+:root{
+    --ink:#132321;
+    --forest:#1d4038;
+    --coral:#ef705d;
+    --mint:#a6e3c4;
+    --paper:#f5f1e8;
+}
+
+body{
+    background:radial-gradient(circle at 10% 10%, rgba(239,112,93,.25), transparent 25%), linear-gradient(135deg, #0b1212, #1d4038);
+    font-family:"Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+body::before{
+    background:linear-gradient(120deg, rgba(11,18,18,.9), rgba(29,64,56,.68)), url("https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=2000&q=85");
+    opacity:.7;
+}
+
+.glow{
+    filter:blur(0);
+    border-radius:24% 76% 32% 68%;
+}
+
+.glow1{background:var(--coral); opacity:.5;}
+.glow2{background:var(--mint); opacity:.26;}
+
+.music{color:rgba(245,241,232,.2); font-family:Georgia, serif;}
+
+.register-container{
+    width:min(1120px,92%);
+    border-radius:8px 48px 8px 48px;
+    background:var(--paper);
+    border:1px solid rgba(245,241,232,.7);
+    box-shadow:0 35px 90px rgba(0,0,0,.42);
+}
+
+.left-section{
+    background:var(--ink);
+}
+
+.left-section::before{
+    background:linear-gradient(140deg, rgba(19,35,33,.88), rgba(29,64,56,.7)), url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=85");
+    opacity:.82;
+}
+
+.left-section::after{
+    border-color:rgba(166,227,196,.25);
+}
+
+.ai-badge{
+    border-radius:4px;
+    background:rgba(166,227,196,.1);
+    border-color:rgba(166,227,196,.3);
+    color:var(--mint);
+}
+
+.ai-dot{background:var(--coral); box-shadow:0 0 15px var(--coral);}
+
+.logo{
+    border-radius:50%;
+    background:var(--coral);
+    border:6px solid rgba(245,241,232,.18);
+}
+
+.left-section h1,
+.left-section h3{
+    font-family:Georgia, "Times New Roman", serif;
+}
+
+.left-section h1 span,
+.gradient-text{
+    color:var(--mint);
+}
+
+.right-section{
+    background:var(--paper);
+}
+
+.header h2,
+form h2{
+    color:var(--ink);
+    font-family:Georgia, "Times New Roman", serif;
+}
+
+.input-box input{
+    border-color:#d6cec0;
+    border-radius:4px 12px 4px 12px;
+    background:rgba(255,255,255,.45);
+}
+
+.input-box input:focus{
+    border-color:var(--coral);
+    box-shadow:0 0 0 3px rgba(239,112,93,.12);
+}
+
+.input-box > i:first-child{color:var(--coral);}
+
+.login-btn,
+button[type="submit"]{
+    border-radius:4px 14px 4px 14px;
+    background:var(--ink);
+}
+
+.login-btn:hover,
+button[type="submit"]:hover{background:var(--coral);}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     BACKGROUND
+========================================================= -->
+
+<div class="glow glow1"></div>
+
+<div class="glow glow2"></div>
+
+
+<div class="music music1">♪</div>
+
+<div class="music music2">♫</div>
+
+<div class="music music3">♬</div>
+
+<div class="music music4">♪</div>
+
+
+
+<!-- =========================================================
+     MAIN CONTAINER
+========================================================= -->
+
+<div class="register-container">
+
+
+    <!-- =====================================================
+         LEFT SIDE
+    ===================================================== -->
+
+    <section class="left-section">
+
+        <div class="left-content">
+
+
+            <div class="ai-badge">
+
+                <span class="ai-dot"></span>
+
+                POWERED BY AI MUSIC ANALYTICS
+
+            </div>
+
+
+            <div class="logo">
+
+                🎼
+
+            </div>
+
+
+            <h1>
+
+                Create Your
+
+                <span>
+                    Musical Identity
+                </span>
+
+            </h1>
+
+
+            <div class="tagline">
+
+                Your Music.
+                Your Progress.
+                Your Journey.
+
+            </div>
+
+
+            <p class="description">
+
+                Join Polyphonic AI and explore a smarter
+                way to understand music. Analyze instruments,
+                generate musical notes, evaluate performances
+                and track your improvement with intelligent
+                music analysis.
+
+            </p>
+
+
+
+            <!-- SOUND WAVE -->
+
+            <div class="wave">
+
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+
+            </div>
+
+
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+                <div class="feature">
+                    🎤 Vocal Analysis
+                </div>
+
+                <div class="feature">
+                    🎹 Instrument AI
+                </div>
+
+                <div class="feature">
+                    🎼 Note Detection
+                </div>
+
+                <div class="feature">
+                    📈 Progress Tracking
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RIGHT SIDE
+    ===================================================== -->
+
+    <section class="right-section">
+
+
+        <div class="header">
+
+            <div class="mini">
+                NEW MUSICIAN
+            </div>
+
+            <h2>
+                Create Account
+            </h2>
+
+            <p>
+                Start your intelligent musical journey today.
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             REGISTER FORM
+        ================================================= -->
+
+        <form
+            id="registerForm"
+            onsubmit="registerUser(event)"
+        >
+
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    FULL NAME
+                </label>
+
+                <div class="input-box">
+
+                    <span class="input-icon">
+                        👤
+                    </span>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    EMAIL ADDRESS
+                </label>
+
+                <div class="input-box">
+
+                    <span class="input-icon">
+                        ✉
+                    </span>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email address"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    CREATE PASSWORD
+                </label>
+
+                <div class="input-box">
+
+                    <span class="input-icon">
+                        🔒
+                    </span>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create a password"
+                        required
+                        minlength="6"
+                        oninput="checkPasswordStrength()"
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        onclick="togglePassword('password','passwordToggle')"
+                        id="passwordToggle"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+
+                <div class="password-strength">
+
+                    <div
+                        class="strength-bar"
+                        id="strengthBar"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+                <label class="form-label">
+                    CONFIRM PASSWORD
+                </label>
+
+                <div class="input-box">
+
+                    <span class="input-icon">
+                        🔐
+                    </span>
+
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        placeholder="Confirm your password"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="toggle-password"
+                        onclick="togglePassword('confirmPassword','confirmToggle')"
+                        id="confirmToggle"
+                    >
+                        👁
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TERMS -->
+
+            <label class="terms">
+
+                <input
+                    type="checkbox"
+                    id="terms"
+                    required
+                >
+
+                <span>
+
+                    I agree to the
+                    <a href="#">
+                        Terms of Service
+                    </a>
+                    and
+                    <a href="#">
+                        Privacy Policy
+                    </a>
+
+                </span>
+
+            </label>
+
+
+
+            <!-- REGISTER BUTTON -->
+
+            <button
+                type="submit"
+                class="register-btn"
+                id="registerBtn"
+            >
+
+                ✨ Create My Account
+
+            </button>
+
+
+            <!-- MESSAGE -->
+
+            <div id="message"></div>
+
+
+        </form>
+
+
+
+        <div class="divider">
+            OR
+        </div>
+
+
+
+        <!-- LOGIN -->
+
+        <div class="login-text">
+
+            Already have an account?
+
+            <a href="login.html">
+                Sign In
+            </a>
+
+        </div>
+
+
+
+        <div class="security">
+
+            🔐 Your information is securely processed
+            by Polyphonic AI
+
+        </div>
+
+
+    </section>
+
+</div>
+
+
+
+<script>
+
+
+// ============================================================
+// BACKEND URL
+// ============================================================
+
+const API_URL =
+    "http://127.0.0.1:5000/api";
+
+
+// ============================================================
+// PASSWORD SHOW / HIDE
+// ============================================================
+
+function togglePassword(
+    inputId,
+    buttonId
+){
+
+    const input =
+        document.getElementById(inputId);
+
+    const button =
+        document.getElementById(buttonId);
+
+
+    if(input.type === "password"){
+
+        input.type = "text";
+
+        button.textContent = "🙈";
+
+    }
+
+    else{
+
+        input.type = "password";
+
+        button.textContent = "👁";
+
+    }
+
+}
+
+
+// ============================================================
+// PASSWORD STRENGTH
+// ============================================================
+
+function checkPasswordStrength(){
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    const bar =
+        document.getElementById(
+            "strengthBar"
+        );
+
+
+    let strength = 0;
+
+
+    if(password.length >= 6){
+
+        strength += 25;
+
+    }
+
+
+    if(password.length >= 8){
+
+        strength += 25;
+
+    }
+
+
+    if(/[A-Z]/.test(password)){
+
+        strength += 20;
+
+    }
+
+
+    if(/[0-9]/.test(password)){
+
+        strength += 15;
+
+    }
+
+
+    if(/[^A-Za-z0-9]/.test(password)){
+
+        strength += 15;
+
+    }
+
+
+    bar.style.width =
+        strength + "%";
+
+}
+
+
+// ============================================================
+// SHOW MESSAGE
+// ============================================================
+
+function showMessage(
+    text,
+    type
+){
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    message.textContent =
+        text;
+
+    message.className =
+        type || "";
+
+}
+
+
+// ============================================================
+// REGISTER USER
+// ============================================================
+
+async function registerUser(event){
+
+    event.preventDefault();
+
+
+    const name =
+        document.getElementById(
+            "name"
+        ).value.trim();
+
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+
+    const password =
+        document.getElementById(
+            "password"
+        ).value;
+
+
+    const confirmPassword =
+        document.getElementById(
+            "confirmPassword"
+        ).value;
+
+
+    const terms =
+        document.getElementById(
+            "terms"
+        ).checked;
+
+
+    const registerButton =
+        document.getElementById(
+            "registerBtn"
+        );
+
+
+
+    // ========================================================
+    // VALIDATION
+    // ========================================================
+
+    if(!name){
+
+        showMessage(
+            "Please enter your full name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!email){
+
+        showMessage(
+            "Please enter your email address.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(password.length < 6){
+
+        showMessage(
+            "Password must contain at least 6 characters.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(password !== confirmPassword){
+
+        showMessage(
+            "Passwords do not match.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if(!terms){
+
+        showMessage(
+            "Please accept the terms and privacy policy.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+
+    // ========================================================
+    // DISABLE BUTTON
+    // ========================================================
+
+    registerButton.disabled = true;
+
+    registerButton.textContent =
+        "⏳ Creating Account...";
+
+
+    showMessage(
+        "Connecting to Polyphonic AI...",
+        "info"
+    );
+
+
+
+    // ========================================================
+    // SEND DATA TO FLASK
+    // ========================================================
+
+    try{
+
+
+        const response =
+            await fetch(
+                `${API_URL}/auth/register`,
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        name:name,
+
+                        email:email,
+
+                        password:password
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Registration response:",
+            data
+        );
+
+
+
+        // ====================================================
+        // ERROR
+        // ====================================================
+
+        if(
+            !response.ok ||
+            !data.success
+        ){
+
+            throw new Error(
+                data.message ||
+                "Registration failed."
+            );
+
+        }
+
+
+
+        // ====================================================
+        // SUCCESS
+        // ====================================================
+
+        showMessage(
+            "✓ Account created successfully! Redirecting to login...",
+            "success"
+        );
+
+
+        registerButton.textContent =
+            "✓ Account Created";
+
+
+
+        // ====================================================
+        // SAVE USER
+        // ====================================================
+
+        if(data.user){
+
+            localStorage.setItem(
+                "registered_user",
+                JSON.stringify(
+                    data.user
+                )
+            );
+
+        }
+
+
+
+        // ====================================================
+        // REDIRECT
+        // ====================================================
+
+        setTimeout(
+            function(){
+
+                window.location.href =
+                    "login.html";
+
+            },
+            1200
+        );
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Registration Error:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to connect to backend.",
+            "error"
+        );
+
+
+        registerButton.disabled =
+            false;
+
+
+        registerButton.textContent =
+            "✨ Create My Account";
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

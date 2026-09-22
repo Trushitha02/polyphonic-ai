@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Confidence Analysis - Polyphonic AI</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Global Sidebar Navigation -->
+    <link rel="stylesheet" href="sidebar.css">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            height: 70px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .logo i {
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .logout {
+            background: rgba(255,255,255,0.18);
+            padding: 9px 15px;
+            border-radius: 20px;
+        }
+
+        /* MAIN */
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 35px auto;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .page-title p {
+            color: #777;
+        }
+
+        /* HERO */
+
+        .hero {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 35px;
+            border-radius: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(37,117,252,0.25);
+        }
+
+        .hero-text {
+            max-width: 65%;
+        }
+
+        .hero-text h2 {
+            font-size: 29px;
+            margin-bottom: 12px;
+        }
+
+        .hero-text p {
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .confidence-icon {
+            width: 125px;
+            height: 125px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            border: 4px solid rgba(255,255,255,0.5);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 55px;
+        }
+
+        /* GRID */
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        }
+
+        .card h3 {
+            margin-bottom: 22px;
+            color: #333;
+        }
+
+        /* CONFIDENCE SCORE */
+
+        .score-section {
+            text-align: center;
+        }
+
+        .confidence-circle {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+
+            background:
+                conic-gradient(
+                    #2575fc 0deg,
+                    #e8ecf5 0deg
+                );
+
+            margin: 10px auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            position: relative;
+        }
+
+        .confidence-circle::before {
+            content: "";
+            position: absolute;
+
+            width: 145px;
+            height: 145px;
+
+            background: white;
+            border-radius: 50%;
+        }
+
+        .score-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-content strong {
+            display: block;
+            font-size: 40px;
+            color: #2575fc;
+        }
+
+        .score-content span {
+            color: #777;
+            font-size: 14px;
+        }
+
+        .confidence-status {
+            font-size: 19px;
+            font-weight: bold;
+            color: #2575fc;
+            margin-bottom: 8px;
+        }
+
+        .confidence-description {
+            color: #777;
+            line-height: 1.5;
+        }
+
+        /* BEFORE AFTER */
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .compare-box {
+            padding: 20px;
+            border-radius: 15px;
+            background: #f5f7fb;
+            text-align: center;
+        }
+
+        .compare-box i {
+            font-size: 27px;
+            color: #2575fc;
+            margin-bottom: 10px;
+        }
+
+        .compare-box h4 {
+            margin-bottom: 8px;
+        }
+
+        .compare-score {
+            font-size: 27px;
+            font-weight: bold;
+            color: #2575fc;
+        }
+
+        .compare-box p {
+            color: #777;
+            font-size: 13px;
+            margin-top: 7px;
+        }
+
+        /* FACTORS */
+
+        .factor {
+            margin-bottom: 18px;
+        }
+
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+        }
+
+        .factor-header span:last-child {
+            font-weight: bold;
+            color: #2575fc;
+        }
+
+        .bar {
+            height: 10px;
+            background: #e9edf5;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6a11cb, #2575fc);
+            border-radius: 20px;
+            transition: width 1s ease;
+        }
+
+        /* BOOST / BLOCKERS */
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .boost-box,
+        .blocker-box {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        }
+
+        .boost-box h3,
+        .blocker-box h3 {
+            margin-bottom: 18px;
+        }
+
+        .boost-box h3 i {
+            color: #2575fc;
+        }
+
+        .blocker-box h3 i {
+            color: #6a11cb;
+        }
+
+        .item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+            color: #666;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .item i {
+            margin-top: 3px;
+        }
+
+        .boost-box .item i {
+            color: #2575fc;
+        }
+
+        .blocker-box .item i {
+            color: #6a11cb;
+        }
+
+        /* PRACTICE PLAN */
+
+        .practice {
+            background: linear-gradient(135deg, #f0e9ff, #e8f1ff);
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 25px;
+        }
+
+        .practice h3 {
+            margin-bottom: 20px;
+        }
+
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .practice-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .practice-card i {
+            font-size: 25px;
+            color: #6a11cb;
+            margin-bottom: 12px;
+        }
+
+        .practice-card h4 {
+            margin-bottom: 8px;
+        }
+
+        .practice-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* INFO */
+
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2575fc;
+        }
+
+        .info p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* BUTTON */
+
+        .button-area {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .next-btn {
+            border: none;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 25px;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(37,117,252,0.25);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #2575fc;
+            border: 1px solid #d7e1f7;
+            margin-right: 10px;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 800px) {
+
+            .grid,
+            .two-column,
+            .practice-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                gap: 25px;
+            }
+
+            .hero-text {
+                max-width: 100%;
+            }
+
+            .nav-links a:not(.logout) {
+                display: none;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<div class="app-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <div id="sidebarContainer" data-active="confidence"></div>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-area">
+
+        <!-- TOP BAR -->
+        <header class="main-topbar">
+            <div style="display: flex; align-items: center;">
+                <button class="mobile-toggle" aria-label="Toggle Sidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="topbar-title">
+                    <i class="fa-solid fa-shield-heart" style="color: #1746b8;"></i>
+                    <span>Confidence Score</span>
+                </div>
+            </div>
+
+            <div class="topbar-right">
+                <a href="profile.html" class="topbar-user">
+                    <div class="topbar-user-avatar">M</div>
+                    <span class="topbar-user-name">Musician</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="page-container">
+
+
+    <!-- PAGE TITLE -->
+
+    <div class="page-title">
+
+        <h1>
+            AI Confidence Analysis
+        </h1>
+
+        <p>
+            Understand your musical confidence through performance consistency
+        </p>
+
+    </div>
+
+
+    <!-- HERO -->
+
+    <div class="hero">
+
+        <div class="hero-text">
+
+            <h2 id="confidenceTitle">
+                🌱 Confidence Journey Starting
+            </h2>
+
+            <p id="confidenceDescription">
+
+                Your confidence profile will be created after you complete
+                your first performance analysis. Keep practicing and your
+                musical progress will become easier to track.
+
+            </p>
+
+        </div>
+
+
+        <div class="confidence-icon" id="confidenceIcon">
+            🌱
+        </div>
+
+    </div>
+
+
+    <!-- SCORE + COMPARISON -->
+
+    <div class="grid">
+
+
+        <!-- CONFIDENCE SCORE -->
+
+        <div class="card">
+
+            <h3>
+                <i class="fa-solid fa-heart"></i>
+                Musical Confidence Score
+            </h3>
+
+            <div class="score-section">
+
+                <div class="confidence-circle" id="confidenceCircle">
+
+                    <div class="score-content">
+
+                        <strong id="confidenceScore">
+                            0%
+                        </strong>
+
+                        <span>
+                            Confidence
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="confidence-status"
+                     id="confidenceStatus">
+
+                    Starting Point
+
+                </div>
+
+
+                <p class="confidence-description"
+                   id="confidenceMessage">
+
+                    No performance data is available yet.
+                    Complete your first performance analysis
+                    to begin your confidence journey.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- BEFORE / AFTER -->
+
+        <div class="card">
+
+            <h3>
+                <i class="fa-solid fa-arrow-trend-up"></i>
+                Confidence Growth
+            </h3>
+
+            <div class="comparison">
+
+
+                <div class="compare-box">
+
+                    <i class="fa-solid fa-hourglass-start"></i>
+
+                    <h4>
+                        Before Practice
+                    </h4>
+
+                    <div class="compare-score">
+                        0%
+                    </div>
+
+                    <p>
+                        Initial confidence
+                    </p>
+
+                </div>
+
+
+                <div class="compare-box">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    <h4>
+                        Current
+                    </h4>
+
+                    <div class="compare-score"
+                         id="currentConfidence">
+                        0%
+                    </div>
+
+                    <p>
+                        Based on performance
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONFIDENCE FACTORS -->
+
+    <div class="card" style="margin-bottom:25px;">
+
+        <h3>
+            <i class="fa-solid fa-chart-simple"></i>
+            Confidence Building Factors
+        </h3>
+
+
+        <div class="factor">
+
+            <div class="factor-header">
+
+                <span>
+                    Performance Consistency
+                </span>
+
+                <span id="consistencyValue">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div class="bar-fill"
+                     id="consistencyBar">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="factor">
+
+            <div class="factor-header">
+
+                <span>
+                    Pitch Stability
+                </span>
+
+                <span id="pitchValue">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div class="bar-fill"
+                     id="pitchBar">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="factor">
+
+            <div class="factor-header">
+
+                <span>
+                    Rhythm Control
+                </span>
+
+                <span id="rhythmValue">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div class="bar-fill"
+                     id="rhythmBar">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="factor">
+
+            <div class="factor-header">
+
+                <span>
+                    Timing Accuracy
+                </span>
+
+                <span id="timingValue">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div class="bar-fill"
+                     id="timingBar">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="factor">
+
+            <div class="factor-header">
+
+                <span>
+                    Note Accuracy
+                </span>
+
+                <span id="noteValue">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="bar">
+
+                <div class="bar-fill"
+                     id="noteBar">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BOOST + BLOCKERS -->
+
+    <div class="two-column">
+
+
+        <!-- BOOST -->
+
+        <div class="boost-box">
+
+            <h3>
+                <i class="fa-solid fa-bolt"></i>
+                Confidence Boost Factors
+            </h3>
+
+
+            <div class="item">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <span>
+                    Regular practice can help improve performance consistency.
+                </span>
+
+            </div>
+
+
+            <div class="item">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <span>
+                    Improving pitch and rhythm accuracy can strengthen
+                    musical performance.
+                </span>
+
+            </div>
+
+
+            <div class="item">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <span>
+                    Repeating difficult musical sections can build familiarity.
+                </span>
+
+            </div>
+
+
+            <div class="item">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <span>
+                    Tracking progress helps you see improvement over time.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- BLOCKERS -->
+
+        <div class="blocker-box">
+
+            <h3>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Areas to Watch
+            </h3>
+
+
+            <div class="item" id="watchMessage">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <span>
+                    Performance data will appear after your first analysis.
+                </span>
+
+            </div>
+
+
+            <div class="item" id="practiceMessage">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <span>
+                    Complete more analyses to identify areas that need improvement.
+                </span>
+
+            </div>
+
+
+            <div class="item">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                <span>
+                    Do not worry about the initial score.
+                    The system starts from zero.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PRACTICE PLAN -->
+
+    <div class="practice">
+
+        <h3>
+            <i class="fa-solid fa-dumbbell"></i>
+            AI Confidence-Building Practice Plan
+        </h3>
+
+
+        <div class="practice-grid">
+
+
+            <div class="practice-card">
+
+                <i class="fa-solid fa-music"></i>
+
+                <h4>
+                    Step 1 — Start Small
+                </h4>
+
+                <p>
+                    Practice a short musical section instead of
+                    attempting a complete song immediately.
+                </p>
+
+            </div>
+
+
+            <div class="practice-card">
+
+                <i class="fa-solid fa-repeat"></i>
+
+                <h4>
+                    Step 2 — Repeat
+                </h4>
+
+                <p>
+                    Repeat difficult sections several times and
+                    compare your performance with the reference.
+                </p>
+
+            </div>
+
+
+            <div class="practice-card">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <h4>
+                    Step 3 — Track Progress
+                </h4>
+
+                <p>
+                    Use the performance and progress pages to
+                    observe improvements in accuracy and consistency.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFORMATION -->
+
+    <div class="info">
+
+        <p>
+            <strong>Note:</strong>
+            This confidence score is a project-defined indicator based on
+            measurable musical performance factors such as consistency,
+            pitch, rhythm and timing. It is not a psychological or
+            clinical measurement.
+        </p>
+
+    </div>
+
+
+    <!-- BUTTON -->
+
+    <div class="button-area">
+
+        <button class="next-btn secondary-btn"
+                onclick="goToPerformance()">
+
+            Review Performance
+
+            <i class="fa-solid fa-chart-line"></i>
+
+        </button>
+
+        <button class="next-btn secondary-btn"
+                onclick="goToSkillLevel()">
+
+            View Skill Profile
+
+            <i class="fa-solid fa-ranking-star"></i>
+
+        </button>
+
+        <button class="next-btn"
+                onclick="goToProgress()">
+
+            Continue to Progress Tracking
+
+            <i class="fa-solid fa-arrow-right"></i>
+
+        </button>
+
+        </main>
+    </div>
+</div>
+
+
+<script>
+
+
+/*
+    INITIAL PROJECT STATE
+    ----------------------
+
+    Since no performance data has been
+    inserted yet, everything starts at 0.
+*/
+
+let confidence = 0;
+
+let consistency = 0;
+
+let pitch = 0;
+
+let rhythm = 0;
+
+let timing = 0;
+
+let note = 0;
+
+
+function clampScore(value) {
+    return Math.max(0, Math.min(100, Number(value) || 0));
+}
+
+function loadConfidenceData() {
+    pitch = clampScore(localStorage.getItem("pitch_score"));
+    rhythm = clampScore(localStorage.getItem("rhythm_score"));
+    timing = clampScore(localStorage.getItem("timing_score"));
+    note = clampScore(localStorage.getItem("note_score"));
+
+    const overall = clampScore(localStorage.getItem("overall_score"));
+    const hasPerformance = localStorage.getItem("overall_score") !== null;
+    const performanceCount = Number(localStorage.getItem("performance_count")) || (hasPerformance ? 1 : 0);
+    confidence = clampScore(overall + Math.min(performanceCount * 2, 20));
+    consistency = Math.round((pitch + rhythm + timing + note) / 4);
+
+    document.getElementById("confidenceScore").innerText = Math.round(confidence) + "%";
+    document.getElementById("currentConfidence").innerText = Math.round(confidence) + "%";
+    document.getElementById("consistencyValue").innerText = consistency + "%";
+    document.getElementById("pitchValue").innerText = Math.round(pitch) + "%";
+    document.getElementById("rhythmValue").innerText = Math.round(rhythm) + "%";
+    document.getElementById("timingValue").innerText = Math.round(timing) + "%";
+    document.getElementById("noteValue").innerText = Math.round(note) + "%";
+
+    document.getElementById("consistencyBar").style.width = consistency + "%";
+    document.getElementById("pitchBar").style.width = pitch + "%";
+    document.getElementById("rhythmBar").style.width = rhythm + "%";
+    document.getElementById("timingBar").style.width = timing + "%";
+    document.getElementById("noteBar").style.width = note + "%";
+
+    const degrees = Math.round(confidence * 3.6);
+    document.getElementById("confidenceCircle").style.background =
+        `conic-gradient(#1d4038 ${degrees}deg, #d5eee1 ${degrees}deg)`;
+
+    const status = confidence >= 75 ? "Confident Performer" : confidence >= 45 ? "Building Confidence" : "Starting Point";
+    document.getElementById("confidenceStatus").innerText = status;
+    document.getElementById("confidenceTitle").innerText = hasPerformance
+        ? `🎯 ${status}`
+        : "🌱 Confidence Journey Starting";
+    document.getElementById("confidenceMessage").innerText = hasPerformance
+        ? "Confidence is based on your latest performance accuracy and consistency across pitch, rhythm, timing and notes."
+        : "Complete a performance analysis to begin your confidence journey.";
+    document.getElementById("confidenceDescription").innerText = hasPerformance
+        ? "Your confidence is updated from the latest performance and skill profile scores."
+        : "Your confidence profile will be created after you complete your first performance analysis.";
+    document.querySelector("#watchMessage span").innerText = hasPerformance
+        ? (consistency < 70 ? "Focus on the lowest skill areas to build consistency." : "Your current skill profile is developing consistently.")
+        : "Performance data will appear after your first analysis.";
+    document.querySelector("#practiceMessage span").innerText = hasPerformance
+        ? "Repeat difficult musical sections and compare your next performance."
+        : "Complete more analyses to identify areas that need improvement.";
+}
+
+loadConfidenceData();
+
+window.addEventListener("storage", event => {
+    if (["pitch_score", "rhythm_score", "timing_score", "note_score", "overall_score"].includes(event.key)) {
+        loadConfidenceData();
+    }
+});
+
+/*
+    GO TO PROGRESS PAGE
+*/
+function goToProgress() {
+    window.location.href = "progress.html";
+}
+
+function goToPerformance() {
+    window.location.href = "performance.html";
+}
+
+function goToSkillLevel() {
+    window.location.href = "level.html";
+}
+
+</script>
+<script src="api.js"></script>
+<script src="sidebar.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+venv/
+backend/venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+
+# Generated runtime data
+backend/uploads/*
+backend/separated_audio/*
+backend/results/*
+backend/midi/*
+backend/datasets/babyslakh_16k/*
+backend/datasets/instruments/*
+backend/datasets/separation/*
+backend/datasets/transcription/audio/*
+backend/datasets/transcription/midi/*
+backend/separated/*
+separated/*
+
+# Local/editor files
+.vscode/
+*.log

@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Skill Level | Polyphonic AI</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #172e91 0%,
+                    #2454c9 50%,
+                    #173a9c 100%
+                );
+
+            color: white;
+            z-index: 1000;
+
+            display: flex;
+            flex-direction: column;
+
+            box-shadow: 4px 0 20px rgba(25, 48, 120, 0.18);
+        }
+
+        /* LOGO */
+
+        .logo-area {
+            height: 88px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 22px;
+
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+
+            border-radius: 14px;
+
+            background: rgba(255,255,255,0.18);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+
+            margin-right: 13px;
+        }
+
+        .logo-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .logo-text span {
+            font-size: 12px;
+            opacity: 0.75;
+            letter-spacing: 1px;
+        }
+
+        /* NAVIGATION */
+
+        .nav-menu {
+            padding: 20px 14px;
+            flex: 1;
+        }
+
+        .nav-item {
+            height: 52px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 16px;
+
+            margin-bottom: 7px;
+
+            color: rgba(255,255,255,0.82);
+
+            text-decoration: none;
+
+            border-radius: 14px;
+
+            transition: 0.25s;
+        }
+
+        .nav-item i {
+            width: 25px;
+            font-size: 17px;
+            margin-right: 13px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(
+                90deg,
+                #3975ff,
+                #2e63df
+            );
+
+            color: white;
+
+            box-shadow:
+                0 7px 18px rgba(31, 78, 190, 0.35);
+        }
+
+        /* BOTTOM */
+
+        .sidebar-bottom {
+            padding: 15px 14px 20px;
+
+            border-top: 1px solid rgba(255,255,255,0.12);
+        }
+
+
+        /* =====================================================
+           MAIN AREA
+        ===================================================== */
+
+        .main {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .topbar {
+            height: 64px;
+
+            background: white;
+
+            border-bottom: 1px solid #e5e8ef;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 28px;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+
+            color: #23428f;
+
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .page-title i {
+            margin-right: 12px;
+        }
+
+        .user-box {
+            display: flex;
+            align-items: center;
+
+            padding: 7px 14px;
+
+            border: 1px solid #e2e6ef;
+
+            border-radius: 12px;
+
+            background: #fff;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            background: linear-gradient(
+                135deg,
+                #2360dd,
+                #1740a4
+            );
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: bold;
+
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
+        .content {
+            padding: 34px;
+        }
+
+        .heading {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .heading h1 {
+            font-size: 38px;
+            margin-bottom: 7px;
+        }
+
+        .heading p {
+            color: #6c7485;
+            font-size: 17px;
+        }
+
+
+        /* =====================================================
+           HERO LEVEL CARD
+        ===================================================== */
+
+        .level-hero {
+
+            position: relative;
+
+            overflow: hidden;
+
+            min-height: 230px;
+
+            border-radius: 24px;
+
+            padding: 35px 42px;
+
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 85% 25%,
+                    rgba(255,255,255,0.22),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    110deg,
+                    #6415d8,
+                    #394fe9,
+                    #2078f5
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            box-shadow:
+                0 18px 40px rgba(59, 73, 220, 0.22);
+        }
+
+        .hero-left {
+            max-width: 700px;
+        }
+
+        .small-label {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 7px 13px;
+
+            border-radius: 30px;
+
+            background: rgba(255,255,255,0.17);
+
+            font-size: 13px;
+
+            margin-bottom: 14px;
+        }
+
+        .hero-left h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .hero-left p {
+            font-size: 16px;
+            line-height: 1.7;
+
+            color: rgba(255,255,255,0.9);
+        }
+
+
+        /* =====================================================
+           SCORE CIRCLE
+        ===================================================== */
+
+        .score-circle {
+
+            width: 165px;
+            height: 165px;
+
+            border-radius: 50%;
+
+            background:
+                conic-gradient(
+                    #ffffff var(--score),
+                    rgba(255,255,255,0.20) 0
+                );
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            position: relative;
+        }
+
+        .score-circle::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 128px;
+            height: 128px;
+
+            background: #3158e8;
+
+            border-radius: 50%;
+        }
+
+        .score-value {
+
+            position: relative;
+
+            text-align: center;
+
+            z-index: 2;
+        }
+
+        .score-value strong {
+            display: block;
+            font-size: 38px;
+        }
+
+        .score-value span {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+
+        /* =====================================================
+           GRID
+        ===================================================== */
+
+        .dashboard-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 24px;
+
+            margin-top: 25px;
+        }
+
+        .card {
+
+            background: white;
+
+            border-radius: 20px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 7px 25px rgba(30,40,70,0.07);
+
+            border: 1px solid #edf0f5;
+        }
+
+        .card-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            font-size: 20px;
+
+            margin-bottom: 25px;
+        }
+
+        .card-title i {
+            color: #6430df;
+        }
+
+
+        /* =====================================================
+           SKILL BARS
+        ===================================================== */
+
+        .skill {
+            margin-bottom: 22px;
+        }
+
+        .skill-head {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+        }
+
+        .skill-head span:last-child {
+            color: #2864ed;
+            font-weight: 700;
+        }
+
+        .bar {
+
+            width: 100%;
+            height: 9px;
+
+            background: #edf0f7;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .bar-fill {
+
+            height: 100%;
+
+            border-radius: 20px;
+
+            width: 0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #7025dc,
+                    #2875f2
+                );
+
+            transition:
+                width 1.3s ease;
+        }
+
+
+        /* =====================================================
+           LEVEL JOURNEY
+        ===================================================== */
+
+        .journey {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            position: relative;
+
+            margin-top: 35px;
+
+        }
+
+        .journey::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 35px;
+            right: 35px;
+
+            top: 25px;
+
+            height: 4px;
+
+            background: #e5e9f2;
+
+            z-index: 0;
+        }
+
+        .journey-item {
+
+            position: relative;
+
+            z-index: 1;
+
+            text-align: center;
+
+            width: 100px;
+        }
+
+        .journey-icon {
+
+            width: 52px;
+            height: 52px;
+
+            margin: auto;
+
+            border-radius: 50%;
+
+            background: #eef1f8;
+
+            color: #8b93a5;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 18px;
+
+            border: 4px solid white;
+        }
+
+        .journey-item.active .journey-icon {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7025df,
+                    #2d70ef
+                );
+
+            color: white;
+
+            box-shadow:
+                0 7px 18px rgba(79,45,220,0.35);
+        }
+
+        .journey-item p {
+
+            margin-top: 9px;
+
+            font-size: 12px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           AI RECOMMENDATION
+        ===================================================== */
+
+        .recommendation {
+
+            margin-top: 25px;
+
+            border-radius: 20px;
+
+            padding: 25px 30px;
+
+            background:
+                linear-gradient(
+                    110deg,
+                    #f4efff,
+                    #edf4ff
+                );
+
+            border: 1px solid #e3dcff;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 20px;
+        }
+
+        .ai-icon {
+
+            width: 58px;
+            height: 58px;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #7025dd,
+                    #2d70ef
+                );
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 23px;
+
+            flex-shrink: 0;
+        }
+
+        .recommendation h3 {
+            margin-bottom: 6px;
+        }
+
+        .recommendation p {
+            color: #626b7e;
+
+            line-height: 1.6;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+        ===================================================== */
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 20px;
+
+            color: #727b8e;
+
+            display: none;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media(max-width: 1000px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .level-hero {
+                flex-direction: column;
+                text-align: center;
+                gap: 25px;
+            }
+
+        }
+
+        @media(max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .heading h1 {
+                font-size: 28px;
+            }
+
+            .journey {
+                overflow-x: auto;
+                justify-content: flex-start;
+                gap: 20px;
+            }
+
+            .journey::before {
+                display: none;
+            }
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="sidebar.css">
+</head>
+
+<body>
+
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<div id="sidebarContainer" data-active="level"></div>
+<aside class="sidebar legacy-sidebar">
+
+    <div class="logo-area">
+
+        <div class="logo-icon">
+            <i class="fa-solid fa-music"></i>
+        </div>
+
+        <div class="logo-text">
+            <h2>Polyphonic AI</h2>
+            <span>MUSIC STUDIO</span>
+        </div>
+
+    </div>
+
+
+    <nav class="nav-menu">
+
+        <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-table-columns"></i>
+            Dashboard
+        </a>
+
+        <a href="upload.html" class="nav-item">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            Upload Music
+        </a>
+
+        <a href="separation.html" class="nav-item">
+            <i class="fa-solid fa-layer-group"></i>
+            Instrument Separation
+        </a>
+
+        <a href="transcription.html" class="nav-item">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Music Transcription
+        </a>
+
+        <a href="performance.html" class="nav-item">
+            <i class="fa-solid fa-guitar"></i>
+            Performance Analysis
+        </a>
+
+        <a href="level.html" class="nav-item active">
+            <i class="fa-solid fa-ranking-star"></i>
+            Skill Level
+        </a>
+
+        <a href="confidence.html" class="nav-item">
+            <i class="fa-solid fa-shield-heart"></i>
+            Confidence Score
+        </a>
+
+        <a href="progress.html" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i>
+            Progress Tracking
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+        <a href="profile.html" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            Profile
+        </a>
+
+        <a href="login.html" class="nav-item" onclick="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Logout
+        </a>
+
+    </div>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main">
+
+
+    <!-- TOP BAR -->
+
+    <header class="topbar">
+
+        <div class="page-title">
+            <i class="fa-solid fa-ranking-star"></i>
+            Skill Level
+        </div>
+
+        <div class="user-box">
+
+            <div class="avatar" id="avatar">
+                M
+            </div>
+
+            <div class="user-name" id="userName">
+                Musician
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- CONTENT -->
+
+    <section class="content">
+
+
+        <!-- HEADING -->
+
+        <div class="heading">
+
+            <h1>
+                Your Musical Journey
+            </h1>
+
+            <p>
+                Discover your current skill level through AI-powered performance analysis
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             HERO
+        ================================================= -->
+
+        <div class="level-hero">
+
+            <div class="hero-left">
+
+                <div class="small-label">
+
+                    <i class="fa-solid fa-sparkles"></i>
+
+                    AI Skill Assessment
+
+                </div>
+
+                <h2 id="levelName">
+                    Musical Starter
+                </h2>
+
+                <p id="levelDescription">
+                    Your musical journey is beginning.
+                    Complete a performance analysis to allow
+                    the AI system to understand your musical
+                    abilities and provide personalized guidance.
+                </p>
+
+            </div>
+
+
+            <div
+                class="score-circle"
+                id="scoreCircle"
+                style="--score: 0%;"
+            >
+
+                <div class="score-value">
+
+                    <strong id="overallScore">
+                        0%
+                    </strong>
+
+                    <span>
+                        Overall Score
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TWO CARDS
+        ================================================= -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- SKILL PROFILE -->
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <i class="fa-solid fa-sliders"></i>
+
+                    Musical Skill Profile
+
+                </div>
+
+
+                <div class="skill">
+
+                    <div class="skill-head">
+                        <span>Pitch Control</span>
+                        <span id="pitchValue">0%</span>
+                    </div>
+
+                    <div class="bar">
+                        <div
+                            class="bar-fill"
+                            id="pitchBar"
+                        ></div>
+                    </div>
+
+                </div>
+
+
+                <div class="skill">
+
+                    <div class="skill-head">
+                        <span>Rhythm Control</span>
+                        <span id="rhythmValue">0%</span>
+                    </div>
+
+                    <div class="bar">
+                        <div
+                            class="bar-fill"
+                            id="rhythmBar"
+                        ></div>
+                    </div>
+
+                </div>
+
+
+                <div class="skill">
+
+                    <div class="skill-head">
+                        <span>Timing Accuracy</span>
+                        <span id="timingValue">0%</span>
+                    </div>
+
+                    <div class="bar">
+                        <div
+                            class="bar-fill"
+                            id="timingBar"
+                        ></div>
+                    </div>
+
+                </div>
+
+
+                <div class="skill">
+
+                    <div class="skill-head">
+                        <span>Note Accuracy</span>
+                        <span id="noteValue">0%</span>
+                    </div>
+
+                    <div class="bar">
+                        <div
+                            class="bar-fill"
+                            id="noteBar"
+                        ></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- LEVEL JOURNEY -->
+
+            <div class="card">
+
+                <div class="card-title">
+
+                    <i class="fa-solid fa-route"></i>
+
+                    Skill Progression
+
+                </div>
+
+
+                <p style="
+                    color:#697286;
+                    font-size:14px;
+                    line-height:1.6;
+                    margin-bottom:25px;
+                ">
+
+                    Your AI-assigned level changes as your
+                    performance improves.
+
+                </p>
+
+
+                <div class="journey">
+
+
+                    <div
+                        class="journey-item active"
+                        id="starterLevel"
+                    >
+
+                        <div class="journey-icon">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+
+                        <p>Starter</p>
+
+                    </div>
+
+
+                    <div
+                        class="journey-item"
+                        id="beginnerLevel"
+                    >
+
+                        <div class="journey-icon">
+                            <i class="fa-solid fa-music"></i>
+                        </div>
+
+                        <p>Beginner</p>
+
+                    </div>
+
+
+                    <div
+                        class="journey-item"
+                        id="developingLevel"
+                    >
+
+                        <div class="journey-icon">
+                            <i class="fa-solid fa-chart-simple"></i>
+                        </div>
+
+                        <p>Developing</p>
+
+                    </div>
+
+
+                    <div
+                        class="journey-item"
+                        id="intermediateLevel"
+                    >
+
+                        <div class="journey-icon">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+
+                        <p>Intermediate</p>
+
+                    </div>
+
+
+                    <div
+                        class="journey-item"
+                        id="advancedLevel"
+                    >
+
+                        <div class="journey-icon">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+
+                        <p>Advanced</p>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             AI RECOMMENDATION
+        ================================================= -->
+
+        <div class="recommendation">
+
+            <div class="ai-icon">
+
+                <i class="fa-solid fa-brain"></i>
+
+            </div>
+
+
+            <div>
+
+                <h3>
+                    AI Practice Recommendation
+                </h3>
+
+                <p id="recommendationText">
+
+                    Complete your first performance analysis
+                    to receive personalized practice recommendations.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+
+<script>
+
+
+/* ============================================================
+   LOAD USER
+============================================================ */
+
+function loadUser() {
+
+    const userData =
+        localStorage.getItem("user");
+
+    if (!userData) {
+        return;
+    }
+
+    try {
+
+        const user =
+            JSON.parse(userData);
+
+        const name =
+            user.name || "Musician";
+
+        document.getElementById(
+            "userName"
+        ).textContent = name;
+
+        document.getElementById(
+            "avatar"
+        ).textContent =
+            name.charAt(0).toUpperCase();
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "User data error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   SET SCORE
+============================================================ */
+
+function setScore(score) {
+
+    score =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                Number(score) || 0
+            )
+        );
+
+    document.getElementById(
+        "overallScore"
+    ).textContent =
+        Math.round(score) + "%";
+
+    document.getElementById(
+        "scoreCircle"
+    ).style.setProperty(
+        "--score",
+        score + "%"
+    );
+
+}
+
+
+/* ============================================================
+   SET SKILL BAR
+============================================================ */
+
+function setSkill(
+    value,
+    valueId,
+    barId
+) {
+
+    value =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                Number(value) || 0
+            )
+        );
+
+    document.getElementById(
+        valueId
+    ).textContent =
+        Math.round(value) + "%";
+
+    setTimeout(() => {
+
+        document.getElementById(
+            barId
+        ).style.width =
+            value + "%";
+
+    }, 150);
+
+}
+
+
+/* ============================================================
+   LEVEL DESCRIPTION
+============================================================ */
+
+function updateLevel(level) {
+
+    document.getElementById(
+        "levelName"
+    ).textContent = level;
+
+
+    const descriptions = {
+
+        "Musical Starter":
+            "Your musical journey is beginning. Complete your first performance analysis and start building your musical foundation.",
+
+        "Beginner":
+            "You are developing your basic musical skills. Regular practice can help improve your pitch, rhythm and note accuracy.",
+
+        "Developing Musician":
+            "You are showing consistent musical development. Focused practice can help you move toward intermediate performance.",
+
+        "Intermediate":
+            "You have developed solid musical control. Continue refining timing, pitch and expressive performance.",
+
+        "Advanced":
+            "You demonstrate strong musical ability and consistency. Focus on advanced techniques and expressive accuracy.",
+
+        "Master Performer":
+            "Outstanding performance level. Continue challenging yourself with advanced repertoire and precision practice."
+
+    };
+
+
+    document.getElementById(
+        "levelDescription"
+    ).textContent =
+        descriptions[level] ||
+        descriptions["Musical Starter"];
+
+
+    updateJourney(level);
+
+}
+
+
+/* ============================================================
+   UPDATE JOURNEY
+============================================================ */
+
+function updateJourney(level) {
+
+    const levels = [
+        "Musical Starter",
+        "Beginner",
+        "Developing Musician",
+        "Intermediate",
+        "Advanced",
+        "Master Performer"
+    ];
+
+
+    const currentIndex =
+        levels.indexOf(level);
+
+
+    const items = [
+
+        "starterLevel",
+        "beginnerLevel",
+        "developingLevel",
+        "intermediateLevel",
+        "advancedLevel"
+
+    ];
+
+
+    items.forEach(
+        id => {
+
+            document
+                .getElementById(id)
+                .classList
+                .remove("active");
+
+        }
+    );
+
+
+    if (currentIndex >= 0) {
+
+        const index =
+            Math.min(
+                currentIndex,
+                items.length - 1
+            );
+
+        document
+            .getElementById(
+                items[index]
+            )
+            .classList
+            .add("active");
+
+    }
+
+}
+
+
+/* ============================================================
+   LOAD LEVEL FROM BACKEND
+============================================================ */
+
+async function loadSkillLevel() {
+
+    try {
+
+        const performanceScore =
+            localStorage.getItem(
+                "overall_score"
+            );
+
+
+        if (
+            performanceScore === null
+            ||
+            performanceScore === ""
+        ) {
+
+            setScore(0);
+
+            updateLevel(
+                "Musical Starter"
+            );
+
+            return;
+
+        }
+
+
+        const score =
+            Number(
+                performanceScore
+            );
+
+
+        /* BACKEND REQUEST */
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:5000/api/level/predict",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        score: score
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            data.success
+        ) {
+
+            setScore(
+                data.score
+            );
+
+            updateLevel(
+                data.level
+            );
+
+
+            updateRecommendation(
+                data.level
+            );
+
+        }
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Level API error:",
+            error
+        );
+
+        /*
+         FALLBACK
+        */
+
+        const score =
+            Number(
+                localStorage.getItem(
+                    "overall_score"
+                )
+            ) || 0;
+
+
+        setScore(score);
+
+        let level;
+
+        if (score < 40)
+            level = "Musical Starter";
+
+        else if (score < 60)
+            level = "Beginner";
+
+        else if (score < 75)
+            level = "Developing Musician";
+
+        else if (score < 90)
+            level = "Intermediate";
+
+        else if (score < 96)
+            level = "Advanced";
+
+        else
+            level = "Master Performer";
+
+
+        updateLevel(level);
+
+        updateRecommendation(level);
+
+    }
+
+}
+
+
+/* ============================================================
+   RECOMMENDATION
+============================================================ */
+
+function updateRecommendation(level) {
+
+    const recommendations = {
+
+        "Musical Starter":
+            "Start with simple melodies and basic rhythm exercises. Focus on playing slowly and accurately before increasing speed.",
+
+        "Beginner":
+            "Practice scales, simple songs and rhythm patterns regularly. Focus on improving consistency between notes.",
+
+        "Developing Musician":
+            "Work on timing accuracy and smooth transitions between notes. Try gradually increasing song difficulty.",
+
+        "Intermediate":
+            "Challenge yourself with complex rhythms and faster passages. Focus on expressive playing and precision.",
+
+        "Advanced":
+            "Practice advanced compositions and difficult passages. Focus on musical expression, timing precision and consistency.",
+
+        "Master Performer":
+            "Explore advanced repertoire, improvisation and expressive techniques while maintaining high precision."
+
+    };
+
+
+    document.getElementById(
+        "recommendationText"
+    ).textContent =
+        recommendations[level] ||
+        recommendations["Musical Starter"];
+
+}
+
+
+/* ============================================================
+   LOAD PERFORMANCE DETAILS
+============================================================ */
+
+function loadPerformanceSkills() {
+
+    const pitch =
+        Number(
+            localStorage.getItem(
+                "pitch_score"
+            )
+        ) || 0;
+
+    const rhythm =
+        Number(
+            localStorage.getItem(
+                "rhythm_score"
+            )
+        ) || 0;
+
+    const timing =
+        Number(
+            localStorage.getItem(
+                "timing_score"
+            )
+        ) || 0;
+
+    const note =
+        Number(
+            localStorage.getItem(
+                "note_score"
+            )
+        ) || 0;
+
+
+    setSkill(
+        pitch,
+        "pitchValue",
+        "pitchBar"
+    );
+
+    setSkill(
+        rhythm,
+        "rhythmValue",
+        "rhythmBar"
+    );
+
+    setSkill(
+        timing,
+        "timingValue",
+        "timingBar"
+    );
+
+    setSkill(
+        note,
+        "noteValue",
+        "noteBar"
+    );
+
+}
+
+
+/* ============================================================
+   LOGOUT
+============================================================ */
+
+function logout() {
+
+    localStorage.removeItem(
+        "user"
+    );
+
+    localStorage.removeItem(
+        "overall_score"
+    );
+
+    localStorage.removeItem(
+        "pitch_score"
+    );
+
+    localStorage.removeItem(
+        "rhythm_score"
+    );
+
+    localStorage.removeItem(
+        "timing_score"
+    );
+
+    localStorage.removeItem(
+        "note_score"
+    );
+
+}
+
+
+/* ============================================================
+   START
+============================================================ */
+
+loadUser();
+
+loadPerformanceSkills();
+
+loadSkillLevel();
+
+window.addEventListener("storage", event => {
+    const scoreKeys = [
+        "pitch_score",
+        "rhythm_score",
+        "timing_score",
+        "note_score",
+        "overall_score"
+    ];
+
+    if (scoreKeys.includes(event.key)) {
+        loadPerformanceSkills();
+        if (event.key === "overall_score") {
+            loadSkillLevel();
+        }
+    }
+});
+
+</script>
+
+<script src="sidebar.js"></script>
+</body>
+</html>
