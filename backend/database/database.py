@@ -132,6 +132,7 @@ SQLITE_PATH = os.environ.get(
 )
 
 _sqlite_fallback_active = False
+_fallback_reason = None
 _fallback_lock = threading.Lock()
 
 
@@ -243,6 +244,10 @@ def _db_explicitly_configured():
 # Database Type Detection
 # ---------------------------------------------------------------------------
 
+def get_fallback_reason():
+    return _fallback_reason
+
+
 def get_db_type():
     """Detect whether database is PostgreSQL or MySQL."""
     explicit_type = os.environ.get("DB_TYPE", "").strip().lower()
@@ -287,11 +292,15 @@ def get_connection():
     try:
         return _server_connection()
     except Exception as error:
-        if _db_explicitly_configured():
+        # DB_STRICT=1 turns the fallback off (fail instead of using SQLite).
+        if os.environ.get("DB_STRICT", "").strip() in ("1", "true", "yes"):
             raise
         with _fallback_lock:
             if not _sqlite_fallback_active:
-                print(f"[Database] MySQL not reachable ({error}). Using local SQLite database at {SQLITE_PATH}")
+                where = "configured database" if _db_explicitly_configured() else "MySQL"
+                print(f"[Database] {where} not reachable ({error}). Using local SQLite database at {SQLITE_PATH}")
+                global _fallback_reason
+                _fallback_reason = str(error)
             _sqlite_fallback_active = True
         return _sqlite_connection()
 
@@ -311,7 +320,7 @@ def _server_connection():
             # Fix Render postgres:// prefix to postgresql:// if needed
             if database_url.startswith("postgres://"):
                 database_url = "postgresql://" + database_url[len("postgres://"):]
-            conn = psycopg2.connect(database_url)
+            conn = psycopg2.connect(database_url, connect_timeout=5)
         else:
             conn = psycopg2.connect(
                 host=os.environ.get("DB_HOST", "localhost"),
@@ -319,6 +328,7 @@ def _server_connection():
                 user=os.environ.get("DB_USER", "postgres"),
                 password=os.environ.get("DB_PASSWORD", ""),
                 dbname=os.environ.get("DB_NAME", "polyphonic_db"),
+                connect_timeout=5,
             )
         return PostgresConnectionWrapper(conn)
 
@@ -332,6 +342,7 @@ def _server_connection():
         parsed = urlparse(database_url)
         port = parsed.port or 3306
         conn = mysql.connector.connect(
+            connection_timeout=5,
             host=parsed.hostname or "localhost",
             port=port,
             user=parsed.username or "root",

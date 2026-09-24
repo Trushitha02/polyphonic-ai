@@ -20,3 +20,19 @@
 10. Uploads: same-name different songs no longer overwrite each other; user_id saved from the Separation page upload.
 11. Security: file streaming limited to audio files (the old route could download any project file, including the database).
 12. `render.yaml`: gunicorn timeout 900 s (default 30 s killed separation/transcription requests).
+13. **Different instruments no longer play the same BGM.** On Windows the 2-stem Demucs folder (vocals/no_vocals)
+    was chosen before `htdemucs_6s`, so every instrument was a filtered copy of the whole BGM. Now the folder with the
+    most stems is always used; without drum/bass stems, drums and bass are *extracted* (percussive part / low band);
+    the remaining instruments each get their own non-overlapping frequency range of the "other" stem
+    (similarity between instruments dropped from up to 0.93 to at most 0.43). Each card shows where its audio comes from.
+14. **No more background vocals in instrument audio, and more difference between instruments.**
+    All detected instruments of a song are now built together with competitive masking: every
+    time-frequency point goes to the source that dominates it (vocals, guitar, piano, drums, bass, other),
+    plus a noise gate for faint leakage. Instrument files are no longer boosted to full volume
+    (that boost turned near-silent stems full of leaked singing into loud "same BGM" tracks).
+    Measured on Mirchi: vocal leakage in Guitar 0.33 -> 0.05, Piano 0.34 -> 0.04, Other 0.32 -> 0.00.
+    Each card now shows how present the instrument really is ("Clearly present" / "Quiet" /
+    "Barely in this song — the AI detection may be wrong").
+15. **"Login failed" on Render fixed.** If the configured MySQL/PostgreSQL (DB_HOST / DATABASE_URL) is not
+    reachable, the app now falls back to SQLite instead of failing every login (set DB_STRICT=1 to disable).
+    `/api/database/status` shows which database is used and why; login/register show the real error.

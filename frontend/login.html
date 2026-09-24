@@ -1818,8 +1818,8 @@ async function loginUser(event){
         ){
 
             throw new Error(
-                data.message ||
-                "Invalid email or password."
+                (data.message || "Invalid email or password.") +
+                (data.error ? ` (${data.error})` : "")
             );
 
         }

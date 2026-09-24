@@ -1,338 +1,477 @@
+"""
+Turns an AI-detected instrument name into playable audio.
+
+All detected instruments of a song are built together with *competitive
+masking*: at every moment and frequency, the sound is shared between the
+sources (vocals, drums, bass, guitar, piano, other ...) in proportion to how
+strongly each one is present. This
+
+  * removes backing vocals / singing that leaked into instrument stems, and
+  * gives every instrument only what it dominates, so guitar, piano, synth,
+    flute ... sound clearly different instead of like the same BGM.
+
+Where each instrument comes from:
+  1. Its own Demucs stem, cleaned (drums, bass, other, and with the 6-stem
+     model also guitar and piano).
+  2. With only a 2-stem separation (vocals + no_vocals), drums and bass are
+     *extracted* from the BGM (percussive part / low band).
+  3. Other instruments (flute, strings, brass, synth, organ, sitar ...) get
+     their own NON-overlapping frequency range of the cleaned remainder.
+"""
+
 import hashlib
+import math
 import os
 import threading
-import soundfile as sf
+
 import numpy as np
-import scipy.signal as signal
-
-# ============================================================
-# INSTRUMENT FILTER PRESETS
-# Tuned acoustic frequency ranges and formant profiles
-# ============================================================
-
-FILTER_PROFILES = {
-    "guitar": {
-        "bandpass": [90, 4200],
-        "order": 4,
-        "peak_freq": 2200,
-        "peak_gain": 0.35,
-        "q": 2.0
-    },
-    "acoustic guitar": {
-        "bandpass": [85, 4000],
-        "order": 4,
-        "peak_freq": 2000,
-        "peak_gain": 0.35,
-        "q": 2.0
-    },
-    "sitar": {
-        "bandpass": [100, 4500],
-        "order": 4,
-        "peak_freq": 2400,
-        "peak_gain": 0.4,
-        "q": 2.5
-    },
-    "veena": {
-        "bandpass": [80, 4200],
-        "order": 4,
-        "peak_freq": 1800,
-        "peak_gain": 0.35,
-        "q": 2.0
-    },
-    "piano": {
-        "bandpass": [50, 4800],
-        "order": 4,
-        "peak_freq": 1200,
-        "peak_gain": 0.2,
-        "q": 1.5
-    },
-    "keyboard": {
-        "bandpass": [55, 5200],
-        "order": 4,
-        "peak_freq": 1500,
-        "peak_gain": 0.2,
-        "q": 1.5
-    },
-    "flute": {
-        "bandpass": [280, 3400],
-        "order": 4,
-        "peak_freq": 1400,
-        "peak_gain": 0.45,
-        "q": 2.2
-    },
-    "bansuri": {
-        "bandpass": [260, 3200],
-        "order": 4,
-        "peak_freq": 1300,
-        "peak_gain": 0.45,
-        "q": 2.2
-    },
-    "strings": {
-        "bandpass": [180, 6000],
-        "order": 4,
-        "peak_freq": 2800,
-        "peak_gain": 0.3,
-        "q": 1.8
-    },
-    "violin": {
-        "bandpass": [200, 6500],
-        "order": 4,
-        "peak_freq": 3000,
-        "peak_gain": 0.35,
-        "q": 2.0
-    },
-    "cello": {
-        "bandpass": [100, 4000],
-        "order": 4,
-        "peak_freq": 1200,
-        "peak_gain": 0.3,
-        "q": 1.8
-    },
-    "brass": {
-        "bandpass": [160, 3800],
-        "order": 4,
-        "peak_freq": 1500,
-        "peak_gain": 0.45,
-        "q": 2.0
-    },
-    "trumpet": {
-        "bandpass": [180, 4200],
-        "order": 4,
-        "peak_freq": 1600,
-        "peak_gain": 0.5,
-        "q": 2.2
-    },
-    "saxophone": {
-        "bandpass": [140, 3400],
-        "order": 4,
-        "peak_freq": 1400,
-        "peak_gain": 0.4,
-        "q": 1.8
-    },
-    "synth": {
-        "bandpass": [260, 7500],
-        "order": 4,
-        "peak_freq": 3200,
-        "peak_gain": 0.35,
-        "q": 1.6
-    },
-    "organ": {
-        "bandpass": [70, 3200],
-        "order": 4,
-        "peak_freq": 800,
-        "peak_gain": 0.25,
-        "q": 1.5
-    },
-    "harmonium": {
-        "bandpass": [80, 3000],
-        "order": 4,
-        "peak_freq": 900,
-        "peak_gain": 0.3,
-        "q": 1.6
-    },
-    "harmonica": {
-        "bandpass": [380, 4200],
-        "order": 4,
-        "peak_freq": 1800,
-        "peak_gain": 0.4,
-        "q": 2.0
-    },
-    "harp": {
-        "bandpass": [120, 5000],
-        "order": 4,
-        "peak_freq": 2200,
-        "peak_gain": 0.35,
-        "q": 2.0
-    }
-}
+import soundfile as sf
 
 
-def get_instrument_output_dir(audio_id):
-    base_folder = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "separated",
-            str(audio_id),
-            "instruments"
-        )
-    )
-    os.makedirs(base_folder, exist_ok=True)
-    return base_folder
-
-
-def get_matching_profile(instrument_name):
-    clean = (instrument_name or "").lower().strip()
-    for key, profile in FILTER_PROFILES.items():
-        if key in clean or clean in key:
-            return profile
-    return {
-        "bandpass": [120, 4500],
-        "order": 4,
-        "peak_freq": 1600,
-        "peak_gain": 0.3,
-        "q": 1.8
-    }
-
-
-def isolate_instrument_from_audio(source_path, instrument_name, output_path):
-    """
-    Applies instrument-specific DSP isolation (Butterworth bandpass + resonance shaping + normalization).
-    """
-    if not source_path or not os.path.isfile(source_path):
-        raise FileNotFoundError(f"Source audio not found: {source_path}")
-
-    data, sr = sf.read(source_path)
-    if data.ndim == 1:
-        data = data[:, None]
-
-    profile = get_matching_profile(instrument_name)
-    low, high = profile["bandpass"]
-
-    # Pitched instruments: keep the harmonic (sustained) part and drop
-    # leftover percussive hits before band-passing.
-    lower_name = (instrument_name or "").lower()
-    if not any(word in lower_name for word in PERCUSSIVE_WORDS):
-        try:
-            import librosa
-            channels = []
-            for ch in range(data.shape[1]):
-                spec = librosa.stft(data[:, ch].astype(np.float32), n_fft=2048, hop_length=512)
-                harmonic, _ = librosa.decompose.hpss(spec, margin=2.0)
-                channels.append(librosa.istft(harmonic, hop_length=512, length=data.shape[0]))
-            data = np.stack(channels, axis=1)
-        except Exception as error:
-            print("Harmonic filtering skipped:", error)
-
-    # Clamp bounds to Nyquist limit
-    nyquist = sr / 2.0 - 100
-    low = max(20, min(low, nyquist - 200))
-    high = max(low + 100, min(high, nyquist))
-
-    # 4th order bandpass filter
-    sos = signal.butter(profile.get("order", 4), [low, high], btype="bandpass", fs=sr, output="sos")
-    filtered = signal.sosfiltfilt(sos, data, axis=0)
-
-    # Optional resonant peak filter for formant clarity
-    peak_freq = profile.get("peak_freq", 1800)
-    peak_gain = profile.get("peak_gain", 0.3)
-    q = profile.get("q", 2.0)
-    if peak_freq < nyquist and peak_gain > 0:
-        try:
-            b, a = signal.iirpeak(peak_freq, q, fs=sr)
-            peaked = signal.lfilter(b, a, filtered, axis=0)
-            filtered = filtered + (peak_gain * peaked)
-        except Exception:
-            pass
-
-    # Normalize peak amplitude to 0.85
-    peak = np.max(np.abs(filtered))
-    if peak > 1e-4:
-        filtered = (filtered / peak) * 0.85
-
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    # Write to a temp file then swap in, so a half-written file is never streamed.
-    temp_path = output_path + ".part.wav"
-    sf.write(temp_path, filtered.astype(np.float32), sr)
-    os.replace(temp_path, output_path)
-    return output_path
-
-
-PERCUSSIVE_WORDS = ("drum", "percussion", "tabla", "dhol", "mridangam", "ghatam", "kanjira", "pakhawaj", "cymbal")
+# Hand percussion vs. drum kit
+DRUM_KIT_WORDS = ("drum",)
+HAND_PERCUSSION_WORDS = ("percussion", "tabla", "dhol", "mridangam", "ghatam", "kanjira", "pakhawaj", "cymbal", "conga", "bongo")
+PERCUSSIVE_WORDS = DRUM_KIT_WORDS + HAND_PERCUSSION_WORDS
 PIANO_WORDS = ("piano", "keyboard", "keys")
 GUITAR_WORDS = ("guitar",)
+
+# Typical centre of each instrument's energy (Hz). Used to split the
+# remaining spectrum between the filtered instruments of one song.
+INSTRUMENT_CENTRES = [
+    ("cello", 220),
+    ("organ", 330),
+    ("harmonium", 420),
+    ("saxophone", 520),
+    ("sax", 520),
+    ("trumpet", 700),
+    ("brass", 650),
+    ("veena", 800),
+    ("guitar", 850),
+    ("sitar", 1000),
+    ("piano", 1100),
+    ("keyboard", 1100),
+    ("harp", 1300),
+    ("shehnai", 1400),
+    ("nadaswaram", 1400),
+    ("strings", 1600),
+    ("harmonica", 1700),
+    ("violin", 1900),
+    ("sarangi", 1900),
+    ("flute", 2100),
+    ("bansuri", 2100),
+    ("santoor", 2400),
+    ("synth", 3000),
+]
+DEFAULT_CENTRE = 1200
+LOW_EDGE = 180.0      # below this belongs to bass
+HIGH_EDGE = 9000.0
+BASS_CUTOFF = 220.0
+
+N_FFT = 4096
+HOP = 1024
+
+POWER = 3.0            # >2 = sharper decisions, more difference between instruments
+VOCAL_WEIGHT = 2.0     # extra push to keep singing out of instruments
+GATE_DB = -40.0        # drop sound more than 40 dB below the song at that frequency (faint bleed)
+MAX_BOOST_DB = 12.0    # quiet instruments may be raised, but never blown up to full volume
+PRESENT_DB = -18.0     # instrument level vs. the whole BGM
+QUIET_DB = -32.0
+BLOCK_SECONDS = 20.0   # processed in blocks so long songs fit in memory
+OVERLAP_SECONDS = 2.0
+BUILD_VERSION = "v4"
+import json
 
 
 def _usable(path):
     return bool(path) and os.path.isfile(path)
 
 
-def get_or_create_isolated_instrument(audio_id, instrument_name, stems_dict=None):
+def _has(words, lower):
+    return any(word in lower for word in words)
+
+
+def _centre(name):
+    lower = name.lower()
+    for key, centre in INSTRUMENT_CENTRES:
+        if key in lower:
+            return centre
+    return DEFAULT_CENTRE
+
+
+def get_instrument_output_dir(audio_id):
+    base_folder = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "separated", str(audio_id), "instruments")
+    )
+    os.makedirs(base_folder, exist_ok=True)
+    return base_folder
+
+
+def _fingerprint(*parts):
+    text = "|".join(str(p) for p in parts)
+    return hashlib.md5(text.encode("utf-8")).hexdigest()[:10]
+
+
+def _file_id(path):
+    st = os.stat(path)
+    return f"{os.path.abspath(path)}:{st.st_size}:{int(st.st_mtime)}"
+
+
+def _safe(name):
+    return "".join(c if c.isalnum() else "_" for c in name)
+
+
+# ------------------------------------------------------------------
+# Classification: where does this instrument's audio come from?
+# ------------------------------------------------------------------
+
+def classify_instrument(name, stems):
+    """Return (kind, detail).
+
+    kind: "stem"     -> vocals / bgm, played exactly as separated
+          "clean"    -> a Demucs stem (drums, bass, other, guitar, piano)
+                        with vocal bleed and other instruments' leftovers removed
+          "derived"  -> detail is "drums" | "bass" | "hand_percussion" (computed)
+          "filtered" -> own frequency range of the cleaned instrument remainder
     """
-    Resolves or extracts the playable audio path for a detected instrument.
-    - Drums / Percussion / Tabla ...   -> drums.wav
-    - Bass                               -> bass.wav
-    - Vocals / Voice                     -> vocals.wav
-    - Guitar / Piano (6-stem Demucs)     -> guitar.wav / piano.wav
-    - Other                              -> other.wav
-    - Any other instrument               -> isolated from other.wav (or bgm.wav)
-      with a harmonic filter + instrument band-pass, cached as WAV.
-    """
-    if not instrument_name:
-        return None
+    lower = (name or "").lower().strip()
+    stems = stems or {}
 
-    clean_name = str(instrument_name).strip()
-    lower = clean_name.lower()
-
-    if stems_dict is None:
-        from services.instrument_separation import find_stems_for_audio
-        stems_dict = find_stems_for_audio(audio_id) or {}
-
-    if not stems_dict:
-        return None
-
-    # Direct stem mappings
-    if any(word in lower for word in PERCUSSIVE_WORDS) and _usable(stems_dict.get("drums")):
-        return stems_dict["drums"]
-
-    if "bass" in lower and _usable(stems_dict.get("bass")):
-        return stems_dict["bass"]
-
-    if ("vocal" in lower or "voice" in lower) and _usable(stems_dict.get("vocals")):
-        return stems_dict["vocals"]
-
-    if any(word in lower for word in GUITAR_WORDS) and _usable(stems_dict.get("guitar")):
-        return stems_dict["guitar"]
-
-    if any(word in lower for word in PIANO_WORDS) and _usable(stems_dict.get("piano")):
-        return stems_dict["piano"]
-
+    if ("vocal" in lower or "voice" in lower) and _usable(stems.get("vocals")):
+        return "stem", "vocals"
     if lower in ("bgm", "accompaniment", "no_vocals", "instrumental"):
-        bgm_path = stems_dict.get("bgm") or stems_dict.get("other")
-        if _usable(bgm_path):
-            return bgm_path
+        return "stem", "bgm" if _usable(stems.get("bgm")) else "other"
+    if lower == "other" and _usable(stems.get("other")):
+        return "clean", "other"
 
-    if lower == "other" and _usable(stems_dict.get("other")):
-        return stems_dict["other"]
+    if _has(DRUM_KIT_WORDS, lower):
+        return ("clean", "drums") if _usable(stems.get("drums")) else ("derived", "drums")
+    if _has(HAND_PERCUSSION_WORDS, lower):
+        return "derived", "hand_percussion"
+    if "bass" in lower:
+        return ("clean", "bass") if _usable(stems.get("bass")) else ("derived", "bass")
+    if _has(GUITAR_WORDS, lower) and _usable(stems.get("guitar")):
+        return "clean", "guitar"
+    if _has(PIANO_WORDS, lower) and _usable(stems.get("piano")):
+        return "clean", "piano"
+    return "filtered", None
 
-    # Source stem to isolate from: preferably other.wav, then bgm.wav
-    source_stem = stems_dict.get("other")
-    if not _usable(source_stem):
-        source_stem = stems_dict.get("bgm")
-    if not _usable(source_stem):
+
+def describe_instrument_source(name, stems):
+    """Short human label shown on the Separation page card."""
+    kind, detail = classify_instrument(name, stems)
+    if kind == "stem":
+        return "stem", f"Real Demucs {detail} stem"
+    if kind == "clean":
+        return "stem", f"Demucs {detail} stem · vocals removed"
+    if detail == "hand_percussion":
+        return "derived", "Percussion hits (high part of the drums)"
+    if kind == "derived":
+        return "derived", f"{detail.capitalize()} extracted from the BGM · vocals removed"
+    return "filtered", "Approximate · own frequency range, vocals removed"
+
+
+# ------------------------------------------------------------------
+# DSP helpers
+# ------------------------------------------------------------------
+
+def _read(path):
+    data, sr = sf.read(path, dtype="float32", always_2d=True)
+    if data.shape[1] == 1:
+        data = np.repeat(data, 2, axis=1)
+    return data[:, :2], sr
+
+
+def _write(path, data, sr, peak_target=0.85, gain=None):
+    peak = float(np.max(np.abs(data))) if data.size else 0.0
+    if gain is None:
+        gain = peak_target / peak if peak > 1e-4 else 1.0
+    data = data * gain
+    peak = float(np.max(np.abs(data))) if data.size else 0.0
+    if peak > 0.99:
+        data = data * (0.99 / peak)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    temp_path = path + ".part.wav"
+    sf.write(temp_path, data.astype(np.float32), sr)
+    os.replace(temp_path, path)   # never stream a half-written file
+    return path
+
+
+def _freqs(sr):
+    return np.fft.rfftfreq(N_FFT, 1.0 / sr)[:, None]
+
+
+def _soft_band(freqs, low, high, width_octaves=0.15):
+    """1 inside [low, high], smooth log-frequency fade outside."""
+    f = np.maximum(freqs, 1.0)
+    rise = 1.0 / (1.0 + np.exp(-(np.log2(f / low)) / (width_octaves / 4)))
+    fall = 1.0 / (1.0 + np.exp((np.log2(f / high)) / (width_octaves / 4)))
+    return (rise * fall).astype(np.float32)
+
+
+def _partition(names):
+    """Split LOW_EDGE..HIGH_EDGE into one non-overlapping band per instrument."""
+    ordered = sorted(set(names), key=lambda n: (_centre(n), n.lower()))
+    centres = [_centre(n) for n in ordered]
+    # instruments sharing a centre get neighbouring slices around it
+    adjusted = []
+    for i, c in enumerate(centres):
+        same_before = sum(1 for x in centres[:i] if x == c)
+        adjusted.append(c * (2 ** (same_before * 0.35)))
+    edges = [LOW_EDGE]
+    for a, b in zip(adjusted, adjusted[1:]):
+        edges.append(math.sqrt(a * b))
+    edges.append(HIGH_EDGE)
+    return {name: (edges[i], edges[i + 1]) for i, name in enumerate(ordered)}
+
+
+def _competition(mags, weights=None):
+    """Soft 'winner takes most' masks for a dict of magnitude spectrograms."""
+    weights = weights or {}
+    powered = {k: (weights.get(k, 1.0) * m) ** POWER for k, m in mags.items()}
+    total = sum(powered.values()) + 1e-12
+    return {k: (v / total).astype(np.float32) for k, v in powered.items()}
+
+
+def _load_all(paths):
+    arrays, rate = {}, None
+    for key, path in paths.items():
+        data, sr = _read(path)
+        if rate is not None and sr != rate:
+            import librosa
+            data = librosa.resample(data.T, orig_sr=sr, target_sr=rate).T.astype(np.float32)
+        arrays[key] = data
+        rate = rate or sr
+    length = min(a.shape[0] for a in arrays.values())
+    return {k: a[:length] for k, a in arrays.items()}, rate, length
+
+
+def _block_windows(length, sr):
+    """Overlapping blocks with linear cross-fades that sum to 1."""
+    block = int(BLOCK_SECONDS * sr)
+    overlap = int(OVERLAP_SECONDS * sr)
+    step = block - overlap
+    starts = [0]
+    while starts[-1] + block < length:
+        starts.append(starts[-1] + step)
+    for i, start in enumerate(starts):
+        end = min(start + block, length)
+        weight = np.ones(end - start, dtype=np.float32)
+        fade = min(overlap, end - start)
+        if i > 0:
+            weight[:fade] = np.linspace(0.0, 1.0, fade, dtype=np.float32)
+        if i < len(starts) - 1:
+            weight[-fade:] = np.minimum(weight[-fade:], np.linspace(1.0, 0.0, fade, dtype=np.float32))
+        yield start, end, weight[:, None]
+
+
+# ------------------------------------------------------------------
+# Whole-song builder
+# ------------------------------------------------------------------
+
+def _build_song(stems, jobs, out_paths):
+    """jobs: {instrument name: (kind, detail)}. Writes every requested file."""
+    import librosa
+
+    sources = {k: stems[k] for k in ("vocals", "drums", "bass", "other", "guitar", "piano") if _usable(stems.get(k))}
+    two_stem = not any(k in sources for k in ("drums", "bass", "other"))
+    if two_stem or not sources:
+        sources["bgm"] = stems.get("bgm") or stems.get("other")
+    arrays, sr, length = _load_all(sources)
+    base_key = "bgm" if "bgm" in arrays else "other"
+
+    filtered = sorted([n for n, (kind, _) in jobs.items() if kind == "filtered"], key=str.lower)
+    bands = _partition(filtered) if filtered else {}
+    freqs = _freqs(sr)
+    band_masks = {n: _soft_band(freqs, lo, min(hi, sr / 2 - 100), width_octaves=0.08) for n, (lo, hi) in bands.items()}
+    bass_band = _soft_band(freqs, 30.0, BASS_CUTOFF)
+    high_band = _soft_band(freqs, 1500.0, 14000.0, width_octaves=0.4)
+    above_bass = 1.0 - bass_band
+
+    outputs = {n: np.zeros((length, 2), dtype=np.float32) for n in jobs}
+
+    for start, end, weight in _block_windows(length, sr):
+        specs = {
+            k: [librosa.stft(np.ascontiguousarray(a[start:end, ch]), n_fft=N_FFT, hop_length=HOP) for ch in range(2)]
+            for k, a in arrays.items()
+        }
+        mags = {k: 0.5 * (np.abs(v[0]) + np.abs(v[1])) for k, v in specs.items()}
+        masks = _competition(mags, {"vocals": VOCAL_WEIGHT})
+        # Noise gate: whatever is far below the whole song at that
+        # frequency is leakage (mostly faint singing) -> remove it.
+        mix_level = sum(mags.values())
+        floor = np.max(mix_level, axis=1, keepdims=True) * (10 ** (GATE_DB / 20))
+        for k in masks:
+            if k != "vocals":
+                masks[k] = masks[k] * ((mags[k] * masks[k]) > floor)
+
+        # Instrument-only remainder used for derived / filtered instruments
+        base_mag = mags[base_key] * masks[base_key]
+        harmonic, percussive = librosa.decompose.hpss(base_mag, mask=True, margin=1.5)
+        harmonic = harmonic.astype(np.float32)
+        percussive = percussive.astype(np.float32)
+
+        drums_perc = None
+        for name, (kind, detail) in jobs.items():
+            if kind == "clean":
+                src, mask = detail, masks[detail]
+            elif kind == "derived" and detail == "hand_percussion":
+                if "drums" in specs:
+                    if drums_perc is None:
+                        _, drums_perc = librosa.decompose.hpss(mags["drums"] * masks["drums"], mask=True, margin=1.5)
+                        drums_perc = drums_perc.astype(np.float32)
+                    src, mask = "drums", masks["drums"] * drums_perc * high_band
+                else:
+                    src, mask = base_key, masks[base_key] * percussive * high_band
+            elif kind == "derived" and detail == "drums":
+                src, mask = base_key, masks[base_key] * percussive
+            elif kind == "derived" and detail == "bass":
+                src, mask = base_key, masks[base_key] * harmonic * bass_band
+            else:  # filtered melodic instrument
+                src, mask = base_key, masks[base_key] * harmonic * above_bass * band_masks[name]
+            block = np.stack([
+                librosa.istft(specs[src][ch] * mask, hop_length=HOP, length=end - start)
+                for ch in range(2)
+            ], axis=1)
+            outputs[name][start:end] += block * weight
+
+    # One shared gain for the song (so loud/quiet instruments stay honest),
+    # plus a limited boost for quiet ones so they are still audible.
+    reference = arrays.get("bgm")
+    if reference is None:
+        reference = sum(a for k, a in arrays.items() if k != "vocals")
+    ref_rms = float(np.sqrt(np.mean(reference ** 2))) + 1e-9
+    ref_peak = float(np.max(np.abs(reference))) + 1e-9
+    song_gain = 0.85 / ref_peak
+
+    levels = {}
+    for name, data in outputs.items():
+        rms = float(np.sqrt(np.mean(data ** 2))) + 1e-12
+        level_db = 20 * math.log10(rms / ref_rms)
+        levels[name] = round(level_db, 1)
+        peak = float(np.max(np.abs(data))) + 1e-12
+        boost = min(10 ** (MAX_BOOST_DB / 20), 0.85 / (peak * song_gain))
+        _write(out_paths[name], data, sr, gain=song_gain * max(boost, 1.0))
+
+    info_path = os.path.join(os.path.dirname(next(iter(out_paths.values()))), "levels.json")
+    try:
+        existing = json.load(open(info_path, encoding="utf-8")) if os.path.isfile(info_path) else {}
+    except Exception:
+        existing = {}
+    for name, path in out_paths.items():
+        existing[name.lower()] = {"file": os.path.basename(path), "level_db": levels[name]}
+    with open(info_path, "w", encoding="utf-8") as handle:
+        json.dump(existing, handle, indent=1)
+    return out_paths
+
+
+# ------------------------------------------------------------------
+# Public API
+# ------------------------------------------------------------------
+
+def presence_label(level_db):
+    if level_db is None:
+        return None, None
+    if level_db >= PRESENT_DB:
+        return "present", "Clearly present in this song"
+    if level_db >= QUIET_DB:
+        return "quiet", "Quiet in this song"
+    return "absent", "Barely in this song — the AI detection may be wrong"
+
+
+def get_instrument_presence(audio_id, instrument_name, stems_dict=None):
+    """Level of an already-built instrument vs. the song's BGM (or None)."""
+    info_path = os.path.join(get_instrument_output_dir(audio_id), "levels.json")
+    if not os.path.isfile(info_path):
         return None
-
-    # Cached isolated file. The name includes a fingerprint of the exact
-    # source stem, so a re-separated song (or a reused audio_id after a
-    # database reset) can never play another song's instrument audio.
-    out_dir = get_instrument_output_dir(audio_id)
-    stat = os.stat(source_stem)
-    fingerprint = hashlib.md5(
-        f"{os.path.abspath(source_stem)}|{stat.st_size}|{int(stat.st_mtime)}".encode("utf-8")
-    ).hexdigest()[:10]
-    safe_filename = "".join([c if c.isalnum() else "_" for c in clean_name]) + f"_{fingerprint}.wav"
-    cached_path = os.path.join(out_dir, safe_filename)
-
-    if os.path.isfile(cached_path) and os.path.getsize(cached_path) > 1000:
-        return cached_path
-
-    with _path_lock(cached_path):
-        # Another request may have finished it while we waited.
-        if os.path.isfile(cached_path) and os.path.getsize(cached_path) > 1000:
-            return cached_path
-        try:
-            return isolate_instrument_from_audio(source_stem, clean_name, cached_path)
-        except Exception as e:
-            print(f"Error isolating instrument {clean_name} for audio {audio_id}: {e}")
-            return None
+    try:
+        info = json.load(open(info_path, encoding="utf-8")).get(str(instrument_name).strip().lower())
+    except Exception:
+        return None
+    if not info:
+        return None
+    if not os.path.isfile(os.path.join(os.path.dirname(info_path), info.get("file", ""))):
+        return None
+    status, label = presence_label(info.get("level_db"))
+    return {"level_db": info.get("level_db"), "presence": status, "presence_label": label}
 
 
 _locks_guard = threading.Lock()
 _path_locks = {}
 
 
-def _path_lock(path):
+def _lock_for(key):
     with _locks_guard:
-        if path not in _path_locks:
-            _path_locks[path] = threading.Lock()
-        return _path_locks[path]
+        if key not in _path_locks:
+            _path_locks[key] = threading.Lock()
+        return _path_locks[key]
+
+
+def _detected_names(audio_id):
+    try:
+        from services.instrument_detection import get_saved_instrument_detections
+        return [
+            (d.get("instrument") or d.get("instrument_name") or "").strip()
+            for d in get_saved_instrument_detections(audio_id)
+        ]
+    except Exception as error:
+        print("Could not read detections for isolation:", error)
+        return []
+
+
+def get_or_create_isolated_instrument(audio_id, instrument_name, stems_dict=None, group_names=None):
+    """Return a playable WAV path for a detected instrument (or None).
+
+    All detected instruments of a song are built together in one pass (they
+    compete for the same sound), then cached; later calls return instantly.
+    """
+    if not instrument_name:
+        return None
+
+    clean_name = str(instrument_name).strip()
+
+    if stems_dict is None:
+        from services.instrument_separation import find_stems_for_audio
+        stems_dict = find_stems_for_audio(audio_id) or {}
+    if not stems_dict:
+        return None
+
+    kind, detail = classify_instrument(clean_name, stems_dict)
+    if kind == "stem":
+        path = stems_dict.get(detail) or (stems_dict.get("other") if detail == "bgm" else None)
+        return path if _usable(path) else None
+
+    if not (_usable(stems_dict.get("other")) or _usable(stems_dict.get("bgm"))):
+        return None
+
+    names = group_names if group_names is not None else _detected_names(audio_id)
+    jobs = {}
+    for n in list(names) + [clean_name]:
+        n = (n or "").strip()
+        if not n or n.lower() in {j.lower() for j in jobs}:
+            continue
+        job = classify_instrument(n, stems_dict)
+        if job[0] != "stem":
+            jobs[n] = job
+    target_name = next(n for n in jobs if n.lower() == clean_name.lower())
+
+    source_ids = [_file_id(stems_dict[k]) for k in sorted(stems_dict) if k != "bgm" and _usable(stems_dict.get(k))]
+    key = _fingerprint(BUILD_VERSION, *source_ids, *sorted(n.lower() for n in jobs))
+    out_dir = get_instrument_output_dir(audio_id)
+    out_paths = {n: os.path.join(out_dir, f"{_safe(n)}_{key}.wav") for n in jobs}
+    target = out_paths[target_name]
+
+    with _lock_for(key):
+        if _usable(target) and os.path.getsize(target) > 1000:
+            return target
+        try:
+            _build_song(stems_dict, jobs, out_paths)
+            return target if _usable(target) else None
+        except Exception as error:
+            print(f"Error isolating {clean_name} for audio {audio_id}: {error}")
+            return None
+
+
+def isolate_instrument_from_audio(source_path, instrument_name, output_path):
+    """Kept for older callers: isolate one instrument from a single file."""
+    _build_song({"other": source_path}, {instrument_name: ("filtered", None)}, {instrument_name: output_path})
+    return output_path

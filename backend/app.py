@@ -93,7 +93,7 @@ def test():
 @app.route("/api/database/status")
 def database_status():
     try:
-        from database.database import get_db_type, get_existing_tables, get_connection
+        from database.database import get_db_type, get_existing_tables, get_connection, get_fallback_reason
         conn = get_connection()
         db_type = get_db_type()
         tables = get_existing_tables(conn)
@@ -101,6 +101,7 @@ def database_status():
         return jsonify({
             "success": True,
             "db_type": db_type,
+            "fallback_reason": get_fallback_reason(),
             "tables": tables,
             "total_tables": len(tables),
             "status": "ready" if len(tables) >= 6 else "incomplete",

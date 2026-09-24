@@ -688,7 +688,7 @@
                         window.location.href = "dashboard.html";
                     }, 1000);
                 } else {
-                    showToast(data.message || "Registration failed", "error");
+                    showToast((data.message || "Registration failed") + (data.error ? ` (${data.error})` : ""), "error");
                 }
             })
             .catch(err => {

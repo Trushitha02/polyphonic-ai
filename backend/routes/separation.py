@@ -24,8 +24,10 @@ from services.instrument_detection import (
     extract_instrument_features
 ) 
 from services.instrument_isolation import (
-    get_or_create_isolated_instrument
-) 
+    get_or_create_isolated_instrument,
+    describe_instrument_source,
+    get_instrument_presence
+)
  
  
 # ============================================================ 
@@ -312,6 +314,8 @@ def build_separation_payload(
         name = item.get("instrument") or item.get("instrument_name") or "Unknown"
         conf = float(item["confidence"]) if item.get("confidence") is not None else 85.0
         
+        isolation_kind, isolation_label = describe_instrument_source(name, stems_dict)
+
         inst_url = url_for(
             "separation.get_separated_audio",
             audio_id=audio_id,
@@ -337,7 +341,9 @@ def build_separation_payload(
             "download_url": inst_dl,
             "is_isolated": True,
             "solo_available": True,
-            "duration": bgm_duration or target_duration
+            "duration": bgm_duration or target_duration,
+            "isolation_kind": isolation_kind,
+            "isolation_label": isolation_label
         })
  
     # -------------------------------------------------------- 
@@ -735,6 +741,21 @@ def get_separated_audio():
     )
     response.headers["Accept-Ranges"] = "bytes"
     return response 
+
+
+# ============================================================
+# HOW PRESENT IS EACH DETECTED INSTRUMENT (after its audio is built)
+# ============================================================
+
+@separation_bp.route("/instrument_info/<int:audio_id>", methods=["GET"])
+def instrument_info(audio_id):
+    names = [n.strip() for n in (request.args.get("names") or "").split(",") if n.strip()]
+    info = {}
+    for name in names:
+        presence = get_instrument_presence(audio_id, name)
+        if presence:
+            info[name] = presence
+    return jsonify({"success": True, "audio_id": audio_id, "instruments": info, "ready": len(info) == len(names)}), 200
 
 
 # ============================================================

@@ -316,13 +316,24 @@ def _name_key(value):
     return "".join(ch.lower() for ch in (value or "") if ch.isalnum())
 
 
+def _stem_richness(stems):
+    """6-stem (guitar/piano) > 4-stem (drums/bass/other) > 2-stem (no_vocals)."""
+    return sum(1 for key in ("drums", "bass", "other", "guitar", "piano") if stems.get(key))
+
+
 def find_stems_by_song_name(file_path, separated_root=None):
-    """Find Demucs output that was generated manually for this song."""
+    """Find Demucs output that was generated manually for this song.
+
+    If the song was separated with several models (e.g. htdemucs two-stem
+    AND htdemucs_6s), use the folder with the most instrument stems, so
+    drums/bass/guitar/piano get their real stems instead of a filtered BGM.
+    """
     separated_root = separated_root or SEPARATED_ROOT
     expected_key = _name_key(os.path.splitext(os.path.basename(file_path or ""))[0])
     if not expected_key or not os.path.isdir(separated_root):
         return None
 
+    best = None
     for root, dirs, files in os.walk(separated_root):
         dirs[:] = [d for d in dirs if d.lower() != "instruments"]
         if "vocals.wav" not in {name.lower() for name in files}:
@@ -331,9 +342,9 @@ def find_stems_by_song_name(file_path, separated_root=None):
         if not folder_key or (expected_key not in folder_key and folder_key not in expected_key):
             continue
         stems = scan_existing_stems(root)
-        if _has_core_stems(stems):
-            return stems
-    return None
+        if _has_core_stems(stems) and (best is None or _stem_richness(stems) > _stem_richness(best)):
+            best = stems
+    return best
 
 
 def _audio_file_path(audio_id):
