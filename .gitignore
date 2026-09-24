@@ -22,3 +22,7 @@ separated/*
 # Local/editor files
 .vscode/
 *.log
+
+# Local SQLite fallback database
+backend/polyphonic.db
+backend/uploads/performances/*

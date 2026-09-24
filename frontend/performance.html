@@ -1466,8 +1466,13 @@ audio{
    USER NAME
 ========================================================= */
 
-const storedUser =
-    JSON.parse(localStorage.getItem("user"));
+const storedUser = (() => {
+    try {
+        return JSON.parse(localStorage.getItem("polyphonic_user") || localStorage.getItem("user") || "null");
+    } catch (error) {
+        return null;
+    }
+})();
 
 if(storedUser && storedUser.name){
 
@@ -1608,22 +1613,58 @@ if (referenceSongName) referenceSongName.textContent = uploadedSong || "Uploaded
 function updateReferenceAudio(category) {
     const referenceAudio = document.getElementById("referenceAudio");
     if (!referenceAudio || !activeAudioId) return;
-    const streamUrl = category === "BGM"
-        ? `/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=bgm`
-        : `/api/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&stem=vocals`;
+    const id = encodeURIComponent(activeAudioId);
+    let streamUrl;
+    let label;
+    if (category === "BGM") {
+        streamUrl = `/api/separation/file?audio_id=${id}&stem=bgm`;
+        label = "Selected reference: separated BGM";
+    } else if (category === "Vocals") {
+        streamUrl = `/api/separation/file?audio_id=${id}&stem=vocals`;
+        label = "Selected reference: separated Vocals";
+    } else {
+        streamUrl = `/api/separation/file?audio_id=${id}&instrument=${encodeURIComponent(category)}`;
+        label = `Selected reference: isolated ${category} from the BGM`;
+    }
     referenceAudio.pause();
     referenceAudio.src = streamUrl;
     referenceAudio.load();
-    if (referenceSongDetails) referenceSongDetails.textContent = category === "BGM"
-        ? "Selected reference: separated BGM"
-        : "Selected reference: separated Vocals";
+    if (referenceSongDetails) referenceSongDetails.textContent = label;
 }
 
-function loadDetectedPerformanceInstruments() {
-    const group = document.getElementById("detectedPerformanceInstruments");
-    if (group) group.innerHTML = "";
+function addDetectedInstrumentOptions(detections) {
+    const existing = new Set(Array.from(instrumentSelect.options).map(option => option.value.toLowerCase()));
+    let group = document.getElementById("detectedPerformanceInstruments");
+    (detections || []).forEach(item => {
+        const name = String(item.instrument_name || item.instrument || item.name || "").trim();
+        if (!name || existing.has(name.toLowerCase()) || /^(vocal|vocals|voice)$/i.test(name)) return;
+        if (!group) {
+            group = document.createElement("optgroup");
+            group.id = "detectedPerformanceInstruments";
+            group.label = "AI detected instruments";
+            instrumentSelect.appendChild(group);
+        }
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = `🎼 ${name}`;
+        group.appendChild(option);
+        existing.add(name.toLowerCase());
+    });
 }
-
+async function loadDetectedPerformanceInstruments() {
+    if (separationCache && String(separationCache.audio_id) === String(activeAudioId)) {
+        addDetectedInstrumentOptions(separationCache.detected_instruments);
+    }
+    if (!activeAudioId) return;
+    try {
+        const response = await fetch(`/api/separation/instruments/${encodeURIComponent(activeAudioId)}`);
+        const data = await response.json();
+        if (response.ok && data.success) addDetectedInstrumentOptions(data.instruments);
+    } catch (error) {
+        console.warn("Could not load detected instruments:", error);
+    }
+    applySavedPerformanceInstrument();
+}
 loadDetectedPerformanceInstruments();
 
 if(uploadedSong){
@@ -1640,17 +1681,18 @@ if(uploadedSong){
 instrumentSelect.value = "Vocals";
 instrumentSelect.dispatchEvent(new Event("change"));
 
-const savedPerformanceInstrument = localStorage.getItem("performance_instrument");
-if (savedPerformanceInstrument) {
+function applySavedPerformanceInstrument() {
+    const savedPerformanceInstrument = localStorage.getItem("performance_instrument");
+    if (!savedPerformanceInstrument || instrumentSelect.value.toLowerCase() === savedPerformanceInstrument.toLowerCase()) return;
     const matchingInstrument = Array.from(instrumentSelect.options).find(option =>
-        option.value.toLowerCase() === savedPerformanceInstrument.toLowerCase() ||
-        option.textContent.toLowerCase().includes(savedPerformanceInstrument.toLowerCase())
+        option.value.toLowerCase() === savedPerformanceInstrument.toLowerCase()
     );
     if (matchingInstrument) {
         instrumentSelect.value = matchingInstrument.value;
         instrumentSelect.dispatchEvent(new Event("change"));
     }
 }
+applySavedPerformanceInstrument();
 
 
 /* =========================================================
@@ -1695,6 +1737,7 @@ async function analyzePerformance(){
 
         const formData = new FormData();
         formData.append("file", file);
+        formData.append("purpose", "performance");
         const uploadResponse = await fetch("/api/audio/upload", {
             method: "POST",
             body: formData

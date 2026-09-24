@@ -1497,7 +1497,23 @@
 
         }
 
-    </style>
+    
+.transcription-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid #c7d2fe;
+    background: #eef2ff;
+    color: #4338ca;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.transcription-action:hover { background: #e0e7ff; }
+</style>
 
     <link rel="stylesheet" href="sidebar.css">
 
@@ -2163,7 +2179,7 @@
 // ============================================================
 
 const BASE_API =
-    "/api";
+    `${window.location.origin}/api`;
 
 
 // ============================================================
@@ -2770,7 +2786,8 @@ async function startTranscription() {
     try {
 
 
-        const transcriptionResults = await Promise.all(selectedInstruments.map(async instrument => {
+        let finishedCount = 0;
+        const transcribeOne = async instrument => {
             const selectedDetection = detectedInstrumentData.find(item =>
                 (item.instrument_name || item.instrument || item.name || "").toLowerCase() === instrument.toLowerCase()
             );
@@ -2788,21 +2805,55 @@ async function startTranscription() {
             if (!response.ok || !data.success) {
                 throw new Error(`${instrument}: ${data.message || "Transcription failed"}`);
             }
-            return { instrument, notes: data.result?.notes || [], streamUrl: selectedDetection?.instrument_stream_url || `${BASE_API}/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&instrument=${encodeURIComponent(instrument)}` };
-        }));
+            return {
+                instrument,
+                notes: data.result?.notes || [],
+                kind: data.result?.kind || "notes",
+                tempo: data.result?.tempo_bpm || null,
+                midiUrl: data.result?.midi_url || null,
+                streamUrl: selectedDetection?.instrument_stream_url || `${BASE_API}/separation/file?audio_id=${encodeURIComponent(activeAudioId)}&instrument=${encodeURIComponent(instrument)}`
+            };
+        };
+
+        // Two instruments at a time keeps the computer responsive.
+        const transcriptionResults = new Array(selectedInstruments.length);
+        let nextIndex = 0;
+        const worker = async () => {
+            while (nextIndex < selectedInstruments.length) {
+                const current = nextIndex++;
+                transcriptionResults[current] = await transcribeOne(selectedInstruments[current]);
+                finishedCount++;
+                button.textContent = `Transcribing... ${finishedCount}/${selectedInstruments.length}`;
+            }
+        };
+        button.textContent = `Transcribing... 0/${selectedInstruments.length}`;
+        await Promise.all([worker(), worker()]);
 
         const totalNotes = transcriptionResults.reduce((total, item) => total + item.notes.length, 0);
         document.getElementById("resultInstrument").textContent = transcriptionResults.map(item => item.instrument).join(", ");
         document.getElementById("noteCount").textContent = totalNotes;
 
         const notesBox = document.getElementById("notesBox");
-        notesBox.innerHTML = transcriptionResults.map(item => {
+        window.lastTranscriptionResults = transcriptionResults;
+        notesBox.innerHTML = transcriptionResults.map((item, index) => {
+            const isHits = item.kind === "hits";
             const noteText = item.notes.length
-                ? item.notes.slice(0, 200).map(note => `Note: ${note.note} | Pitch: ${Number(note.pitch).toFixed(2)} Hz | Time: ${Number(note.time).toFixed(2)} sec`).join("<br>")
+                ? item.notes.slice(0, 200).map(note => isHits
+                    ? `Hit: ${note.note} | Time: ${Number(note.time).toFixed(2)} sec`
+                    : `Note: ${note.note} | Pitch: ${Number(note.pitch).toFixed(2)} Hz | Time: ${Number(note.time).toFixed(2)} sec | Length: ${Number(note.duration || 0).toFixed(2)} sec`
+                ).join("<br>") + (item.notes.length > 200 ? `<br>… and ${item.notes.length - 200} more (download the MIDI for all of them)` : "")
                 : "No musical notes were detected in this instrument audio.";
+            const midiLink = item.midiUrl
+                ? `<a class="transcription-action" href="${new URL(item.midiUrl, BASE_API).href}" download>⬇ Download MIDI</a>`
+                : "";
+            const playNotes = item.notes.length
+                ? `<button type="button" class="transcription-action" id="synth-btn-${index}" onclick="playTranscribedNotes(${index})">▶ Play transcribed ${isHits ? "hits" : "notes"}</button>`
+                : "";
             return `<section class="instrument-transcription-result">
-                <h3>${item.instrument} Notes (${item.notes.length})</h3>
-                <audio controls preload="metadata" src="${new URL(item.streamUrl, BASE_API).href}"></audio>
+                <h3>${item.instrument} ${isHits ? "Hits" : "Notes"} (${item.notes.length})${item.tempo ? ` · ${item.tempo} BPM` : ""}</h3>
+                <p style="margin:4px 0 6px;color:#64748b;font-size:13px;">Isolated ${item.instrument} audio from the song's BGM:</p>
+                <audio controls preload="metadata" src="${new URL(item.streamUrl, BASE_API).href}" style="width:100%;"></audio>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;">${playNotes}${midiLink}</div>
                 <div>${noteText}</div>
             </section>`;
         }).join("");
@@ -2878,6 +2929,88 @@ async function startTranscription() {
 
 }
 
+// ============================================================
+// PLAY TRANSCRIBED NOTES (browser synth, no extra files)
+// ============================================================
+
+let synthContext = null;
+let synthPlayingIndex = null;
+let synthStopTimer = null;
+
+function stopTranscribedNotes() {
+    if (synthContext) {
+        synthContext.close().catch(() => {});
+        synthContext = null;
+    }
+    if (synthStopTimer) clearTimeout(synthStopTimer);
+    const button = document.getElementById(`synth-btn-${synthPlayingIndex}`);
+    const item = (window.lastTranscriptionResults || [])[synthPlayingIndex];
+    if (button && item) button.textContent = `▶ Play transcribed ${item.kind === "hits" ? "hits" : "notes"}`;
+    synthPlayingIndex = null;
+}
+
+function playTranscribedNotes(index) {
+    const item = (window.lastTranscriptionResults || [])[index];
+    if (!item || !item.notes.length) return;
+    const wasPlaying = synthPlayingIndex === index;
+    stopTranscribedNotes();
+    if (wasPlaying) return;
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) {
+        showMessage("This browser cannot synthesize notes. Download the MIDI instead.", "error");
+        return;
+    }
+    document.querySelectorAll("audio").forEach(audio => audio.pause());
+
+    synthContext = new AudioCtx();
+    synthPlayingIndex = index;
+    const ctx = synthContext;
+    const start = ctx.currentTime + 0.1;
+    const firstTime = item.notes[0].time || 0;
+    const master = ctx.createGain();
+    master.gain.value = 0.25;
+    master.connect(ctx.destination);
+    const isHits = item.kind === "hits";
+    let lastEnd = 0;
+
+    item.notes.slice(0, 2000).forEach(note => {
+        const t = start + Math.max(0, note.time - firstTime);
+        const dur = Math.min(Math.max(Number(note.duration) || 0.1, 0.06), 2.5);
+        const gain = ctx.createGain();
+        const level = Math.max(0.15, Math.min(1, (note.velocity || 90) / 127));
+        const osc = ctx.createOscillator();
+        if (isHits) {
+            osc.type = "sine";
+            const low = note.midi === 36;
+            osc.frequency.setValueAtTime(low ? 120 : 330, t);
+            osc.frequency.exponentialRampToValueAtTime(low ? 45 : 180, t + 0.12);
+            gain.gain.setValueAtTime(level, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            osc.start(t);
+            osc.stop(t + 0.16);
+            lastEnd = Math.max(lastEnd, t + 0.16);
+        } else {
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(Number(note.pitch) || 440, t);
+            gain.gain.setValueAtTime(0.0001, t);
+            gain.gain.exponentialRampToValueAtTime(level, t + 0.02);
+            gain.gain.setValueAtTime(level, t + Math.max(0.03, dur - 0.05));
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+            osc.start(t);
+            osc.stop(t + dur + 0.02);
+            lastEnd = Math.max(lastEnd, t + dur + 0.02);
+        }
+        osc.connect(gain);
+        gain.connect(master);
+    });
+
+    const button = document.getElementById(`synth-btn-${index}`);
+    if (button) button.textContent = "⏹ Stop notes";
+    synthStopTimer = setTimeout(stopTranscribedNotes, Math.ceil((lastEnd - ctx.currentTime + 0.3) * 1000));
+    showMessage(`Playing the transcribed ${item.instrument} ${isHits ? "hits" : "notes"}.`, "success");
+}
+
 function continueToPerformance() {
     if (!activeAudioId && !localStorage.getItem("uploaded_audio_path")) {
         showMessage("Complete audio separation before opening Performance Analysis.", "error");
@@ -2904,10 +3037,8 @@ function loadUser() {
         user.name
     ) {
 
-        document.getElementById(
-            "userName"
-        ).textContent =
-            user.name;
+        const userNameElement = document.getElementById("userName");
+            if (userNameElement) userNameElement.textContent = user.name;
 
     }
 

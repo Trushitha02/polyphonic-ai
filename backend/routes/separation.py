@@ -1,18 +1,27 @@
 from flask import Blueprint, request, jsonify, current_app, send_file, url_for 
 from database.database import get_connection 
 import os 
+import csv
+import threading
+from werkzeug.utils import secure_filename
 import joblib 
 import numpy as np 
 import librosa 
  
-from services.instrument_separation import ( 
-    separate_audio, 
+from services.instrument_separation import (
+    separate_audio,
     scan_existing_stems,
+    find_stems_for_audio,
     SeparationInProgressError
-) 
+)
  
 from services.instrument_detection import ( 
-    get_instrument_classes 
+    get_instrument_classes,
+    detect_audio_instruments,
+    save_instrument_detections,
+    get_saved_instrument_detections,
+    load_instrument_labels,
+    extract_instrument_features
 ) 
 from services.instrument_isolation import (
     get_or_create_isolated_instrument
@@ -57,8 +66,14 @@ LABEL_PATH = os.path.join(
     "models", 
     "instrument_labels.joblib" 
 ) 
- 
- 
+
+LABEL_CSV_PATH = os.path.join(
+    BASE_DIR,
+    "datasets",
+    "instrument_dataset.csv"
+)
+
+
 # ============================================================ 
 # AUDIO DURATION 
 # ============================================================ 
@@ -98,409 +113,62 @@ def get_audio_duration(path):
             return None 
  
  
-# ============================================================ 
-# FEATURE EXTRACTION 
-# SAME FEATURES USED DURING TRAINING 
-# ============================================================ 
- 
-def extract_instrument_features(audio_path): 
- 
-    y, sr = librosa.load( 
-        audio_path, 
-        sr=16000, 
-        mono=True, 
-        duration=30 
-    ) 
- 
-    if len(y) < sr: 
- 
-        y = np.pad( 
-            y, 
-            (0, sr - len(y)) 
-        ) 
- 
-    features = [] 
- 
-    # -------------------------------------------------------- 
-    # MFCC 
-    # -------------------------------------------------------- 
- 
-    mfcc = librosa.feature.mfcc( 
-        y=y, 
-        sr=sr, 
-        n_mfcc=20 
-    ) 
- 
-    features.extend( 
-        np.mean(mfcc, axis=1) 
-    ) 
- 
-    features.extend( 
-        np.std(mfcc, axis=1) 
-    ) 
- 
-    # -------------------------------------------------------- 
-    # CHROMA 
-    # -------------------------------------------------------- 
- 
-    chroma = librosa.feature.chroma_stft( 
-        y=y, 
-        sr=sr 
-    ) 
- 
-    features.extend( 
-        np.mean(chroma, axis=1) 
-    ) 
- 
-    features.extend( 
-        np.std(chroma, axis=1) 
-    ) 
- 
-    # -------------------------------------------------------- 
-    # SPECTRAL CENTROID 
-    # -------------------------------------------------------- 
- 
-    centroid = librosa.feature.spectral_centroid( 
-        y=y, 
-        sr=sr 
-    ) 
- 
-    features.append( 
-        float( 
-            np.mean(centroid) 
-        ) 
-    ) 
- 
-    # -------------------------------------------------------- 
-    # SPECTRAL BANDWIDTH 
-    # -------------------------------------------------------- 
- 
-    bandwidth = librosa.feature.spectral_bandwidth( 
-        y=y, 
-        sr=sr 
-    ) 
- 
-    features.append( 
-        float( 
-            np.mean(bandwidth) 
-        ) 
-    ) 
- 
-    # -------------------------------------------------------- 
-    # SPECTRAL CONTRAST 
-    # -------------------------------------------------------- 
- 
-    contrast = librosa.feature.spectral_contrast( 
-        y=y, 
-        sr=sr 
-    ) 
- 
-    features.extend( 
-        np.mean(contrast, axis=1) 
-    ) 
- 
-    # -------------------------------------------------------- 
-    # ZERO CROSSING RATE 
-    # -------------------------------------------------------- 
- 
-    zcr = librosa.feature.zero_crossing_rate( 
-        y 
-    ) 
- 
-    features.append( 
-        float( 
-            np.mean(zcr) 
-        ) 
-    ) 
- 
-    # -------------------------------------------------------- 
-    # RMS ENERGY 
-    # -------------------------------------------------------- 
- 
-    rms = librosa.feature.rms( 
-        y=y 
-    ) 
- 
-    features.append( 
-        float( 
-            np.mean(rms) 
-        ) 
-    ) 
- 
-    # -------------------------------------------------------- 
-    # TEMPO 
-    # -------------------------------------------------------- 
- 
-    try: 
- 
-        tempo, _ = librosa.beat.beat_track( 
-            y=y, 
-            sr=sr 
-        ) 
- 
-        tempo_value = float( 
-            np.asarray(tempo) 
-            .reshape(-1)[0] 
-        ) 
- 
-        features.append( 
-            tempo_value 
-        ) 
- 
-    except Exception: 
- 
-        features.append( 
-            0.0 
-        ) 
- 
-    return np.asarray( 
-        features, 
-        dtype=np.float32 
-    ) 
- 
- 
-# ============================================================ 
-# PREDICT INSTRUMENTS 
-# ============================================================ 
- 
-def detect_bgm_instruments(bgm_path): 
- 
-    if not bgm_path: 
-        return [] 
- 
-    if not os.path.isfile(bgm_path): 
- 
-        print( 
-            "BGM file does not exist:", 
-            bgm_path 
-        ) 
- 
-        return [] 
- 
-    if not os.path.isfile(MODEL_PATH): 
- 
-        print( 
-            "Instrument model not found:", 
-            MODEL_PATH 
-        ) 
- 
-        return [] 
- 
-    if not os.path.isfile(LABEL_PATH): 
- 
-        print( 
-            "Instrument label file not found:", 
-            LABEL_PATH 
-        ) 
- 
-        return [] 
- 
-    try: 
- 
-        print() 
-        print("======================================") 
-        print("AI INSTRUMENT DETECTION") 
-        print("======================================") 
- 
-        print( 
-            "BGM:", 
-            bgm_path 
-        ) 
- 
-        # ---------------------------------------------------- 
-        # LOAD MODEL 
-        # ---------------------------------------------------- 
- 
-        model = joblib.load( 
-            MODEL_PATH 
-        ) 
- 
-        mlb = joblib.load( 
-            LABEL_PATH 
-        ) 
- 
-        # ---------------------------------------------------- 
-        # FEATURES 
-        # ---------------------------------------------------- 
- 
-        features = extract_instrument_features( 
-            bgm_path 
-        ) 
- 
-        X = features.reshape( 
-            1, 
-            -1 
-        ) 
- 
-        # ---------------------------------------------------- 
-        # PREDICTION & PROBABILITIES
-        # ---------------------------------------------------- 
- 
-        prediction = model.predict( 
-            X 
-        )[0] 
+# ============================================================
+# AI INSTRUMENT DETECTION ON THE SEPARATED BGM
+# ============================================================
 
-        try:
-            probas = model.predict_proba(X)
-        except Exception:
-            probas = None
- 
-        detected = [] 
- 
-        for idx, (label, value) in enumerate(zip(mlb.classes_, prediction)):
-            confidence = None
-            if probas is not None and idx < len(probas):
-                p_arr = probas[idx][0]
-                if len(p_arr) > 1:
-                    confidence = round(float(p_arr[1]) * 100, 1)
-                else:
-                    confidence = 100.0 if int(value) == 1 else 0.0
-
-            # Consider detected if positive prediction or probability >= 35%
-            is_detected = (int(value) == 1) or (confidence is not None and confidence >= 35.0)
-
-            if is_detected:
-                if confidence is None:
-                    confidence = 90.0 if int(value) == 1 else 50.0
-                detected.append({
-                    "instrument": str(label),
-                    "source": "BGM",
-                    "confidence": float(confidence)
-                })
-
-        # Sort detected by confidence descending
-        detected.sort(key=lambda item: item["confidence"], reverse=True)
- 
-        print() 
-        print("Detected instruments:") 
- 
-        if detected: 
-            for item in detected: 
-                print(f"  + {item['instrument']} ({item['confidence']}%)")
-        else: 
-            print("  No instrument detected.") 
- 
-        print( 
-            "======================================" 
-        ) 
- 
-        return detected 
- 
-    except Exception as error: 
- 
-        print( 
-            "Instrument detection error:", 
-            error 
-        ) 
- 
-        return [] 
- 
- 
-# ============================================================ 
-# GET SAVED DETECTIONS FROM MYSQL 
-# ============================================================ 
-
-def get_saved_instrument_detections(audio_id):
-    try:
-        connection = get_connection()
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute(
-            """
-            SELECT detection_id, audio_id, instrument_name, confidence, source_stem, created_at
-            FROM instrument_detections
-            WHERE audio_id = %s
-            ORDER BY confidence DESC, detection_id ASC
-            """,
-            (audio_id,)
-        )
-        rows = cursor.fetchall()
-        cursor.close()
-        connection.close()
-
-        if not rows:
-            return []
-
-        # If all confidences are None, detections are legacy and should be re-computed
-        if all(r.get("confidence") is None for r in rows):
-            return []
-
-        result = []
-        for r in rows:
-            conf = float(r["confidence"]) if r.get("confidence") is not None else 85.0
-            result.append({
-                "instrument": r["instrument_name"],
-                "instrument_name": r["instrument_name"],
-                "confidence": conf,
-                "source": r.get("source_stem") or "BGM"
-            })
-        return result
-    except Exception as error:
-        print("Error fetching saved detections:", error)
+def detect_bgm_instruments(bgm_path):
+    """Run the trained instrument model on the separated BGM stem."""
+    if not bgm_path or not os.path.isfile(bgm_path):
         return []
+    return detect_audio_instruments(bgm_path, source="BGM")
 
 
-# ============================================================ 
-# SAVE DETECTIONS TO MYSQL 
-# ============================================================ 
- 
-def save_instrument_detections( 
-    audio_id, 
-    detections 
-): 
- 
-    try: 
- 
-        connection = get_connection() 
- 
-        cursor = connection.cursor() 
- 
-        # Remove previous detections 
-        cursor.execute( 
-            """ 
-            DELETE FROM instrument_detections 
-            WHERE audio_id = %s 
-            """, 
-            (audio_id,) 
-        ) 
- 
-        for detection in detections: 
-            conf_val = float(detection["confidence"]) if detection.get("confidence") is not None else None
-            cursor.execute( 
-                """ 
-                INSERT INTO instrument_detections 
-                ( 
-                    audio_id, 
-                    instrument_name, 
-                    confidence, 
-                    source_stem 
-                ) 
-                VALUES (%s, %s, %s, %s) 
-                """, 
-                ( 
-                    audio_id, 
-                    detection["instrument"], 
-                    conf_val, 
-                    detection.get("source", "BGM") 
-                ) 
-            ) 
- 
-        connection.commit() 
- 
-        cursor.close() 
-        connection.close() 
- 
-        print( 
-            f"Saved {len(detections)} instrument detections to MySQL." 
-        ) 
- 
-    except Exception as error: 
- 
-        print( 
-            "Could not save instrument detections:", 
-            error 
-        ) 
- 
- 
+_prepare_lock = threading.Lock()
+_prepared = set()
+
+
+def prepare_instrument_audio(audio_id, detections):
+    """Build every detected instrument's audio in the background so the
+    'Play <instrument>' buttons start instantly."""
+    names = [
+        (d.get("instrument") or d.get("instrument_name") or "").strip()
+        for d in (detections or [])
+    ]
+    names = [n for n in names if n]
+    key = (str(audio_id), tuple(sorted(names)))
+    with _prepare_lock:
+        if not names or key in _prepared:
+            return
+        _prepared.add(key)
+
+    def worker():
+        for name in names:
+            try:
+                get_or_create_isolated_instrument(audio_id, name)
+            except Exception as error:
+                print(f"Background isolation failed for {name}: {error}")
+
+    threading.Thread(target=worker, daemon=True).start()
+
+
+def get_or_detect_bgm_instruments(audio_id, bgm_path):
+    """Reuse saved BGM detections, otherwise detect on the BGM stem.
+
+    Detections saved at upload time come from the full mix (with vocals);
+    once a BGM stem exists we re-run the model on it, which is closer to
+    the instrument-only audio the model was trained on.
+    """
+    saved = get_saved_instrument_detections(audio_id)
+    if saved and any((d.get("source") or "").upper() == "BGM" for d in saved):
+        return saved
+    detections = detect_bgm_instruments(bgm_path)
+    if detections:
+        save_instrument_detections(audio_id, detections)
+        return detections
+    return saved
+
+
 # ============================================================ 
 # STEM PAYLOAD 
 # ============================================================ 
@@ -637,6 +305,8 @@ def build_separation_payload(
     drums_stream_url = stem_payload(drums_path).get("stream_url", "")
     bass_stream_url = stem_payload(bass_path).get("stream_url", "")
 
+    prepare_instrument_audio(audio_id, detected_instruments)
+
     enriched_detections = []
     for item in (detected_instruments or []):
         name = item.get("instrument") or item.get("instrument_name") or "Unknown"
@@ -666,7 +336,8 @@ def build_separation_payload(
             "audio_url": inst_url,
             "download_url": inst_dl,
             "is_isolated": True,
-            "solo_available": True
+            "solo_available": True,
+            "duration": bgm_duration or target_duration
         })
  
     # -------------------------------------------------------- 
@@ -774,166 +445,63 @@ def build_separation_payload(
     } 
  
  
-# ============================================================ 
-# CHECK / RESTORE SEPARATION 
-# ============================================================ 
- 
-def check_or_restore_separation( 
-    audio_id, 
-    file_path 
-): 
- 
-    # -------------------------------------------------------- 
-    # DATABASE 
-    # -------------------------------------------------------- 
- 
-    try: 
- 
-        connection = get_connection() 
- 
-        cursor = connection.cursor( 
-            dictionary=True 
-        ) 
- 
-        cursor.execute( 
-            """ 
-            SELECT * 
-            FROM separation_results 
-            WHERE audio_id = %s 
-            ORDER BY separation_id DESC 
-            LIMIT 1 
-            """, 
-            (audio_id,) 
-        ) 
- 
-        db_result = cursor.fetchone() 
- 
-        cursor.close() 
-        connection.close() 
- 
-        if ( 
-            db_result 
-            and db_result.get("vocals_path") 
-            and os.path.isfile( 
-                db_result["vocals_path"] 
-            ) 
-        ): 
- 
-            output_folder = os.path.dirname( 
-                db_result["vocals_path"] 
-            ) 
- 
-            stems = scan_existing_stems( 
-                output_folder 
-            ) 
- 
-            if not stems.get("vocals"): 
- 
-                stems["vocals"] = ( 
-                    db_result["vocals_path"] 
-                ) 
- 
-            if not stems.get("drums"): 
- 
-                stems["drums"] = ( 
-                    db_result.get("drums_path") 
-                ) 
- 
-            if not stems.get("bass"): 
- 
-                stems["bass"] = ( 
-                    db_result.get("bass_path") 
-                ) 
- 
-            if not stems.get("other"): 
- 
-                stems["other"] = ( 
-                    db_result.get("other_path") 
-                ) 
- 
-            return stems 
- 
-    except Exception as error: 
- 
-        print( 
-            "Error checking DB separation:", 
-            error 
-        ) 
- 
-    # -------------------------------------------------------- 
-    # DISK 
-    # -------------------------------------------------------- 
- 
-    separated_folder = os.path.abspath( 
-        current_app.config[ 
-            "SEPARATED_FOLDER" 
-        ] 
-    ) 
- 
-    audio_output_folder = os.path.join( 
-        separated_folder, 
-        str(audio_id) 
-    ) 
- 
-    if os.path.isdir( 
-        audio_output_folder 
-    ): 
- 
-        stems = scan_existing_stems( 
-            audio_output_folder 
-        ) 
- 
-        if ( 
-            stems.get("vocals") 
-            and os.path.isfile( 
-                stems["vocals"] 
-            ) 
-        ): 
- 
-            try: 
- 
-                conn = get_connection() 
- 
-                cur = conn.cursor() 
- 
-                cur.execute( 
-                    """ 
-                    INSERT INTO separation_results 
-                    ( 
-                        audio_id, 
-                        vocals_path, 
-                        drums_path, 
-                        bass_path, 
-                        other_path 
-                    ) 
-                    VALUES (%s, %s, %s, %s, %s) 
-                    """, 
-                    ( 
-                        audio_id, 
-                        stems["vocals"], 
-                        stems.get("drums"), 
-                        stems.get("bass"), 
-                        stems.get("other") 
-                    ) 
-                ) 
- 
-                conn.commit() 
- 
-                cur.close() 
-                conn.close() 
- 
-            except Exception as error: 
- 
-                print( 
-                    "DB error saving restored stems:", 
-                    error 
-                ) 
- 
-            return stems 
- 
-    return None 
- 
- 
+# ============================================================
+# CHECK / RESTORE SEPARATION
+# ============================================================
+
+def _save_separation_record(audio_id, stems):
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM separation_results WHERE audio_id = %s", (audio_id,))
+        cur.execute(
+            """
+            INSERT INTO separation_results
+            (audio_id, vocals_path, drums_path, bass_path, other_path)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            (
+                audio_id,
+                stems.get("vocals"),
+                stems.get("drums") or None,
+                stems.get("bass") or None,
+                stems.get("other") or None,
+            ),
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as error:
+        print("DB error saving separation record:", error)
+
+
+def check_or_restore_separation(audio_id, file_path):
+    """Return existing stems for this audio (and remember where they are)."""
+    separated_folder = os.path.abspath(current_app.config["SEPARATED_FOLDER"])
+    stems = find_stems_for_audio(audio_id, file_path, separated_folder)
+    if not stems:
+        return None
+
+    # Record the location so instrument playback, transcription and
+    # performance pages can always find these stems again.
+    try:
+        conn = get_connection()
+        cur = conn.cursor(dictionary=True)
+        cur.execute(
+            "SELECT vocals_path FROM separation_results WHERE audio_id = %s ORDER BY separation_id DESC LIMIT 1",
+            (audio_id,),
+        )
+        row = cur.fetchone()
+        cur.close()
+        conn.close()
+        if not row or row.get("vocals_path") != stems.get("vocals"):
+            _save_separation_record(audio_id, stems)
+    except Exception as error:
+        print("Error checking DB separation:", error)
+
+    return stems
+
+
 # ============================================================ 
 # DATASET AUDIO 
 # ============================================================ 
@@ -1106,64 +674,28 @@ def get_separated_audio():
         requested_path = get_or_create_isolated_instrument(audio_id, stem)
 
     if not requested_path and audio_id:
-        try:
-            conn = get_connection()
-            cur = conn.cursor(dictionary=True)
-            cur.execute(
-                """
-                SELECT vocals_path, drums_path, bass_path, other_path
-                FROM separation_results
-                WHERE audio_id = %s
-                ORDER BY separation_id DESC
-                LIMIT 1
-                """,
-                (audio_id,)
-            )
-            db_res = cur.fetchone()
-            cur.close()
-            conn.close()
-
-            if db_res:
-                if stem == "vocals":
-                    requested_path = db_res.get("vocals_path")
-                elif stem == "drums":
-                    requested_path = db_res.get("drums_path")
-                elif stem == "bass":
-                    requested_path = db_res.get("bass_path")
-                elif stem == "other":
-                    requested_path = db_res.get("other_path")
-                elif stem in ("bgm", "accompaniment"):
-                    dir_cand = os.path.dirname(db_res.get("vocals_path") or "")
-                    if dir_cand and os.path.isdir(dir_cand):
-                        b_cand = os.path.join(dir_cand, "bgm.wav")
-                        if os.path.isfile(b_cand):
-                            requested_path = b_cand
-                        else:
-                            nb_cand = os.path.join(dir_cand, "no_vocals.wav")
-                            if os.path.isfile(nb_cand):
-                                requested_path = nb_cand
-                            else:
-                                requested_path = db_res.get("other_path")
-        except Exception as err:
-            print("DB lookup error in get_separated_audio:", err)
-
-        if not requested_path or not os.path.isfile(requested_path):
-            audio_dir = os.path.join(separated_folder, str(audio_id))
-            if os.path.isdir(audio_dir):
-                stems = scan_existing_stems(audio_dir)
-                if stem in stems and stems[stem] and os.path.isfile(stems[stem]):
-                    requested_path = stems[stem]
-                elif stem in ("bgm", "accompaniment"):
-                    requested_path = stems.get("bgm") or stems.get("other")
+        stems = find_stems_for_audio(audio_id, separated_root=separated_folder) or {}
+        if stem in ("bgm", "accompaniment"):
+            requested_path = stems.get("bgm") or stems.get("other")
+        elif stem:
+            requested_path = stems.get(stem)
 
     if not requested_path and file_path:
         requested_path = os.path.abspath(file_path)
 
     if not requested_path:
+        if audio_id:
+            return jsonify({
+                "success": False,
+                "message": "This song has not been separated yet. Run AI separation first."
+            }), 404
         return jsonify({
             "success": False,
             "message": "No separated audio path or audio_id provided"
         }), 400
+
+    if os.path.splitext(requested_path)[1].lower() not in DATASET_EXTENSIONS:
+        return jsonify({"success": False, "message": "Only audio files can be streamed"}), 400
 
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     root_separated = os.path.abspath(os.path.join(project_root, "separated"))
@@ -1194,7 +726,10 @@ def get_separated_audio():
         as_attachment=(
             request.args.get("download") == "1"
         ),
-        download_name=os.path.basename(requested_path),
+        download_name=(
+            f"{secure_filename(instrument) or 'instrument'}.wav"
+            if instrument else os.path.basename(requested_path)
+        ),
         conditional=True,
         mimetype=mimetype
     )
@@ -1451,19 +986,8 @@ def get_separation_status(
                 or stems.get("other") 
             ) 
  
-            detections = get_saved_instrument_detections(audio_id)
-            if not detections:
-                detections = ( 
-                    detect_bgm_instruments( 
-                        bgm_path 
-                    ) 
-                ) 
-                if detections:
-                    save_instrument_detections( 
-                        audio_id, 
-                        detections 
-                    ) 
- 
+            detections = get_or_detect_bgm_instruments(audio_id, bgm_path)
+
             payload = build_separation_payload( 
  
                 audio_id, 
@@ -1648,19 +1172,8 @@ def run_separation():
                     or cached_stems.get("other") 
                 ) 
  
-                detections = get_saved_instrument_detections(audio_id)
-                if not detections:
-                    detections = ( 
-                        detect_bgm_instruments( 
-                            bgm_path 
-                        ) 
-                    ) 
-                    if detections:
-                        save_instrument_detections( 
-                            audio_id, 
-                            detections 
-                        ) 
- 
+                detections = get_or_detect_bgm_instruments(audio_id, bgm_path)
+
                 return jsonify( 
                     build_separation_payload( 
  
@@ -1884,6 +1397,36 @@ def get_detected_instruments(
  
         cursor.close() 
         connection.close() 
+
+        if not rows:
+            audio_connection = get_connection()
+            audio_cursor = audio_connection.cursor(dictionary=True)
+            audio_cursor.execute(
+                "SELECT file_path FROM audio_files WHERE audio_id = %s",
+                (audio_id,)
+            )
+            audio = audio_cursor.fetchone()
+            audio_cursor.close()
+            audio_connection.close()
+
+            if audio:
+                stems = check_or_restore_separation(audio_id, audio.get("file_path"))
+                bgm_path = (stems or {}).get("bgm") or (stems or {}).get("other")
+                if bgm_path:
+                    detections = detect_bgm_instruments(bgm_path)
+                    if detections:
+                        save_instrument_detections(audio_id, detections)
+                        rows = [
+                            {
+                                "detection_id": None,
+                                "audio_id": audio_id,
+                                "instrument_name": item.get("instrument"),
+                                "confidence": item.get("confidence"),
+                                "source_stem": item.get("source", "BGM"),
+                                "created_at": None,
+                            }
+                            for item in detections
+                        ]
 
         clean_rows = []
         for r in rows:

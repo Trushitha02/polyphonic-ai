@@ -47,7 +47,7 @@ def analyze():
     instrument = data.get("instrument")
 
     if audio_id and instrument == "Vocals":
-        base_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "separated_audio", str(audio_id)))
+        base_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "separated", str(audio_id)))
         stems = scan_existing_stems(base_folder)
         reference_audio = stems.get("vocals") or reference_audio
     elif audio_id and instrument and instrument != "BGM":
@@ -55,7 +55,7 @@ def analyze():
         if isolated_path:
             reference_audio = isolated_path
     elif audio_id and instrument == "BGM":
-        base_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "separated_audio", str(audio_id)))
+        base_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "separated", str(audio_id)))
         stems = scan_existing_stems(base_folder)
         reference_audio = stems.get("bgm") or stems.get("other") or reference_audio
 

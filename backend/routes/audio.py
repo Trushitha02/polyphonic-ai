@@ -2,6 +2,13 @@ from flask import Blueprint, request, jsonify, current_app, send_file
 from database.database import get_connection
 from werkzeug.utils import secure_filename
 import os
+import uuid
+
+from services.instrument_detection import (
+    detect_audio_instruments,
+    save_instrument_detections,
+    get_saved_instrument_detections
+)
 
 
 audio_bp = Blueprint("audio", __name__)
@@ -50,6 +57,9 @@ def get_uploaded_audio():
 
     if not valid_prefix:
         return jsonify({"success": False, "message": "Invalid audio path"}), 400
+
+    if os.path.splitext(requested_path)[1].lower().lstrip(".") not in ALLOWED_EXTENSIONS:
+        return jsonify({"success": False, "message": "Only audio files can be streamed"}), 400
 
     if not os.path.isfile(requested_path):
         return jsonify({"success": False, "message": "Audio file not found"}), 404
@@ -118,24 +128,48 @@ def upload_audio():
         }), 400
 
     # Get user ID
-    user_id = request.form.get("user_id")
+    user_id = request.form.get("user_id") or None
+    purpose = (request.form.get("purpose") or "").strip().lower()
 
-    # Secure filename
+    # Secure filename (keep a readable name even for non-latin titles)
     filename = secure_filename(file.filename)
+    extension = file.filename.rsplit(".", 1)[1].lower()
+    if not filename or "." not in filename:
+        filename = f"audio_{uuid.uuid4().hex[:8]}.{extension}"
 
     # Upload folder
     upload_folder = current_app.config["UPLOAD_FOLDER"]
+    if purpose == "performance":
+        upload_folder = os.path.join(upload_folder, "performances")
 
     os.makedirs(upload_folder, exist_ok=True)
 
-    # Complete file path
-    file_path = os.path.join(
-        upload_folder,
-        filename
-    )
+    # Complete file path. Re-uploading the same song reuses its file;
+    # a different song with the same name gets a unique name instead of
+    # overwriting (which would break the earlier song's separation).
+    file_path = os.path.join(upload_folder, filename)
+    if os.path.exists(file_path):
+        temp_path = os.path.join(upload_folder, f".incoming_{uuid.uuid4().hex}")
+        file.save(temp_path)
+        if os.path.getsize(temp_path) == os.path.getsize(file_path):
+            os.replace(temp_path, file_path)
+        else:
+            stem, ext = os.path.splitext(filename)
+            filename = f"{stem}_{uuid.uuid4().hex[:6]}{ext}"
+            file_path = os.path.join(upload_folder, filename)
+            os.replace(temp_path, file_path)
+    else:
+        file.save(file_path)
 
-    # Save audio file
-    file.save(file_path)
+    # A practice recording for Performance Analysis is only compared with
+    # the reference; it is not a new song, so skip DB + instrument detection.
+    if purpose == "performance":
+        return jsonify({
+            "success": True,
+            "message": "Performance audio uploaded",
+            "filename": filename,
+            "file_path": file_path,
+        }), 201
 
     try:
 
@@ -173,25 +207,32 @@ def upload_audio():
         except Exception:
             try:
                 import wave
-                with wave.open(file_path, "rb") as w:
-                    duration = round(w.getnframes() / float(w.getframerate()), 2)
+                with wave.open(file_path, "rb") as audio_wave:
+                    duration = round(
+                        audio_wave.getnframes() / float(audio_wave.getframerate()),
+                        2,
+                    )
             except Exception:
                 pass
 
+        # Run AI instrument detection on uploaded audio
+        detected_instruments = []
+        try:
+            detected_instruments = detect_audio_instruments(file_path, source="Uploaded Audio")
+            if detected_instruments:
+                save_instrument_detections(audio_id, detected_instruments)
+        except Exception as det_err:
+            print(f"[Upload] Instrument detection warning for audio_id {audio_id}: {det_err}")
+
         return jsonify({
-
             "success": True,
-
-            "message": "Audio uploaded successfully",
-
+            "message": "Audio uploaded and analyzed successfully",
             "audio_id": audio_id,
-
             "filename": filename,
-
             "file_path": file_path,
-
             "duration": duration,
-
+            "detected_instruments": detected_instruments,
+            "detected_instrument_count": len(detected_instruments),
         }), 201
 
     except Exception as error:
@@ -256,6 +297,20 @@ def get_audio(audio_id):
                 except Exception:
                     pass
         audio["duration"] = duration
+
+        # Include saved AI detected instruments
+        try:
+            detected_instruments = get_saved_instrument_detections(audio_id)
+            if not detected_instruments and file_path and os.path.isfile(file_path):
+                detected_instruments = detect_audio_instruments(file_path, source="Uploaded Audio")
+                if detected_instruments:
+                    save_instrument_detections(audio_id, detected_instruments)
+            audio["detected_instruments"] = detected_instruments
+            audio["detected_instrument_count"] = len(detected_instruments)
+        except Exception as det_err:
+            print(f"[Get Audio] Instrument detection fetch error for audio_id {audio_id}: {det_err}")
+            audio["detected_instruments"] = []
+            audio["detected_instrument_count"] = 0
 
         return jsonify({
 

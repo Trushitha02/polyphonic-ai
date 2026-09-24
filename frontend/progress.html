@@ -1127,8 +1127,40 @@
         return history.reduce((total, item) => total + clampScore(item[key]), 0) / history.length;
     }
 
+    let serverHistory = null;
+    let serverSongCount = null;
+
+    // Load saved performances from the database so progress is the same on
+    // every device; browser storage is only a fallback when offline.
+    async function loadServerProgress() {
+        let user = null;
+        try { user = JSON.parse(localStorage.getItem("polyphonic_user") || "null"); } catch (error) {}
+        const userId = (user && user.id) || localStorage.getItem("user_id");
+        if (!userId) return;
+        try {
+            const response = await fetch(`/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
+            const data = await response.json();
+            if (!response.ok || !data.success) return;
+            serverHistory = (data.recent_performances || []).slice().reverse().map(item => ({
+                pitch_score: Number(item.pitch_score) || 0,
+                rhythm_score: Number(item.rhythm_score) || 0,
+                timing_score: Number(item.timing_score) || 0,
+                note_score: Number(item.note_score) || 0,
+                overall_score: Number(item.overall_score) || 0,
+                instrument: item.instrument_name,
+                created_at: item.created_at
+            }));
+            serverSongCount = data.stats ? Number(data.stats.total_songs) || 0 : null;
+            if (serverHistory.length) updateProgressPage();
+        } catch (error) {
+            console.warn("Could not load progress from server:", error);
+        }
+    }
+
     function updateProgressPage() {
-        const history = JSON.parse(localStorage.getItem("performance_history") || "[]");
+        const history = (serverHistory && serverHistory.length)
+            ? serverHistory
+            : JSON.parse(localStorage.getItem("performance_history") || "[]");
         const latest = history[history.length - 1] || {
             pitch_score: localStorage.getItem("pitch_score"),
             rhythm_score: localStorage.getItem("rhythm_score"),
@@ -1147,7 +1179,9 @@
         const consistency = Math.round((pitch + rhythm + timing + note) / 4);
         const level = overall >= 96 ? "Master Performer" : overall >= 90 ? "Advanced" : overall >= 75 ? "Intermediate" : overall >= 60 ? "Developing Musician" : overall >= 40 ? "Beginner" : "Musical Starter";
 
-        document.getElementById("songsAnalyzed").innerText = hasPerformance ? "1" : "0";
+        document.getElementById("songsAnalyzed").innerText = serverSongCount !== null && serverHistory && serverHistory.length
+            ? String(serverSongCount)
+            : (hasPerformance ? "1" : "0");
         document.getElementById("performances").innerText = history.length || (hasPerformance ? "1" : "0");
         document.getElementById("bestScore").innerText = Math.round(best) + "%";
         document.getElementById("currentLevel").innerText = level;
@@ -1193,6 +1227,7 @@
     }
 
     updateProgressPage();
+    loadServerProgress();
     window.addEventListener("storage", event => {
         if (["performance_history", "overall_score", "pitch_score", "rhythm_score", "timing_score", "note_score"].includes(event.key)) {
             updateProgressPage();
@@ -1201,7 +1236,7 @@
 
     function renderProgressChart(heatmapData) {
         const ctx = document.getElementById("practiceHeatmapChart");
-        if (!ctx) return;
+        if (!ctx || typeof Chart === "undefined") return;
 
         if (!heatmapData || heatmapData.length === 0) {
             heatmapData = [

@@ -1,0 +1,8 @@
+# Everything in requirements.txt plus the Demucs neural separator.
+# Use this on your own computer:  pip install -r requirements-local.txt
+# (Render uses requirements.txt only; without Demucs the app automatically
+#  uses its built-in DSP separation so every page still works.)
+-r requirements.txt
+torch
+torchaudio
+demucs>=4.0.1

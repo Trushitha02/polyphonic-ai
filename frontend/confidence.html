@@ -1038,16 +1038,57 @@ function clampScore(value) {
     return Math.max(0, Math.min(100, Number(value) || 0));
 }
 
-function loadConfidenceData() {
-    pitch = clampScore(localStorage.getItem("pitch_score"));
-    rhythm = clampScore(localStorage.getItem("rhythm_score"));
-    timing = clampScore(localStorage.getItem("timing_score"));
-    note = clampScore(localStorage.getItem("note_score"));
+let serverScores = null;
 
-    const overall = clampScore(localStorage.getItem("overall_score"));
-    const hasPerformance = localStorage.getItem("overall_score") !== null;
-    const performanceCount = Number(localStorage.getItem("performance_count")) || (hasPerformance ? 1 : 0);
-    confidence = clampScore(overall + Math.min(performanceCount * 2, 20));
+// Latest scores + practice count from the database (same on every device),
+// confidence computed by the backend /api/confidence/calculate endpoint.
+async function loadServerConfidence() {
+    let user = null;
+    try { user = JSON.parse(localStorage.getItem("polyphonic_user") || "null"); } catch (error) {}
+    const userId = (user && user.id) || localStorage.getItem("user_id");
+    if (!userId) return;
+    try {
+        const response = await fetch(`/api/progress/dashboard?user_id=${encodeURIComponent(userId)}`);
+        const data = await response.json();
+        const latest = (data.recent_performances || [])[0];
+        if (!response.ok || !data.success || !latest) return;
+        const count = Number(data.stats?.total_performances) || 1;
+        const confidenceResponse = await fetch("/api/confidence/calculate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ performance_score: Number(latest.overall_score) || 0, practice_count: count })
+        });
+        const confidenceData = await confidenceResponse.json();
+        serverScores = {
+            pitch: latest.pitch_score,
+            rhythm: latest.rhythm_score,
+            timing: latest.timing_score,
+            note: latest.note_score,
+            overall: latest.overall_score,
+            count,
+            confidence: confidenceResponse.ok && confidenceData.success ? confidenceData.confidence_score : null
+        };
+        loadConfidenceData();
+    } catch (error) {
+        console.warn("Could not load confidence from server:", error);
+    }
+}
+
+function loadConfidenceData() {
+    const fromServer = serverScores !== null;
+    pitch = clampScore(fromServer ? serverScores.pitch : localStorage.getItem("pitch_score"));
+    rhythm = clampScore(fromServer ? serverScores.rhythm : localStorage.getItem("rhythm_score"));
+    timing = clampScore(fromServer ? serverScores.timing : localStorage.getItem("timing_score"));
+    note = clampScore(fromServer ? serverScores.note : localStorage.getItem("note_score"));
+
+    const overall = clampScore(fromServer ? serverScores.overall : localStorage.getItem("overall_score"));
+    const hasPerformance = fromServer || localStorage.getItem("overall_score") !== null;
+    const performanceCount = fromServer
+        ? serverScores.count
+        : (Number(localStorage.getItem("performance_count")) || (hasPerformance ? 1 : 0));
+    confidence = fromServer && serverScores.confidence !== null
+        ? clampScore(serverScores.confidence)
+        : clampScore(overall + Math.min(performanceCount * 2, 20));
     consistency = Math.round((pitch + rhythm + timing + note) / 4);
 
     document.getElementById("confidenceScore").innerText = Math.round(confidence) + "%";
@@ -1088,6 +1129,7 @@ function loadConfidenceData() {
 }
 
 loadConfidenceData();
+loadServerConfidence();
 
 window.addEventListener("storage", event => {
     if (["pitch_score", "rhythm_score", "timing_score", "note_score", "overall_score"].includes(event.key)) {
